@@ -1,13 +1,13 @@
-package org.example.stigespillet.gui;
+package edu.ntnu.iir.bidata.gui;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import org.example.stigespillet.object.Board;
-import org.example.stigespillet.object.LadderAction;
-import org.example.stigespillet.object.Tile;
+import edu.ntnu.iir.bidata.object.Board;
+import edu.ntnu.iir.bidata.object.LadderAction;
+import edu.ntnu.iir.bidata.object.Tile;
 
 public class GameBoardGui {
   private Board board;

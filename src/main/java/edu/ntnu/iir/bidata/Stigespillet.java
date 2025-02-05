@@ -1,4 +1,4 @@
-package org.example.stigespillet;
+package edu.ntnu.iir.bidata;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -6,8 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.example.stigespillet.gui.GameBoardGui;
-import org.example.stigespillet.object.BoardGame;
+import edu.ntnu.iir.bidata.gui.GameBoardGui;
+import edu.ntnu.iir.bidata.object.BoardGame;
 
 public class Stigespillet extends Application {
     private BoardGame boardGame;

@@ -1,4 +1,4 @@
-package org.example.stigespillet.object;
+package edu.ntnu.iir.bidata.object;
 
 /**
  * The board class represents the game board a 10*9 grid with 90 tiles.

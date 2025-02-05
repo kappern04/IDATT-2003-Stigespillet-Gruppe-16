@@ -1,4 +1,4 @@
-package org.example.stigespillet.object;
+package edu.ntnu.iir.bidata.object;
 
 public class BoardGame {
     private Board board;

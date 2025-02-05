@@ -1,4 +1,4 @@
-package org.example.stigespillet.object;
+package edu.ntnu.iir.bidata.object;
 
 /**
  * Die class have last roll value and can be rolled.
