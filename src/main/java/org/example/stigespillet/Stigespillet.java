@@ -6,6 +6,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.example.stigespillet.gui.GameBoardGui;
 import org.example.stigespillet.object.BoardGame;
 
 public class Stigespillet extends Application {
@@ -15,13 +16,14 @@ public class Stigespillet extends Application {
     @Override
     public void start(Stage stage) {
         boardGame = new BoardGame();
+        GameBoardGui gameBoardGui = new GameBoardGui(boardGame.getBoard());
 
         gameStatus = new Label("Welcome to Stigespillet!");
         Button rollButton = new Button("Roll Dice");
 
         rollButton.setOnAction(event -> onRollButtonClick());
 
-        VBox layout = new VBox(10, gameStatus, rollButton);
+        VBox layout = new VBox(10, gameStatus, rollButton, gameBoardGui.createGameBoard());
         Scene scene = new Scene(layout, 320, 240);
 
         stage.setTitle("Stigespillet");
