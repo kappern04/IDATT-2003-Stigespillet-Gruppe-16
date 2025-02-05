@@ -2,6 +2,7 @@ package org.example.stigespillet;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import org.example.stigespillet.object.Dice;
 
 public class HelloController {
     @FXML
@@ -9,6 +10,6 @@ public class HelloController {
 
     @FXML
     protected void onHelloButtonClick() {
-        welcomeText.setText("Welcome to JavaFX Application!");
+        welcomeText.setText((new Dice()).toString());
     }
 }
