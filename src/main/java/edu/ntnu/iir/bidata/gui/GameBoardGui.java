@@ -16,29 +16,57 @@ public class GameBoardGui {
     this.board = board;
   }
 
-  private StackPane createTile(int tileNummer) {
+  private StackPane createTiles(int tileNummer) {
     StackPane rute = new StackPane();
     Rectangle rect = new Rectangle(30, 30);
-    Tile tile = board.getTiles()[tileNummer];
-    if (tile.getTileAction() instanceof LadderAction) {
-      LadderAction action = (LadderAction) tile.getTileAction();
-      if (action.getDestinationTile() > tileNummer) {
-        rect.setFill(Color.GREEN);
-      } else {
-        rect.setFill(Color.RED);
-      }
-    } else {
-      rect.setFill(Color.ORANGE);
-    }
+
+    handleDestinationTile(tileNummer, rect);
+    handleActionTile(tileNummer, rect);
+    handleTile(tileNummer, rect);
+
     Label ruteLabel = new Label(Integer.toString(tileNummer));
     rute.getChildren().addAll(rect, ruteLabel);
     return rute;
   }
 
+  private void handleTile(int tileNummer, Rectangle rect) {
+    if (rect.getFill() == Color.BLACK) {
+      rect.setFill(Color.ORANGE);
+    }
+  }
+
+  private void handleDestinationTile(int tileNummer, Rectangle rect) {
+    for (Tile destinationT : board.getTiles()) {
+      if (destinationT.getTileAction() instanceof LadderAction) {
+        LadderAction action = (LadderAction) destinationT.getTileAction();
+        if (action.getDestinationTile() == tileNummer) {
+          if (tileNummer > destinationT.getTileNumber()) {
+            rect.setFill(Color.LIGHTGREEN);
+          } else {
+            rect.setFill(Color.LIGHTCORAL);
+          }
+          return;
+        }
+      }
+    }
+  }
+
+  private void handleActionTile(int tileNummer, Rectangle rect) {
+    Tile actionT = board.getTiles()[tileNummer];
+    if (actionT.getTileAction() instanceof LadderAction) {
+      LadderAction action = (LadderAction) actionT.getTileAction();
+      if (action.getDestinationTile() > tileNummer) {
+        rect.setFill(Color.GREEN);
+      } else {
+        rect.setFill(Color.RED);
+      }
+    }
+  }
+
   public GridPane createGameBoard() {
     GridPane gridPane = new GridPane();
     for (int i = 1; i < board.getTiles().length; i++) { // Start from 1 to exclude tile 0
-      StackPane tile = createTile(i);
+      StackPane tile = createTiles(i);
       gridPane.add(tile, (i - 1) % 10, (i - 1) / 10); // Adjust position to account for skipping tile 0
     }
     return gridPane;
