@@ -8,32 +8,34 @@ public class Board {
   private Tile[] tiles;
 
   public Board() {
-    tiles = new Tile[91];
+    tiles = new Tile[101];
     createTiles();
   }
 
   private void createTiles() {
-    for (int i = 0; i < 91; i++) {
+    for (int i = 0; i < 101; i++) {
       tiles[i] = new Tile(i, new TileAction());
     }
 
-    // Define ladder actions
-    tiles[1].setTileAction(new LadderAction(40));
-    tiles[8].setTileAction(new LadderAction(10));
-    tiles[36].setTileAction(new LadderAction(52));
-    tiles[43].setTileAction(new LadderAction(62));
-    tiles[49].setTileAction(new LadderAction(79));
-    tiles[65].setTileAction(new LadderAction(82));
-    tiles[68].setTileAction(new LadderAction(85));
-    tiles[24].setTileAction(new LadderAction(5));
-    tiles[33].setTileAction(new LadderAction(3));
-    tiles[42].setTileAction(new LadderAction(30));
-    tiles[56].setTileAction(new LadderAction(37));
-    tiles[64].setTileAction(new LadderAction(27));
-    tiles[74].setTileAction(new LadderAction(12));
-    tiles[87].setTileAction(new LadderAction(70));
-  }
+    // Ladders
+    tiles[2].setTileAction(new LadderSnakesRocketAction(22));
+    tiles[20].setTileAction(new LadderSnakesRocketAction(41));
+    tiles[26].setTileAction(new LadderSnakesRocketAction(55));
+    tiles[36].setTileAction(new LadderSnakesRocketAction(57));
+    tiles[52].setTileAction(new LadderSnakesRocketAction(72));
+    tiles[71].setTileAction(new LadderSnakesRocketAction(91));
+    // Snakes
+    tiles[43].setTileAction(new LadderSnakesRocketAction(17));
+    tiles[49].setTileAction(new LadderSnakesRocketAction(33));
+    tiles[56].setTileAction(new LadderSnakesRocketAction(38));
+    tiles[73].setTileAction(new LadderSnakesRocketAction(12));
+    tiles[84].setTileAction(new LadderSnakesRocketAction(58));
+    tiles[98].setTileAction(new LadderSnakesRocketAction(78));
+    // Rocket Paths
+    tiles[26].setTileAction(new LadderSnakesRocketAction(86));
+    tiles[48].setTileAction(new LadderSnakesRocketAction(98));
 
+  }
   public Tile[] getTiles() {
     return tiles;
   }

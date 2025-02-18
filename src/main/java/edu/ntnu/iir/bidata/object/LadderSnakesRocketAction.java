@@ -1,10 +1,10 @@
 package edu.ntnu.iir.bidata.object;
 
 /** This class represents the action of moving up or down a ladder. */
-public class LadderAction extends TileAction {
+public class LadderSnakesRocketAction extends TileAction {
   private int destinationTile;
 
-  public LadderAction(int destinationTile) {
+  public LadderSnakesRocketAction(int destinationTile) {
     this.destinationTile = destinationTile;
   }
 
