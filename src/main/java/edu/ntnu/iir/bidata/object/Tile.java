@@ -1,9 +1,6 @@
 package edu.ntnu.iir.bidata.object;
 
-/**
- * Tile class represents the different tiles in the game.
- * Each tile has a different action.
- */
+/** Tile class represents the different tiles in the game. Each tile has a different action. */
 public class Tile {
   private int tileNumber;
   private TileAction tileAction;

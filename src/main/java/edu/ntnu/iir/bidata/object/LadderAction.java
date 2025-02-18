@@ -1,8 +1,6 @@
 package edu.ntnu.iir.bidata.object;
 
-/**
- * This class represents the action of moving up or down a ladder.
- */
+/** This class represents the action of moving up or down a ladder. */
 public class LadderAction extends TileAction {
   private int destinationTile;
 
@@ -25,8 +23,6 @@ public class LadderAction extends TileAction {
 
   @Override
   public String toString() {
-    return "LadderAction{" +
-        "destinationTile=" + destinationTile +
-        '}';
+    return "LadderAction{" + "destinationTile=" + destinationTile + '}';
   }
 }

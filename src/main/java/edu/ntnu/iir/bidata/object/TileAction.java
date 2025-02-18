@@ -1,8 +1,8 @@
 package edu.ntnu.iir.bidata.object;
 
 /**
- * This class is a placeholder for the different actions that can be performed on a tile.
- * The actions are determined by the type of tile the player lands on.
+ * This class is a placeholder for the different actions that can be performed on a tile. The
+ * actions are determined by the type of tile the player lands on.
  */
 public class TileAction {
   public void performAction(Player player) {
