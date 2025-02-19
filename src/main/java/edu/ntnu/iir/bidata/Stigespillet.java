@@ -6,8 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import edu.ntnu.iir.bidata.gui.GameBoardGui;
-import edu.ntnu.iir.bidata.object.BoardGame;
+import edu.ntnu.iir.bidata.view.BoardGameView;
+import edu.ntnu.iir.bidata.controller.BoardGame;
 
 public class Stigespillet extends Application {
   private BoardGame boardGame;
@@ -16,7 +16,7 @@ public class Stigespillet extends Application {
   @Override
   public void start(Stage stage) {
     boardGame = new BoardGame();
-    GameBoardGui gameBoardGui = new GameBoardGui(boardGame.getBoard());
+    BoardGameView gameBoardGui = new BoardGameView(boardGame.getBoard());
 
     gameStatus = new Label("Welcome to Stigespillet!");
     Button rollButton = new Button("Roll Dice");

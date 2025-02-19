@@ -9,7 +9,7 @@ public class Board {
 
   public Board() {
     tiles = new Tile[91];
-    createTiles();
+    createTiles();  
   }
 
   private void createTiles() {

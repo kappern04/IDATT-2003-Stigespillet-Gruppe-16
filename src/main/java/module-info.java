@@ -4,6 +4,7 @@ module edu.ntnu.iir.bidata {
   requires javafx.base;
 
   exports edu.ntnu.iir.bidata;
-  exports edu.ntnu.iir.bidata.gui;
+  exports edu.ntnu.iir.bidata.view;
   exports edu.ntnu.iir.bidata.object;
+  exports edu.ntnu.iir.bidata.controller;
 }

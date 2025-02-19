@@ -1,4 +1,9 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.controller;
+
+import edu.ntnu.iir.bidata.object.Board;
+import edu.ntnu.iir.bidata.object.Die;
+import edu.ntnu.iir.bidata.object.Player;
+import edu.ntnu.iir.bidata.object.Tile;
 
 public class BoardGame {
   private Board board;
