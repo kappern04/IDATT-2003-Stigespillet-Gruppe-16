@@ -32,9 +32,9 @@ public class GameBoardGui {
 
   private void colorTile(int tileNumber, Rectangle rect) {
     if (rect.getFill() == Color.BLACK) {
-      rect.setFill(Color.ORANGE);
+      rect.setFill(Color.rgb(254, 241, 0));
       if (tileNumber == 90) {
-        rect.setFill(Color.LIGHTBLUE);
+        rect.setFill(Color.rgb(109, 208, 247));
       }
     }
   }
@@ -44,9 +44,9 @@ public class GameBoardGui {
       if (destinationT.getTileAction() instanceof LadderAction action
           && action.getDestinationTile() == tileNumber) {
         if (tileNumber > destinationT.getTileNumber()) {
-          rect.setFill(Color.LIGHTGREEN);
+          rect.setFill(Color.rgb(166, 206, 58));
         } else {
-          rect.setFill(Color.LIGHTCORAL);
+          rect.setFill(Color.rgb(250, 165, 25));
         }
         return;
       }
@@ -58,9 +58,9 @@ public class GameBoardGui {
       if (actionT.getTileAction() instanceof LadderAction action
           && actionT.getTileNumber() == tileNumber) {
         if (action.getDestinationTile() > tileNumber) {
-          rect.setFill(Color.GREEN);
+          rect.setFill(Color.rgb(15, 177, 77));
         } else {
-          rect.setFill(Color.RED);
+          rect.setFill(Color.rgb(239, 28, 38));
         }
       }
     }
@@ -90,7 +90,7 @@ public class GameBoardGui {
   public StackPane outline() {
     StackPane stackPane = new StackPane();
     Rectangle outline = new Rectangle(500, 500);
-    outline.setFill(Color.LIGHTSKYBLUE);
+    outline.setFill(Color.rgb(0, 174, 240));
 
     stackPane.getChildren().add(outline);
     return stackPane;
