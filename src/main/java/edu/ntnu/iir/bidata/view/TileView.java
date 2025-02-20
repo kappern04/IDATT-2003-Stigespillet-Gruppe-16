@@ -15,11 +15,10 @@ public class TileView {
     this.board = board;
   }
 
-  public StackPane createTile(int tileNumber, Color color) {
+  public StackPane createTile(int tileNumber) {
     StackPane stackPane = new StackPane();
     Rectangle rect = new Rectangle(50, 45);
-    rect.setStroke(Color.BLACK);
-    rect.setFill(color);
+    rect.setFill(Color.rgb(254, 241, 0));
 
     Label tileLabel = new Label(Integer.toString(tileNumber));
     stackPane.getChildren().addAll(rect, tileLabel);

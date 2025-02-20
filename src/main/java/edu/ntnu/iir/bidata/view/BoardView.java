@@ -1,6 +1,5 @@
 package edu.ntnu.iir.bidata.view;
 
-import java.util.Stack;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import edu.ntnu.iir.bidata.object.Board;
@@ -21,7 +20,7 @@ public class BoardView {
     int numRows = (int) Math.ceil(board.getTiles().length / 9.0);
     for (int i = 1; i < board.getTiles().length; i++) { // Start from 1 to exclude tile 0
       int tileNumber = board.getTiles()[i].getTileNumber();
-      StackPane tilePane = tileView.createTile(tileNumber, Color.rgb(254, 241, 0));
+      StackPane tilePane = tileView.createTile(tileNumber);
       Rectangle rect = (Rectangle) tilePane.getChildren().get(0);
 
       tileView.colorTile(tileNumber, rect);
@@ -36,6 +35,8 @@ public class BoardView {
       gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
     gridPane.alignmentProperty().set(javafx.geometry.Pos.CENTER);
+
+
 
     StackPane stackPane = new StackPane();
     stackPane.getChildren().addAll(outline(), gridPane);
