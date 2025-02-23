@@ -53,8 +53,11 @@ public class BoardView {
 
     // Add mouse moved event handler to update coordinates
     stackPane.addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
-      coordinatesLabel.setText("X: " + event.getSceneX() + ", Y: " + event.getSceneY());
+      double mouseX = event.getX();
+      double mouseY = event.getY();
+      coordinatesLabel.setText("Col: " + mouseX + ", Row: " + mouseY);
     });
+
     // Set the alignment of the coordinatesLabel to the top-right corner
     StackPane.setAlignment(coordinatesLabel, javafx.geometry.Pos.TOP_RIGHT);
 
@@ -66,7 +69,7 @@ public class BoardView {
       StackPane gameBoard = createGameBoard();
 
       // Create and position the ladder as a free object
-      StackPane ladder = ladderview.createLadder("/image/img_1.png", 380, 535, 525, 355);
+      GridPane ladder = ladderview.createLadder("/image/ladder.png", 10, 10, 4, 4);
       gameBoard.getChildren().add(ladder);
 
       return gameBoard;
