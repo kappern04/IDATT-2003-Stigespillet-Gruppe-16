@@ -1,10 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
-import edu.ntnu.iir.bidata.object.LadderAction;
-import javafx.scene.Node;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -16,14 +13,11 @@ public class BoardView {
   private Board board;
   private TileView tileView;
   private LadderView ladderview;
-  private Label coordinatesLabel;
 
   public BoardView(Board board) {
     this.board = board;
     this.tileView = new TileView(board);
     this.ladderview = new LadderView();
-    this.coordinatesLabel = new Label();
-    this.coordinatesLabel.setStyle("-fx-font-size: 14; -fx-text-fill: black;");
   }
 
   public StackPane createGameBoard() {
@@ -46,20 +40,11 @@ public class BoardView {
       gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
 
-    gridPane.alignmentProperty().set(javafx.geometry.Pos.CENTER);
-
     StackPane stackPane = new StackPane();
-    stackPane.getChildren().addAll(outline(), gridPane, coordinatesLabel);
+    stackPane.getChildren().addAll(outline(), gridPane);
 
-    // Add mouse moved event handler to update coordinates
-    stackPane.addEventHandler(MouseEvent.MOUSE_MOVED, event -> {
-      double mouseX = event.getX();
-      double mouseY = event.getY();
-      coordinatesLabel.setText("Col: " + mouseX + ", Row: " + mouseY);
-    });
-
-    // Set the alignment of the coordinatesLabel to the top-right corner
-    StackPane.setAlignment(coordinatesLabel, javafx.geometry.Pos.TOP_RIGHT);
+    gridPane.setAlignment(Pos.CENTER);
+    stackPane.setAlignment(Pos.CENTER);
 
     return stackPane;
   }
@@ -69,8 +54,26 @@ public class BoardView {
       StackPane gameBoard = createGameBoard();
 
       // Create and position the ladder as a free object
-      GridPane ladder = ladderview.createLadder("/image/ladder.png", 10, 10, 4, 4);
-      gameBoard.getChildren().add(ladder);
+      StackPane ladder = ladderview.createLadder("/image/img_1.png");
+      StackPane coordinates = new StackPane();
+      Label coordinatesLabel = new Label();
+      coordinates.getChildren().add(coordinatesLabel);
+
+      coordinates.setOnMouseMoved((MouseEvent event) -> {
+        coordinatesLabel.setText("X: " + event.getX() + ", Y: " + event.getY());
+      });
+
+      coordinates.setAlignment(Pos.TOP_LEFT);
+
+      ladder.setTranslateX(525);  //475
+      ladder.setTranslateY(275); //375
+
+
+
+
+      gameBoard.getChildren().addAll(ladder, coordinates);
+
+
 
       return gameBoard;
     }
