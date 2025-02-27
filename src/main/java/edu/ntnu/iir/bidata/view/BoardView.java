@@ -12,12 +12,10 @@ import javafx.scene.shape.Rectangle;
 public class BoardView {
   private Board board;
   private TileView tileView;
-  private LadderView ladderview;
 
   public BoardView(Board board) {
     this.board = board;
     this.tileView = new TileView(board);
-    this.ladderview = new LadderView();
   }
 
   public StackPane createGameBoard() {
@@ -49,34 +47,6 @@ public class BoardView {
     return stackPane;
   }
 
-    // Create and position the ladder as a free object
-    public StackPane createGameBoardWithLadder() {
-      StackPane gameBoard = createGameBoard();
-
-      // Create and position the ladder as a free object
-      StackPane ladder = ladderview.createLadder("/image/img_1.png");
-      StackPane coordinates = new StackPane();
-      Label coordinatesLabel = new Label();
-      coordinates.getChildren().add(coordinatesLabel);
-
-      coordinates.setOnMouseMoved((MouseEvent event) -> {
-        coordinatesLabel.setText("X: " + event.getX() + ", Y: " + event.getY());
-      });
-
-      coordinates.setAlignment(Pos.TOP_LEFT);
-
-      ladder.setTranslateX(525);  //475
-      ladder.setTranslateY(275); //375
-
-
-
-
-      gameBoard.getChildren().addAll(ladder, coordinates);
-
-
-
-      return gameBoard;
-    }
 
   public StackPane outline() {
     StackPane stackPane = new StackPane();

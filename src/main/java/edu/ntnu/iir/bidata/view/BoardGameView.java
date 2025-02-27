@@ -13,6 +13,6 @@ public class BoardGameView {
   }
 
   public StackPane createGameBoard() {
-    return boardView.createGameBoardWithLadder();
+    return boardView.createGameBoard();
   }
 }
