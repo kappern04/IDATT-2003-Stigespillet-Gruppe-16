@@ -24,10 +24,11 @@ public class Stigespillet extends Application {
     rollButton.setOnAction(event -> onRollButtonClick());
 
     VBox layout = new VBox(10, gameStatus, rollButton, gameBoardGui.createGameBoard());
-    Scene scene = new Scene(layout, 1200, 675);
+    Scene scene = new Scene(layout);
 
     stage.setTitle("Stigespillet");
     stage.setScene(scene);
+    stage.setMaximized(true);
     stage.show();
   }
 
@@ -38,6 +39,11 @@ public class Stigespillet extends Application {
             + boardGame.getPlayers()[0].getPosition()
             + ", "
             + boardGame.getPlayers()[1].getPosition());
+    if (boardGame.getPlayers()[0].getPosition() == 90) {
+      gameStatus.setText("Player 1 has won the game!");
+    } else if (boardGame.getPlayers()[1].getPosition() == 90) {
+      gameStatus.setText("Player 2 has won the game!");
+    }
   }
 
   public static void main(String[] args) {

@@ -17,7 +17,7 @@ public class TileView {
 
   public StackPane createTile(int tileNumber) {
     StackPane stackPane = new StackPane();
-    Rectangle rect = new Rectangle(50, 45);
+    Rectangle rect = new Rectangle(64, 64);
     rect.setFill(Color.rgb(254, 241, 0));
 
     Label tileLabel = new Label(Integer.toString(tileNumber));

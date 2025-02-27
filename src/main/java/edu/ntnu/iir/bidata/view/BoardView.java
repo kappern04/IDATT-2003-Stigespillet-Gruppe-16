@@ -12,10 +12,12 @@ import javafx.scene.shape.Rectangle;
 public class BoardView {
   private Board board;
   private TileView tileView;
+  private LadderView ladderview;
 
   public BoardView(Board board) {
     this.board = board;
     this.tileView = new TileView(board);
+    this.ladderview = new LadderView(board);
   }
 
   public StackPane createGameBoard() {
@@ -47,10 +49,32 @@ public class BoardView {
     return stackPane;
   }
 
+    // Create and position the ladder as a free object
+    public StackPane createGameBoardWithLadder() {
+        StackPane gameBoard = createGameBoard();
+        gameBoard.getChildren().add(ladderview.createLadder(1, 40));
+        gameBoard.getChildren().add(ladderview.createLadder(8, 10));
+        gameBoard.getChildren().add(ladderview.createLadder(36, 52));
+        gameBoard.getChildren().add(ladderview.createLadder(43, 62));
+        gameBoard.getChildren().add(ladderview.createLadder(49, 79));
+        gameBoard.getChildren().add(ladderview.createLadder(65, 82));
+        gameBoard.getChildren().add(ladderview.createLadder(68, 85));
+        gameBoard.getChildren().add(ladderview.createLadder(24, 5));
+        gameBoard.getChildren().add(ladderview.createLadder(33, 3));
+        gameBoard.getChildren().add(ladderview.createLadder(42, 30));
+        gameBoard.getChildren().add(ladderview.createLadder(56, 37));
+        gameBoard.getChildren().add(ladderview.createLadder(64, 27));
+        gameBoard.getChildren().add(ladderview.createLadder(74, 12));
+        gameBoard.getChildren().add(ladderview.createLadder(87, 70));
+
+
+
+      return gameBoard;
+    }
 
   public StackPane outline() {
     StackPane stackPane = new StackPane();
-    Rectangle outline = new Rectangle(500, 500);
+    Rectangle outline = new Rectangle(640, 704);
     outline.setFill(Color.rgb(0, 174, 240));
 
     stackPane.getChildren().add(outline);

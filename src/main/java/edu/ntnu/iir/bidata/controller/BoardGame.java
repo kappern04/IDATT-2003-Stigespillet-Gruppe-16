@@ -51,10 +51,6 @@ public class BoardGame {
     Tile currentTile = board.getTiles()[currentPlayer.getPosition()];
     currentTile.landOn(currentPlayer);
 
-    if(currentPlayer.getPosition() == 90) {
-      System.out.println(currentPlayer.getName() + " has won the game!");
-    }
-
     // Switch to the next player
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
   }
