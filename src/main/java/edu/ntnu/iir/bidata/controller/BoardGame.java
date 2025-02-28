@@ -4,12 +4,14 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.view.DieView;
 
 public class BoardGame {
   private Board board;
   private Player[] players;
   private int currentPlayerIndex;
   private Die die;
+  private DieView dieView;
 
   public BoardGame() {
     this.board = new Board();
@@ -18,6 +20,10 @@ public class BoardGame {
     this.players[1] = new Player("Player 2");
     this.currentPlayerIndex = 0;
     this.die = new Die();
+    this.dieView = new DieView(die);
+
+    // Make the die button trigger a turn
+    this.dieView.createDieButton().setOnAction(e -> playTurn());
   }
 
   public Board getBoard() {
@@ -34,6 +40,14 @@ public class BoardGame {
 
   public void setBoard(Board board) {
     this.board = board;
+  }
+
+  public Die getDie() {
+    return die;
+  }
+
+  public DieView getDieView() {
+    return dieView;
   }
 
   public void playTurn() {
@@ -57,6 +71,6 @@ public class BoardGame {
 
   @Override
   public String toString() {
-    return "BoardGame{" + "board=" + board + ", players=" + players + '}';
+    return "BoardGame{" + "board=" + board + ", players=" + players + ", die=" + die + '}';
   }
 }
