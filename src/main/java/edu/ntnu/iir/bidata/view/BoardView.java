@@ -38,20 +38,25 @@ public class BoardView {
       }
       gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
+    gridPane.setAlignment(Pos.CENTER);
 
-    // Create a VBox to hold the die button (from BoardGame)
-    VBox dieBox = new VBox(10); // Add spacing
+    // Create the StackPane for the board and outline
+    StackPane boardAndOutline = new StackPane();
+    boardAndOutline.getChildren().addAll(outline(), gridPane); // Add the outline and board inside the StackPane
+    boardAndOutline.setAlignment(Pos.CENTER); // Center everything in the StackPane
+
+    // Create a VBox to hold both the board/outline and the die button
+    VBox layout = new VBox(20); // 20px spacing between the board and the die button
+    layout.setAlignment(Pos.CENTER); // Center everything inside the VBox
+    layout.getChildren().addAll(boardAndOutline); // Add the boardAndOutline (StackPane)
+
+    // Create the VBox for the die button
+    VBox dieBox = new VBox(10); // 10px spacing for the die button container
     dieBox.getChildren().add(boardGame.getDieView().createDieButton());
-    dieBox.setAlignment(Pos.CENTER);
+    dieBox.setAlignment(Pos.CENTER); // Center the die button within its VBox
+    layout.getChildren().add(dieBox); // Add the die button below the board
 
-    // Wrap gridPane and dieBox in another VBox for proper layout
-    VBox boardContainer = new VBox(20, gridPane, dieBox);
-    boardContainer.setAlignment(Pos.CENTER);
-
-    StackPane stackPane = new StackPane();
-    stackPane.getChildren().addAll(outline(), boardContainer);
-
-    return stackPane;
+    return new StackPane(layout); // Return the final layout
   }
 
   public StackPane outline() {
