@@ -1,21 +1,24 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.object.LadderAction;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import edu.ntnu.iir.bidata.object.Board;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class BoardView {
   private BoardGame boardGame;
   private TileView tileView;
+  private LadderView ladderView;
 
   public BoardView(BoardGame boardGame) {
     this.boardGame = boardGame;
     this.tileView = new TileView(boardGame.getBoard());
+    this.ladderView = new LadderView(boardGame.getBoard());
   }
 
   public StackPane createGameBoard() {
@@ -41,22 +44,39 @@ public class BoardView {
     gridPane.setAlignment(Pos.CENTER);
 
     // Create the StackPane for the board and outline
-    StackPane boardAndOutline = new StackPane();
-    boardAndOutline.getChildren().addAll(outline(), gridPane); // Add the outline and board inside the StackPane
-    boardAndOutline.setAlignment(Pos.CENTER); // Center everything in the StackPane
+    StackPane boardPane = new StackPane();
+    boardPane.getChildren().addAll(outline(), gridPane,
+            //BLUE
+            ladderView.createLadder("Blue", 1, 40),
+            ladderView.createLadder("Blue", 8, 10),
+            ladderView.createLadder("Blue", 36, 52),
+            ladderView.createLadder("Blue", 43, 62),
+            ladderView.createLadder("Blue", 49, 79),
+            ladderView.createLadder("Blue", 65, 82),
+            ladderView.createLadder("Blue", 68, 85),
+            //RED
+            ladderView.createLadder("Red", 24, 5),
+            ladderView.createLadder("Red", 33, 3),
+            ladderView.createLadder("Red", 42, 30),
+            ladderView.createLadder("Red", 56, 37),
+            ladderView.createLadder("Red", 64, 27),
+            ladderView.createLadder("Red", 74, 12),
+            ladderView.createLadder("Red", 87, 70));
 
-    // Create a VBox to hold both the board/outline and the die button
-    VBox layout = new VBox(20); // 20px spacing between the board and the die button
-    layout.setAlignment(Pos.CENTER); // Center everything inside the VBox
-    layout.getChildren().addAll(boardAndOutline); // Add the boardAndOutline (StackPane)
+// Create a VBox to hold the game board and die button
+    VBox layout = new VBox(20);
+    layout.setAlignment(Pos.CENTER);
+    layout.getChildren().addAll(boardPane);
 
-    // Create the VBox for the die button
-    VBox dieBox = new VBox(10); // 10px spacing for the die button container
+// Create the VBox for the die button
+    VBox dieBox = new VBox(10);
     dieBox.getChildren().add(boardGame.getDieView().createDieButton());
-    dieBox.setAlignment(Pos.CENTER); // Center the die button within its VBox
-    layout.getChildren().add(dieBox); // Add the die button below the board
+    dieBox.setAlignment(Pos.CENTER);
+    layout.getChildren().add(dieBox);
 
-    return new StackPane(layout); // Return the final layout
+// Return the final layout
+    return new StackPane(layout);
+
   }
 
   public StackPane outline() {
