@@ -2,13 +2,11 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
+
 
 
 public class LadderView {
@@ -32,10 +30,10 @@ public class LadderView {
         ImageView end = createImageView("/image/" + color + "Wormhole.png");
 
         // Adjust positions relative to StackPane's center
-        start.setTranslateX(startX - 320); // Half of 640px width
-        start.setTranslateY(startY - 352); // Half of 704px height
-        end.setTranslateX(endX - 320);
-        end.setTranslateY(endY - 352);
+        start.setTranslateX(startX - 350); // Half of 640px width
+        start.setTranslateY(startY - 385); // Half of 704px height
+        end.setTranslateX(endX - 350);
+        end.setTranslateY(endY - 385);
 
 
         StackPane stackPane = new StackPane();
@@ -51,13 +49,13 @@ public class LadderView {
             col = 8 - col; // Reverse column order for odd rows (zig-zag pattern)
         }
 
-        return col * 64 + 64; // Center of tile
+        return col * 70 + 70; // Center of tile
     }
 
 
     private double getTileCenterY(Tile tile) {
         int row = (tile.getTileNumber() - 1) / 9; // Get row index (0 to 9)
-        return (9 - row) * 64 + 64; // Center of tile
+        return (9 - row) * 70 + 70; // Center of tile
     }
 
 

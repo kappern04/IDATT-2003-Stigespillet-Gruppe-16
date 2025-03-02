@@ -1,10 +1,8 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.object.LadderAction;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -41,6 +39,9 @@ public class BoardView {
       }
       gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
+    gridPane.setHgap(3);
+    gridPane.setVgap(3);
+
     gridPane.setAlignment(Pos.CENTER);
 
     // Create the StackPane for the board and outline
@@ -81,8 +82,8 @@ public class BoardView {
 
   public StackPane outline() {
     StackPane stackPane = new StackPane();
-    Rectangle outline = new Rectangle(640, 704);
-    outline.setFill(Color.rgb(0, 174, 240));
+    Rectangle outline = new Rectangle(700, 770);
+    outline.setFill(Color.rgb(0, 0, 0));
 
     stackPane.getChildren().add(outline);
     return stackPane;
