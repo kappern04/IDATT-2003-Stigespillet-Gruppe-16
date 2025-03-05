@@ -6,7 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-
+import javafx.scene.transform.Rotate;
 
 
 public class LadderView {
@@ -26,15 +26,27 @@ public class LadderView {
         double endX = getTileCenterX(endTile);
         double endY = getTileCenterY(endTile);
 
+        //calculate the polar angle from the angle between the start and end tile
+        double angle = Math.toDegrees(Math.atan2(endY - startY, endX - startX)) + 90;
+
+        double offset = 25;
+        double startEdgeX = startX + offset * Math.cos(Math.toRadians(angle - 90));
+        double startEdgeY = startY + offset * Math.sin(Math.toRadians(angle - 90));
+        double endEdgeX = endX + offset * Math.cos(Math.toRadians(angle + 90));
+        double endEdgeY = endY + offset * Math.sin(Math.toRadians(angle + 90));
+
         ImageView start = createImageView("/image/" + color + "Wormhole.png");
         ImageView end = createImageView("/image/" + color + "Wormhole.png");
 
-        // Adjust positions relative to StackPane's center
-        start.setTranslateX(startX - 350); // Half of 640px width
-        start.setTranslateY(startY - 385); // Half of 704px height
-        end.setTranslateX(endX - 350);
-        end.setTranslateY(endY - 385);
+        //positions, angles and flips the start wormhole
+        start.setRotate(angle + 180);
+        start.setTranslateX(startEdgeX - 350);
+        start.setTranslateY(startEdgeY - 385);
 
+        //positions and angles the start wormhole
+        end.setRotate(angle);
+        end.setTranslateX(endEdgeX - 350);
+        end.setTranslateY(endEdgeY - 385);
 
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(start, end);
