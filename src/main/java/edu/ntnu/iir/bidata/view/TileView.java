@@ -18,11 +18,11 @@ public class TileView {
 
   public StackPane createTile(int tileNumber) {
     StackPane stackPane = new StackPane();
-    Rectangle rect = new Rectangle(64, 64);
-    rect.setStroke(Color.rgb(254, 241, 0));
+    Rectangle rect = new Rectangle(60, 60);
+    rect.setFill(Color.rgb(254, 241, 0));
     rect.setStrokeWidth(3); //Stroke Thickness
     Label tileLabel = new Label(Integer.toString(tileNumber));
-    tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-text-fill: white; -fx-padding: 3px 5px;");
+    tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-text-fill: black; -fx-padding: 3px 5px;");
     stackPane.getChildren().addAll(rect, tileLabel);
     stackPane.setAlignment(Pos.TOP_LEFT);
     return stackPane;
@@ -30,7 +30,7 @@ public class TileView {
 
   public void colorTile(int tileNumber, Rectangle rect) {
       if (tileNumber == 90) {
-        rect.setStroke(Color.rgb(109, 208, 247));
+        rect.setFill(Color.rgb(109, 208, 247));
       }
     }
 
@@ -39,9 +39,9 @@ public class TileView {
       if (destinationT.getTileAction() instanceof LadderAction action
           && action.getDestinationTile() == tileNumber) {
         if (tileNumber > destinationT.getTileNumber()) {
-          rect.setStroke(Color.rgb(166, 206, 58));
+          rect.setFill(Color.rgb(166, 206, 58));
         } else {
-          rect.setStroke(Color.rgb(250, 165, 25));
+          rect.setFill(Color.rgb(250, 165, 25));
         }
         return;
       }
@@ -53,9 +53,9 @@ public class TileView {
       if (actionT.getTileAction() instanceof LadderAction action
           && actionT.getTileNumber() == tileNumber) {
         if (action.getDestinationTile() > tileNumber) {
-          rect.setStroke(Color.rgb(15, 177, 77));
+          rect.setFill(Color.rgb(15, 177, 77));
         } else {
-          rect.setStroke(Color.rgb(239, 28, 38));
+          rect.setFill(Color.rgb(239, 28, 38));
         }
       }
     }

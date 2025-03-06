@@ -3,6 +3,7 @@ package edu.ntnu.iir.bidata.view;
 import edu.ntnu.iir.bidata.controller.BoardGame;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -39,8 +40,8 @@ public class BoardView {
       }
       gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
-    gridPane.setHgap(3);
-    gridPane.setVgap(3);
+    gridPane.setHgap(4);
+    gridPane.setVgap(4);
 
     gridPane.setAlignment(Pos.CENTER);
 
@@ -65,14 +66,14 @@ public class BoardView {
             ladderView.createLadder("Red", 87, 70));
 
 // Create a VBox to hold the game board and die button
-    VBox layout = new VBox(20);
+    HBox layout = new HBox(20);
     layout.setAlignment(Pos.CENTER);
     layout.getChildren().addAll(boardPane);
 
 // Create the VBox for the die button
-    VBox dieBox = new VBox(10);
+    HBox dieBox = new HBox(10);
     dieBox.getChildren().add(boardGame.getDieView().createDieButton());
-    dieBox.setAlignment(Pos.CENTER);
+    dieBox.setAlignment(Pos.CENTER_LEFT);
     layout.getChildren().add(dieBox);
 
 // Return the final layout
@@ -82,7 +83,7 @@ public class BoardView {
 
   public StackPane outline() {
     StackPane stackPane = new StackPane();
-    Rectangle outline = new Rectangle(700, 770);
+    Rectangle outline = new Rectangle(640, 704);
     outline.setFill(Color.rgb(0, 0, 0));
 
     stackPane.getChildren().add(outline);
