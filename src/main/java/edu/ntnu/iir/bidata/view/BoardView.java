@@ -3,6 +3,7 @@ package edu.ntnu.iir.bidata.view;
 import edu.ntnu.iir.bidata.controller.BoardGame;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -65,12 +66,14 @@ public class BoardView {
             ladderView.createLadder("Red", 87, 70));
 
 // Create a VBox to hold the game board and die button
-    VBox layout = new VBox(20);
+    HBox layout = new HBox(20);
     layout.setAlignment(Pos.CENTER);
     layout.getChildren().addAll(boardPane);
 
+    VBox playerInfo = new VBox(10);
+
 // Create the VBox for the die button
-    VBox dieBox = new VBox(10);
+    HBox dieBox = new HBox(10);
     dieBox.getChildren().add(boardGame.getDieView().createDieButton());
     dieBox.setAlignment(Pos.CENTER);
     layout.getChildren().add(dieBox);

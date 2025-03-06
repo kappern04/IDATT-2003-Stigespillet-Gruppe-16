@@ -1,27 +1,28 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Die;
-import java.applet.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import java.io.File;
 import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javax.print.attribute.standard.Media;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 
 public class DieView {
     private final Die die;
     private final ImageView imageView;
     private AnimationTimer timer;
     private long animationStartTime;
-    //private AudioClip dieAudioClip;
 
     public DieView(Die die) {
         this.die = die;
         this.imageView = new ImageView(getDieImage());
         initializeAnimationTimer();
-        //dieAudioClip = new AudioClip();
     }
 
     public Button createDieButton() {
@@ -35,6 +36,7 @@ public class DieView {
     private void startRollingAnimation() {
         animationStartTime = System.currentTimeMillis();
         timer.start();
+        playSound("dice-roll-sound.wav");
     }
     //Die Animation
     private void initializeAnimationTimer() {
@@ -62,8 +64,13 @@ public class DieView {
         return new Image(getClass().getResourceAsStream("/image/die_" + die.getLastRoll() + ".png"));
     }
 
-    //private void AudioClip() {
-      //  AudioClip dieAudioClip = new AudioClip(new File("src/main/resources/audio/die_roll.wav").toURI().toString());
-        //dieAudioClip.play();
-    //}
+    private void playSound(String soundFile) {
+        try {
+            Media sound = new Media(getClass().getResource("/audio/" + soundFile).toExternalForm());
+            MediaPlayer mediaPlayer = new MediaPlayer(sound);
+            mediaPlayer.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
