@@ -2,10 +2,13 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.transform.Rotate;
 
 
@@ -29,7 +32,7 @@ public class LadderView {
         //calculate the polar angle from the angle between the start and end tile
         double angle = Math.toDegrees(Math.atan2(endY - startY, endX - startX)) + 90;
 
-        double offset = 25;
+        double offset = 0;
         double startEdgeX = startX + offset * Math.cos(Math.toRadians(angle - 90));
         double startEdgeY = startY + offset * Math.sin(Math.toRadians(angle - 90));
         double endEdgeX = endX + offset * Math.cos(Math.toRadians(angle + 90));

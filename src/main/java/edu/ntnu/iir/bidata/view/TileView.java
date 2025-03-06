@@ -20,7 +20,8 @@ public class TileView {
     StackPane stackPane = new StackPane();
     Rectangle rect = new Rectangle(64, 64);
     rect.setStroke(Color.rgb(254, 241, 0));
-    rect.setStrokeWidth(3); //Stroke Thickness
+    rect.setFill(Color.TRANSPARENT);
+    rect.setStrokeWidth(2); //Stroke Thickness
     Label tileLabel = new Label(Integer.toString(tileNumber));
     tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-text-fill: white; -fx-padding: 3px 5px;");
     stackPane.getChildren().addAll(rect, tileLabel);

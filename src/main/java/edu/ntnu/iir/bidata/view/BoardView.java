@@ -39,14 +39,14 @@ public class BoardView {
       }
       gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
-    gridPane.setHgap(3);
-    gridPane.setVgap(3);
+    gridPane.setHgap(4);
+    gridPane.setVgap(4);
 
     gridPane.setAlignment(Pos.CENTER);
 
     // Create the StackPane for the board and outline
     StackPane boardPane = new StackPane();
-    boardPane.getChildren().addAll(outline(), gridPane,
+    boardPane.getChildren().addAll(gridPane,
             //BLUE
             ladderView.createLadder("Blue", 1, 40),
             ladderView.createLadder("Blue", 8, 10),
@@ -80,12 +80,12 @@ public class BoardView {
 
   }
 
-  public StackPane outline() {
-    StackPane stackPane = new StackPane();
-    Rectangle outline = new Rectangle(700, 770);
-    outline.setFill(Color.rgb(0, 0, 0));
-
-    stackPane.getChildren().add(outline);
-    return stackPane;
-  }
+//  public StackPane outline() {
+//    StackPane stackPane = new StackPane();
+//    Rectangle outline = new Rectangle(640, 704);
+//    outline.setFill(Color.rgb(0, 0, 0));
+//
+//    stackPane.getChildren().add(outline);
+//    return stackPane;
+//  }
 }
