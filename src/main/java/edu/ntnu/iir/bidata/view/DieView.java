@@ -18,6 +18,7 @@ public class DieView {
     private final ImageView imageView;
     private AnimationTimer timer;
     private long animationStartTime;
+    private Runnable onAnimationEnd;
 
     public DieView(Die die) {
         this.die = die;
@@ -25,7 +26,8 @@ public class DieView {
         initializeAnimationTimer();
     }
 
-    public Button createDieButton() {
+    public Button createDieButton(Runnable onAnimationEnd) {
+        this.onAnimationEnd = onAnimationEnd;
         Button button = new Button();
         button.setGraphic(imageView);
         button.setBackground(Background.EMPTY);
@@ -50,6 +52,10 @@ public class DieView {
                     timer.stop();
                     die.roll();
                     imageView.setImage(getDieImage());
+
+                    if (onAnimationEnd != null) {
+                        onAnimationEnd.run();
+                    }
                 }
             }
         };

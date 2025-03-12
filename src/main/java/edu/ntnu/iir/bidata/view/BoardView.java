@@ -6,18 +6,23 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
+import javafx.scene.control.Button;
 import javafx.scene.shape.Rectangle;
 
 public class BoardView {
+
   private BoardGame boardGame;
   private TileView tileView;
   private LadderView ladderView;
+  private DieView dieView;
+  private PlayerView playerView;
 
   public BoardView(BoardGame boardGame) {
     this.boardGame = boardGame;
     this.tileView = new TileView(boardGame.getBoard());
     this.ladderView = new LadderView(boardGame.getBoard());
+    this.playerView = new PlayerView(boardGame.getBoard(), boardGame.getPlayers());
+    this.dieView = new DieView(boardGame.getDie());
   }
 
   public StackPane createGameBoard() {
@@ -74,7 +79,15 @@ public class BoardView {
 
 // Create the VBox for the die button
     HBox dieBox = new HBox(10);
-    dieBox.getChildren().add(boardGame.getDieView().createDieButton());
+    Button dieButton = dieView.createDieButton(() -> {
+      boardGame.playTurn();
+      playerView.updatePlayerPositions();
+        });
+
+    playerView.addPlayersToBoard(boardPane);
+
+    dieBox.getChildren().add(dieButton);
+
     dieBox.setAlignment(Pos.CENTER);
     layout.getChildren().add(dieBox);
 
