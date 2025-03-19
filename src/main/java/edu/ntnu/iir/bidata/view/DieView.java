@@ -31,7 +31,11 @@ public class DieView {
         Button button = new Button();
         button.setGraphic(imageView);
         button.setBackground(Background.EMPTY);
-        button.setOnAction(e -> startRollingAnimation());
+        button.setOnAction(e -> {
+            button.setDisable(true);
+            startRollingAnimation();
+            button.setDisable(false);
+        });
         return button;
     }
 

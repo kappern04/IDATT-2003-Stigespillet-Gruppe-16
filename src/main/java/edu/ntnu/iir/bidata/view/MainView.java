@@ -2,6 +2,8 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.Board;
+import edu.ntnu.iir.bidata.view.elements.MusicControlPanel;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
@@ -9,16 +11,21 @@ import javafx.scene.layout.BackgroundImage;
 import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainView {
   private BoardGame boardGame;
   private BoardView boardView;
+  private MusicPlayer musicPlayer;
+  private MusicControlPanel musicControlPanel;
 
   public MainView(BoardGame boardGame) {
     this.boardGame = boardGame;
     this.boardView = new BoardView(boardGame);
+    this.musicPlayer  = new MusicPlayer("/audio/bgmusic.wav");
+    this.musicControlPanel = new MusicControlPanel(musicPlayer);
   }
 
   public Stage setUpStage(Stage stage) {
@@ -26,11 +33,15 @@ public class MainView {
     VBox layout = new VBox(10, boardView.createGameBoard());
     layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
     layout.setBackground(createBackground());
+    HBox musicPanel = musicControlPanel.createControlPanel();
+    musicPanel.setAlignment(Pos.TOP_LEFT);
+    layout.getChildren().addAll(musicPanel);
 
     Scene scene = new Scene(layout);
     stage.setTitle("Stigespillet");
     stage.setScene(scene);
     stage.setMaximized(true);
+    musicPlayer.play();
     return stage;
   }
 

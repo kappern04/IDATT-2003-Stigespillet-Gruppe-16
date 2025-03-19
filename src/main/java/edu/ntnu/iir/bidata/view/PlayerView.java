@@ -3,12 +3,15 @@ package edu.ntnu.iir.bidata.view;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
+import javafx.animation.RotateTransition;
+import javafx.animation.TranslateTransition;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
 import java.util.HashMap;
 import java.util.Map;
+import javafx.util.Duration;
 
 public class PlayerView {
 
@@ -46,14 +49,21 @@ public class PlayerView {
       ImageView sprite = entry.getValue();
       Tile tile = board.getTiles()[player.getPosition()];
 
-      sprite.setTranslateX(getTileCenterX(tile) - 350);
-      sprite.setTranslateY(getTileCenterY(tile) - 385);
+      // needs to be reworked so that the ship goes through a wormhole
+      // may need to refactor how the turn is played
+      double targetX = getTileCenterX(tile) - 350;
+      double targetY = getTileCenterY(tile) - 385;
+      double targetRotation = (((tile.getTileNumber() - 1) / 9) % 2 == 1) ? -90 : 90;
 
-      if (((tile.getTileNumber() - 1) / 9) % 2 == 1) {
-        sprite.setRotate(-90);
-      } else {
-        sprite.setRotate(90);
-      }
+      TranslateTransition translate = new TranslateTransition(Duration.millis(500), sprite);
+      translate.setToX(targetX);
+      translate.setToY(targetY);
+
+      RotateTransition rotate = new RotateTransition(Duration.millis(300), sprite);
+      rotate.setToAngle(targetRotation);
+
+      translate.play();
+      rotate.play();
     }
   }
 
