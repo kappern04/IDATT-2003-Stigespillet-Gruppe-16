@@ -22,8 +22,8 @@ public class DieView {
 
     public DieView(Die die) {
         this.die = die;
-        this.imageView = new ImageView(getDieImage());
         initializeAnimationTimer();
+        this.imageView = new ImageView(getDieImage());
     }
 
     public Button createDieButton(Runnable onAnimationEnd) {
