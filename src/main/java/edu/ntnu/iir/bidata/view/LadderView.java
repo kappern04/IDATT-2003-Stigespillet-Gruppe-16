@@ -2,15 +2,11 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
-import javafx.geometry.Pos;
+
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.transform.Rotate;
-
 
 public class LadderView {
 
@@ -81,4 +77,5 @@ public class LadderView {
         imageView.setFitHeight(48);
         return imageView;
     }
+
 }
