@@ -3,15 +3,12 @@ package edu.ntnu.iir.bidata.view;
 import edu.ntnu.iir.bidata.object.Die;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.io.File;
 import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
+
 
 public class DieView {
     private final Die die;
@@ -22,8 +19,8 @@ public class DieView {
 
     public DieView(Die die) {
         this.die = die;
-        this.imageView = new ImageView(getDieImage());
         initializeAnimationTimer();
+        this.imageView = new ImageView(getDieImage());
     }
 
     public Button createDieButton(Runnable onAnimationEnd) {
@@ -43,6 +40,7 @@ public class DieView {
         animationStartTime = System.currentTimeMillis();
         timer.start();
         playSound("dice-roll-sound.wav");
+
     }
     //Die Animation
     private void initializeAnimationTimer() {
@@ -55,14 +53,15 @@ public class DieView {
                 } else {
                     timer.stop();
                     die.roll();
-                    imageView.setImage(getDieImage());
 
                     if (onAnimationEnd != null) {
                         onAnimationEnd.run();
+                        imageView.setImage(getDieImage());
                     }
                 }
             }
         };
+
     }
 
     private void updateDie() {
