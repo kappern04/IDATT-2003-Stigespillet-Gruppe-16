@@ -1,5 +1,6 @@
 package edu.ntnu.iir.bidata.view;
 
+import edu.ntnu.iir.bidata.object.Observable;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javafx.util.Duration;
 
-public class PlayerView {
+public class PlayerView implements Observer{
 
   private Board board;
   private Map<Player, ImageView> playerSprites;
@@ -43,7 +44,7 @@ public class PlayerView {
     updatePlayerPositions();
   }
 
-  public void updatePlayerPositions() {
+  private void updatePlayerPositions() {
     for (Map.Entry<Player, ImageView> entry : playerSprites.entrySet()) {
       Player player = entry.getKey();
       ImageView sprite = entry.getValue();
@@ -59,7 +60,7 @@ public class PlayerView {
       translate.setToX(targetX);
       translate.setToY(targetY);
 
-      RotateTransition rotate = new RotateTransition(Duration.millis(300), sprite);
+      RotateTransition rotate = new RotateTransition(Duration.millis(100), sprite);
       rotate.setToAngle(targetRotation);
 
       translate.play();
@@ -80,5 +81,11 @@ public class PlayerView {
   private double getTileCenterY(Tile tile) {
     int row = (tile.getTileNumber() - 1) / 9;
     return (9 - row) * 70 + 70;
+  }
+
+  @Override
+  public <T extends Observer> void update(Observable<T> observable, String prompt) {
+    updatePlayerPositions();
+    System.out.println("Movement animating.");
   }
 }

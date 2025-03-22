@@ -2,7 +2,6 @@ package edu.ntnu.iir.bidata.view;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import java.net.URL;
 
 public class MusicPlayer {
   private MediaPlayer mediaPlayer;

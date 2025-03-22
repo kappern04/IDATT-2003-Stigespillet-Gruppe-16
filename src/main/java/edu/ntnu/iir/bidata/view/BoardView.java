@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
+import java.util.Arrays;
 import javafx.geometry.Pos;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -23,6 +24,8 @@ public class BoardView {
     this.ladderView = new LadderView(boardGame.getBoard());
     this.playerView = new PlayerView(boardGame.getBoard(), boardGame.getPlayers());
     this.dieView = new DieView(boardGame.getDie());
+    boardGame.getDie().addObserver(this.dieView);
+    Arrays.stream(boardGame.getPlayers()).forEach(p -> p.addObserver(this.playerView));
   }
 
   public StackPane createGameBoard() {
@@ -79,10 +82,7 @@ public class BoardView {
 
 // Create the VBox for the die button
     HBox dieBox = new HBox(10);
-    Button dieButton = dieView.createDieButton(() -> {
-      boardGame.playTurn();
-      playerView.updatePlayerPositions();
-        });
+    Button dieButton = dieView.createDieButton(() -> boardGame.playTurn());
 
     playerView.addPlayersToBoard(boardPane);
 
