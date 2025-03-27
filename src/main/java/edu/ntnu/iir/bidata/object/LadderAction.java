@@ -7,14 +7,17 @@ import javafx.scene.media.MediaPlayer;
 public class LadderAction extends TileAction {
   private int destinationTile;
 
-
   public LadderAction(int destinationTile) {
     this.destinationTile = destinationTile;
   }
 
   @Override
   public void performAction(Player player) {
-    playSound("portal.wav");
+    if (destinationTile > player.getPosition()) {
+      playSound("portal.wav");
+    } else {
+      playSound("portal2.wav");
+    }
     player.setPosition(destinationTile);
   }
 
