@@ -1,12 +1,19 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.object.Board;
+import edu.ntnu.iir.bidata.object.Player;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
@@ -82,7 +89,7 @@ public class MainMenu {
     newGameBtn.setOnAction(e -> showGameSetup());
 
     loadGameBtn.setOnAction(e -> {
-      Alert alert = new Alert(Alert.AlertType.INFORMATION);
+      Alert alert = new Alert(AlertType.INFORMATION);
       alert.setTitle("Transmission Interrupted");
       alert.setHeaderText(null);
       alert.setContentText("This feature will be available in a future update!");
@@ -152,15 +159,101 @@ public class MainMenu {
   }
 
   private void startNewGame(String boardType, int numPlayers) {
-    // Create and start the game
-    BoardGame game = new BoardGame();
+    // Create dialog to collect player names
+    List<String> playerNames = collectPlayerNames(numPlayers);
 
-    // For now, just show an alert indicating game start
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle("Mission Launched");
-    alert.setHeaderText(null);
-    alert.setContentText("Initiating space journey in " + boardType + " with " + numPlayers + " astronauts!");
-    alert.showAndWait();
+    Player[] players = new Player[numPlayers];
+    for (int i = 0; i < numPlayers; i++) {
+      players[i] = new Player(playerNames.get(i));
+    }
+    BoardGame game = new BoardGame(players);
+
+    // Set the players in the game
+    game.setPlayers(players);
+
+    // Create board based on selection
+    Board board = null;
+    switch (boardType) {
+      case "Andromeda":
+        //board = new Board(100, "Andromeda"); // Example with more tiles
+        break;
+      case "Nebula Realm":
+        //board = new Board(80, "Nebula"); // Example with different theme
+        break;
+      case "Milky Way":
+      default:
+        board = new Board(); // Default board
+        break;
+    }
+    game.setBoard(board);
+
+    // Create MainView and set it up
+    MainView mainView = new MainView(game);
+    mainView.setUpStage(primaryStage);
+    primaryStage.setTitle("Cosmic Ladder - " + boardType);
+  }
+
+  private List<String> collectPlayerNames(int numPlayers) {
+    List<String> names = new ArrayList<>();
+
+    // Create a dialog pane for player names
+    Dialog<List<String>> dialog = new Dialog<>();
+    dialog.setTitle("Space Traveler Identification");
+    dialog.setHeaderText("Enter names for your " + numPlayers + " space travelers:");
+
+    // Set the button types
+    ButtonType confirmButtonType = new ButtonType("Launch", ButtonBar.ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+
+    // Create a grid for the name fields
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+
+    // Create text fields for each player's name
+    TextField[] nameFields = new TextField[numPlayers];
+    for (int i = 0; i < numPlayers; i++) {
+      Label label = new Label("Traveler " + (i+1) + ":");
+      label.setTextFill(SPACE_BLUE);
+      label.setFont(getOrbitronFont(12, FontWeight.BOLD));
+
+      nameFields[i] = new TextField("Traveler " + (i+1));
+      nameFields[i].setPrefWidth(200);
+
+      grid.add(label, 0, i);
+      grid.add(nameFields[i], 1, i);
+    }
+
+    dialog.getDialogPane().setContent(grid);
+    dialog.getDialogPane().getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+
+    // Convert the result to list of names when the confirm button is clicked
+    dialog.setResultConverter(dialogButton -> {
+      if (dialogButton == confirmButtonType) {
+        List<String> result = new ArrayList<>();
+        for (TextField field : nameFields) {
+          String name = field.getText().trim();
+          result.add(name.isEmpty() ? "Anonymous Traveler" : name);
+        }
+        return result;
+      }
+      return null;
+    });
+
+    // Show the dialog and process the result
+    Optional<List<String>> result = dialog.showAndWait();
+
+    return result.orElseGet(() -> {
+      // If dialog was cancelled, generate default names
+      List<String> defaultNames = new ArrayList<>();
+      for (int i = 0; i < numPlayers; i++) {
+        defaultNames.add("Traveler " + (i+1));
+      }
+      return defaultNames;
+    });
+
+
 
     // TODO: Implement actual game start with views
   }
