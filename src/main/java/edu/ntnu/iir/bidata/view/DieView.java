@@ -9,18 +9,19 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 
-
 public class DieView {
     private final Die die;
     private final ImageView imageView;
     private AnimationTimer timer;
     private long animationStartTime;
     private Runnable onAnimationEnd;
+    private MediaPlayer mediaPlayer;
 
     public DieView(Die die) {
         this.die = die;
         initializeAnimationTimer();
         this.imageView = new ImageView(getDieImage());
+        this.mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
     }
 
     public Button createDieButton(Runnable onAnimationEnd) {
@@ -39,10 +40,9 @@ public class DieView {
     private void startRollingAnimation() {
         animationStartTime = System.currentTimeMillis();
         timer.start();
-        playSound("dice-roll-sound.wav");
-
+        playSound();
     }
-    //Die Animation
+
     private void initializeAnimationTimer() {
         timer = new AnimationTimer() {
             @Override
@@ -53,7 +53,6 @@ public class DieView {
                 } else {
                     timer.stop();
                     die.roll();
-
                     if (onAnimationEnd != null) {
                         onAnimationEnd.run();
                         imageView.setImage(getDieImage());
@@ -61,7 +60,6 @@ public class DieView {
                 }
             }
         };
-
     }
 
     private void updateDie() {
@@ -73,13 +71,20 @@ public class DieView {
         return new Image(getClass().getResourceAsStream("/image/die_" + die.getLastRoll() + ".png"));
     }
 
-    private void playSound(String soundFile) {
+    private MediaPlayer createMediaPlayer(String soundFile) {
         try {
             Media sound = new Media(getClass().getResource("/audio/" + soundFile).toExternalForm());
-            MediaPlayer mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.play();
+            return new MediaPlayer(sound);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void playSound() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.play();
         }
     }
 }

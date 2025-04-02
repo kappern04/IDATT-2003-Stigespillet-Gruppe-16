@@ -29,7 +29,9 @@ public class BoardView {
     GridPane gridPane = new GridPane();
     int numRows = (int) Math.ceil(boardGame.getBoard().getTiles().length / 9.0);
 
-    for (int i = 1; i < boardGame.getBoard().getTiles().length; i++) { // Start from 1 to exclude tile 0
+    for (int i = 1;
+        i < boardGame.getBoard().getTiles().length;
+        i++) { // Start from 1 to exclude tile 0
       int tileNumber = boardGame.getBoard().getTiles()[i].getTileNumber();
       StackPane tilePane = tileView.createTile(tileNumber);
       Rectangle rect = (Rectangle) tilePane.getChildren().get(0);
@@ -43,7 +45,8 @@ public class BoardView {
       if (row % 2 == 1) {
         col = 8 - col; // Reverse column order for odd rows
       }
-      gridPane.add(tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
+      gridPane.add(
+          tilePane, col, numRows - 1 - row); // Adjust position to account for skipping tile 0
     }
     gridPane.setHgap(4);
     gridPane.setVgap(4);
@@ -52,8 +55,11 @@ public class BoardView {
 
     // Create the StackPane for the board and outline
     StackPane boardPane = new StackPane();
-    boardPane.getChildren().addAll(gridPane,
-            //BLUE
+    boardPane
+        .getChildren()
+        .addAll(
+            gridPane,
+            // BLUE
             ladderView.createLadder("Blue", 1, 40),
             ladderView.createLadder("Blue", 8, 10),
             ladderView.createLadder("Blue", 36, 52),
@@ -61,7 +67,7 @@ public class BoardView {
             ladderView.createLadder("Blue", 49, 79),
             ladderView.createLadder("Blue", 65, 82),
             ladderView.createLadder("Blue", 68, 85),
-            //RED
+            // RED
             ladderView.createLadder("Red", 24, 5),
             ladderView.createLadder("Red", 33, 3),
             ladderView.createLadder("Red", 42, 30),
@@ -70,19 +76,21 @@ public class BoardView {
             ladderView.createLadder("Red", 74, 12),
             ladderView.createLadder("Red", 87, 70));
 
-// Create a VBox to hold the game board and die button
+    // Create a VBox to hold the game board and die button
     HBox layout = new HBox(20);
     layout.setAlignment(Pos.CENTER);
     layout.getChildren().addAll(boardPane);
 
     VBox playerInfo = new VBox(10);
 
-// Create the VBox for the die button
+    // Create the VBox for the die button
     HBox dieBox = new HBox(10);
-    Button dieButton = dieView.createDieButton(() -> {
-      boardGame.playTurn();
-      playerView.updatePlayerPositions();
-        });
+    Button dieButton =
+        dieView.createDieButton(
+            () -> {
+              boardGame.playTurn();
+              playerView.updatePlayerPositions();
+            });
 
     playerView.addPlayersToBoard(boardPane);
 
@@ -91,17 +99,7 @@ public class BoardView {
     dieBox.setAlignment(Pos.CENTER);
     layout.getChildren().add(dieBox);
 
-// Return the final layout
+    // Return the final layout
     return new StackPane(layout);
-
   }
-
-//  public StackPane outline() {
-//    StackPane stackPane = new StackPane();
-//    Rectangle outline = new Rectangle(640, 704);
-//    outline.setFill(Color.rgb(0, 0, 0));
-//
-//    stackPane.getChildren().add(outline);
-//    return stackPane;
-//  }
-}
+  }
