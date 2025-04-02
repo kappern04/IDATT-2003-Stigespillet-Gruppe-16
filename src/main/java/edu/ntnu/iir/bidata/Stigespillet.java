@@ -1,26 +1,18 @@
 package edu.ntnu.iir.bidata;
 
-
-import edu.ntnu.iir.bidata.view.MainView;
+import edu.ntnu.iir.bidata.view.MainMenu;
 import javafx.application.Application;
 import javafx.stage.Stage;
-import edu.ntnu.iir.bidata.controller.BoardGame;
 
 public class Stigespillet extends Application {
 
-  private BoardGame boardGame;
-  private MainView mainView;
-
   @Override
   public void start(Stage stage) {
-    boardGame = new BoardGame();
-    MainView mainView = new MainView(boardGame);
-    mainView.setUpStage(stage);
-    stage.show();
+    // Create and show the main menu
+    MainMenu mainMenu = new MainMenu(stage);
   }
 
   public static void main(String[] args) {
     launch();
   }
-
 }

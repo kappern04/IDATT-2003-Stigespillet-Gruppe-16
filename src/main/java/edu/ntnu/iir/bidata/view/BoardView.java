@@ -15,13 +15,13 @@ public class BoardView {
   private TileView tileView;
   private LadderView ladderView;
   private DieView dieView;
-  private PlayerView playerView;
+  private SnakeBoardPlayerView snakeBoardPlayerView;
 
   public BoardView(BoardGame boardGame) {
     this.boardGame = boardGame;
     this.tileView = new TileView(boardGame.getBoard());
     this.ladderView = new LadderView(boardGame.getBoard());
-    this.playerView = new PlayerView(boardGame.getBoard(), boardGame.getPlayers());
+    this.snakeBoardPlayerView = new SnakeBoardPlayerView(boardGame.getBoard(), boardGame.getPlayers());
     this.dieView = new DieView(boardGame.getDie());
   }
 
@@ -89,10 +89,10 @@ public class BoardView {
         dieView.createDieButton(
             () -> {
               boardGame.playTurn();
-              playerView.updatePlayerPositions();
+              snakeBoardPlayerView.updatePlayerPositions();
             });
 
-    playerView.addPlayersToBoard(boardPane);
+    snakeBoardPlayerView.addPlayersToBoard(boardPane);
 
     dieBox.getChildren().add(dieButton);
 

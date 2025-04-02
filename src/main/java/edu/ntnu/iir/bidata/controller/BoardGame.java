@@ -4,13 +4,14 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
-import edu.ntnu.iir.bidata.view.DieView;
+import edu.ntnu.iir.bidata.view.SnakeBoardPlayerView;
 
 public class BoardGame {
   private Board board;
   private Player[] players;
   private int currentPlayerIndex;
   private Die die;
+  private SnakeBoardPlayerView snakeBoardPlayerView;
 
   public BoardGame() {
     this.board = new Board();
@@ -19,6 +20,7 @@ public class BoardGame {
     this.players[1] = new Player("Player 2");
     this.currentPlayerIndex = 0;
     this.die = new Die();
+    this.snakeBoardPlayerView = new SnakeBoardPlayerView(board, players);
   }
 
   public Board getBoard() {
@@ -56,6 +58,8 @@ public class BoardGame {
     Tile currentTile = board.getTiles()[currentPlayer.getPosition()];
     currentTile.landOn(currentPlayer);
 
+    // Update the player view
+    snakeBoardPlayerView.updatePlayerPositions();
 
     // Switch to the next player
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;

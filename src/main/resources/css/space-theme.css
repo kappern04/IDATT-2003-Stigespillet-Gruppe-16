@@ -1,0 +1,40 @@
+.space-button {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-background-radius: 10;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 2;
+  -fx-border-radius: 10;
+}
+
+.space-button:hover {
+  -fx-background-color: rgba(30, 30, 60, 0.9);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-cursor: hand;
+}
+
+.space-combo-box, .space-spinner {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-text-fill: white;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 2;
+}
+
+.space-combo-box .list-cell {
+  -fx-text-fill: white;
+  -fx-background-color: rgba(20, 20, 40, 0.9);
+}
+
+.space-combo-box .list-cell:hover {
+  -fx-background-color: rgba(64, 224, 208, 0.3);
+}
+
+/* In your space-theme.css */
+@font-face {
+  font-family: 'Orbitron';
+  src: url('../font/Orbitron-VariableFont_wght.ttf');
+}
+
+.space-button {
+  -fx-font-family: 'Orbitron';
+  /* other styles... */
+}
