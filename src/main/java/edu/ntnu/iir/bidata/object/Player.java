@@ -9,33 +9,33 @@ import edu.ntnu.iir.bidata.view.Observer;
 public class Player<T extends Observer> extends Observable<T> {
 
   private String name;
-  private int position;
+  private int positionIndex;
 
   public Player(String name) {
     this.name = name;
-    this.position = 0;
+    this.positionIndex = 0;
   }
 
   public String getName() {
     return name;
   }
 
-  public int getPosition() {
-    return position;
+  public int getPositionIndex() {
+    return positionIndex;
   }
 
-  public void setPosition(int position) {
-    this.position = position;
+  public void setPositionIndex(int index) {
+    this.positionIndex = positionIndex;
     notifyObservers();
   }
 
   public void move(int steps) {
-    this.position += steps;
+    this.positionIndex += steps;
     notifyObservers();
   }
 
   public String toString() {
-    return "Player{" + "name='" + name + '\'' + ", position=" + position + '}';
+    return "Player{" + "name='" + name + '\'' + ", position=" + positionIndex + '}';
   }
 
   @Override

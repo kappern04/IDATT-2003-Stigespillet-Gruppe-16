@@ -4,7 +4,6 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
-import edu.ntnu.iir.bidata.view.DieView;
 
 public class BoardGame {
   private Board board;
@@ -48,12 +47,12 @@ public class BoardGame {
     currentPlayer.move(roll);
 
     // Ensure the player does not move beyond the last tile
-    if (currentPlayer.getPosition() >= board.getTiles().length) {
-      currentPlayer.setPosition(board.getTiles().length - 1);
+    if (currentPlayer.getPositionIndex() >= board.getTiles().size()) {
+      currentPlayer.setPositionIndex(board.getTiles().size() - 1);
     }
 
     // Perform the action on the tile the player lands on
-    Tile currentTile = board.getTiles()[currentPlayer.getPosition()];
+    Tile currentTile = board.getTiles().get(currentPlayer.getPositionIndex());
     currentTile.landOn(currentPlayer);
 
 
