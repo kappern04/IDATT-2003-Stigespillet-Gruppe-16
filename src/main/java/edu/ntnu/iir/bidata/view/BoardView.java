@@ -65,6 +65,7 @@ public class BoardView {
     layout.getChildren().addAll(boardPane);
 
     VBox playerInfo = new VBox(10);
+
     HBox dieBox = new HBox(10);
     Button dieButton = dieView.createDieButton(() -> boardGame.playTurn());
 

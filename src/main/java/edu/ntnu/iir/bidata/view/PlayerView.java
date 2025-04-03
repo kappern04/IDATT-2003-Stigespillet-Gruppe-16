@@ -1,3 +1,4 @@
+// Abstract base class
 package edu.ntnu.iir.bidata.view;
 
 import static java.lang.Math.max;
@@ -18,10 +19,13 @@ import javafx.animation.TranslateTransition;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-
-import java.util.HashMap;
-import java.util.Map;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class PlayerView implements Observer{
 
@@ -29,7 +33,6 @@ public class PlayerView implements Observer{
   private Map<Player, ImageView> playerSprites;
   private HashMap<Player, Integer> previousPositions;
   private static final int STEP_DURATION_MS = 300; //
-
 
   public PlayerView(Board board, Player[] players) {
     this.board = board;
@@ -43,18 +46,16 @@ public class PlayerView implements Observer{
     }
   }
 
-  private ImageView createPlayerImage(String imagePath) {
+  protected ImageView createPlayerImage(String imagePath) {
     Image image = new Image(getClass().getResourceAsStream(imagePath));
     ImageView imageView = new ImageView(image);
-    imageView.setFitWidth(32);
-    imageView.setFitHeight(32);
+    imageView.setFitWidth(SPRITE_SIZE);
+    imageView.setFitHeight(SPRITE_SIZE);
     return imageView;
   }
 
   public void addPlayersToBoard(StackPane boardPane) {
-    for (ImageView sprite : playerSprites.values()) {
-      boardPane.getChildren().add(sprite);
-    }
+    playerSprites.values().forEach(boardPane.getChildren()::add);
     updatePlayerPositions();
   }
 
@@ -82,12 +83,25 @@ public class PlayerView implements Observer{
       sequence.setOnFinished(e -> previousPositions.put(player, targetPosition));
       sequence.play();
     }
+
+    // Create a sequence of animations to move through each tile
+    List<ParallelTransition> movementSteps = createMovementSteps(player, sprite, currentPosition, targetPosition);
+
+    // Combine all steps into a sequential animation
+    SequentialTransition sequence = new SequentialTransition();
+    sequence.getChildren().addAll(movementSteps);
+
+    // Update the player's previous position after animation completes
+    sequence.setOnFinished(e -> previousPositions.put(player, targetPosition));
+
+    // Play the animation
+    sequence.play();
   }
 
   private List<ParallelTransition> createMovementSteps(Player player, ImageView sprite, int startPos, int endPos) {
     List<ParallelTransition> steps = new ArrayList<>();
 
-    // determines direction of movement
+    // Determine direction of movement
     int direction = startPos < endPos ? 1 : -1;
 
     // Create animation for each step
@@ -184,4 +198,37 @@ public class PlayerView implements Observer{
   public <T extends Observer> void update(Observable<T> observable, String prompt) {
     updatePlayerPositions();
   }
+
+  protected TranslateTransition createTranslateTransition(ImageView sprite, double targetX, double targetY) {
+    TranslateTransition translate = new TranslateTransition();
+    translate.setNode(sprite);
+    translate.setToX(targetX);
+    translate.setToY(targetY);
+    translate.setInterpolator(Interpolator.EASE_BOTH);
+    return translate;
+  }
+
+  protected RotateTransition createRotateTransition(ImageView sprite, double targetRotation) {
+    RotateTransition rotate = new RotateTransition();
+    rotate.setNode(sprite);
+    rotate.setToAngle(targetRotation);
+    rotate.setInterpolator(Interpolator.EASE_BOTH);
+    return rotate;
+  }
+
+  public void movePlayer(Player player, int steps) {
+    int currentPosition = previousPositions.get(player);
+    int newPosition = Math.max(0, Math.min(board.getTiles().length - 1, currentPosition + steps));
+
+    // Update the player's position in the Player object
+    player.setPosition(newPosition);
+
+    // Update the visual representation
+    animatePlayerMovement(player, playerSprites.get(player));
+  }
+
+  // Abstract methods that must be implemented by subclasses
+  protected abstract double getTilePositionX(Tile tile);
+  protected abstract double getTilePositionY(Tile tile);
+  protected abstract double getRotationForTile(Tile tile);
 }

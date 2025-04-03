@@ -66,8 +66,7 @@ public class BoardGame {
     // Perform the action on the tile the player lands on
     Tile currentTile = board.getTiles().get(currentPlayer.getPositionIndex());
     currentTile.landOn(currentPlayer);
-
-
+    
     // Switch to the next player
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
     System.out.println(currentPlayer.getName() + ": " + currentPlayer.getPositionIndex());

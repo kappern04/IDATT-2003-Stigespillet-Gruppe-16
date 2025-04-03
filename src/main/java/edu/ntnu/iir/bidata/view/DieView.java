@@ -16,12 +16,14 @@ public class DieView implements Observer {
     private final ImageView imageView;
     private AnimationTimer timer;
     private long animationStartTime;
+    private MediaPlayer mediaPlayer;
     private Runnable runnable;
 
     public DieView(Die die) {
         this.die = die;
         initializeAnimationTimer();
         this.imageView = new ImageView(getDieImage());
+        this.mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
     }
 
     public Button createDieButton(Runnable runnable) {
@@ -36,10 +38,9 @@ public class DieView implements Observer {
     private void startRollingAnimation() {
         animationStartTime = System.currentTimeMillis();
         timer.start();
-        playSound("dice-roll-sound.wav");
-
+        playSound();
     }
-    //Die Animation
+
     private void initializeAnimationTimer() {
         timer = new AnimationTimer() {
             @Override
@@ -53,7 +54,6 @@ public class DieView implements Observer {
                 }
             }
         };
-
     }
 
     private void setToRandomDieImage() {
@@ -69,13 +69,20 @@ public class DieView implements Observer {
         return new Image(getClass().getResourceAsStream("/image/die_" + die.getLastRoll() + ".png"));
     }
 
-    private void playSound(String soundFile) {
+    private MediaPlayer createMediaPlayer(String soundFile) {
         try {
             Media sound = new Media(getClass().getResource("/audio/" + soundFile).toExternalForm());
-            MediaPlayer mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.play();
+            return new MediaPlayer(sound);
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void playSound() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.play();
         }
     }
 
