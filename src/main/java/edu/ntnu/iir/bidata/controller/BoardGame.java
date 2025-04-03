@@ -4,14 +4,14 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
-import edu.ntnu.iir.bidata.view.SnakeBoardPlayerView;
+import edu.ntnu.iir.bidata.view.Observer;
+import java.util.Arrays;
 
 public class BoardGame {
   private Board board;
   private Player[] players;
   private int currentPlayerIndex;
   private Die die;
-  private SnakeBoardPlayerView snakeBoardPlayerView;
 
   public BoardGame() {
     this.board = new Board();
@@ -19,9 +19,18 @@ public class BoardGame {
     this.players[0] = new Player("Player 1");
     this.players[1] = new Player("Player 2");
     this.currentPlayerIndex = 0;
-    this.die = new Die();
-    this.snakeBoardPlayerView = new SnakeBoardPlayerView(board, players);
+    this.die = new Die<Observer>();
   }
+
+  public BoardGame(Board board) {
+    this.board = board;
+    this.players = new Player[2];
+    this.players[0] = new Player("Player 1");
+    this.players[1] = new Player("Player 2");
+    this.currentPlayerIndex = 0;
+    this.die = new Die();
+  }
+
 
   public Board getBoard() {
     return board;
@@ -50,23 +59,21 @@ public class BoardGame {
     currentPlayer.move(roll);
 
     // Ensure the player does not move beyond the last tile
-    if (currentPlayer.getPosition() >= board.getTiles().length) {
-      currentPlayer.setPosition(board.getTiles().length - 1);
+    if (currentPlayer.getPositionIndex() >= board.getTiles().size()) {
+      currentPlayer.setPositionIndex(board.getTiles().size() - 1);
     }
 
     // Perform the action on the tile the player lands on
-    Tile currentTile = board.getTiles()[currentPlayer.getPosition()];
+    Tile currentTile = board.getTiles().get(currentPlayer.getPositionIndex());
     currentTile.landOn(currentPlayer);
-
-    // Update the player view
-    snakeBoardPlayerView.updatePlayerPositions();
-
+    
     // Switch to the next player
     currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    System.out.println(currentPlayer.getName() + ": " + currentPlayer.getPositionIndex());
   }
 
   @Override
   public String toString() {
-    return "BoardGame{" + "board=" + board + ", players=" + players + ", die=" + die + '}';
+    return "BoardGame{" + "board=" + board + ", players=" + Arrays.toString(players) + ", die=" + die + '}';
   }
 }

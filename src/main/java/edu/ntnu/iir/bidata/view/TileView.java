@@ -16,30 +16,30 @@ public class TileView {
     this.board = board;
   }
 
-  public StackPane createTile(int tileNumber) {
+  public StackPane createTile(int tileIndex) {
     StackPane stackPane = new StackPane();
     Rectangle rect = new Rectangle(64, 64);
     rect.setStroke(Color.rgb(254, 241, 0));
     rect.setFill(Color.TRANSPARENT);
     rect.setStrokeWidth(2); //Stroke Thickness
-    Label tileLabel = new Label(Integer.toString(tileNumber));
+    Label tileLabel = new Label(Integer.toString(tileIndex));
     tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-text-fill: white; -fx-padding: 3px 5px;");
     stackPane.getChildren().addAll(rect, tileLabel);
     stackPane.setAlignment(Pos.TOP_LEFT);
     return stackPane;
   }
 
-  public void colorTile(int tileNumber, Rectangle rect) {
-      if (tileNumber == 90) {
+  public void colorTile(int tileIndex, Rectangle rect) {
+      if (tileIndex == 90) {
         rect.setStroke(Color.rgb(109, 208, 247));
       }
     }
 
-  public void colorDestinationTile(int tileNumber, Rectangle rect) {
+  public void colorDestinationTile(int tileIndex, Rectangle rect) {
     for (Tile destinationT : board.getTiles()) {
       if (destinationT.getTileAction() instanceof LadderAction action
-          && action.getDestinationTile() == tileNumber) {
-        if (tileNumber > destinationT.getTileNumber()) {
+          && action.getDestinationTileIndex() == tileIndex) {
+        if (tileIndex > destinationT.getIndex()) {
           rect.setStroke(Color.rgb(166, 206, 58));
         } else {
           rect.setStroke(Color.rgb(250, 165, 25));
@@ -49,11 +49,11 @@ public class TileView {
     }
   }
 
-  public void colorActionTile(int tileNumber, Rectangle rect) {
+  public void colorActionTile(int tileIndex, Rectangle rect) {
     for (Tile actionT : board.getTiles()) {
       if (actionT.getTileAction() instanceof LadderAction action
-          && actionT.getTileNumber() == tileNumber) {
-        if (action.getDestinationTile() > tileNumber) {
+          && actionT.getIndex() == tileIndex) {
+        if (action.getDestinationTileIndex() > tileIndex) {
           rect.setStroke(Color.rgb(15, 177, 77));
         } else {
           rect.setStroke(Color.rgb(239, 28, 38));

@@ -45,8 +45,7 @@ public class MusicControlPanel {
   }
 
   private void togglePause() {
-    isPaused = !isPaused;
-    if (isPaused) {
+    if (musicPlayer.isPlaying()) {
       musicPlayer.pause();
       pauseButton.setGraphic(
           new ImageView(new Image(getClass().getResourceAsStream("/image/Play.png"))));

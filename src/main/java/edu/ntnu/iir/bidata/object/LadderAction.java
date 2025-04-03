@@ -5,12 +5,13 @@ import javafx.scene.media.MediaPlayer;
 
 /** This class represents the action of moving up or down a ladder. */
 public class LadderAction extends TileAction {
-  private int destinationTile;
   private MediaPlayer mediaPlayerUp;
   private MediaPlayer mediaPlayerDown;
+  private int destinationTileIndex;
 
-  public LadderAction(int destinationTile) {
-    this.destinationTile = destinationTile;
+
+  public LadderAction(int destinationTileIndex) {
+    this.destinationTileIndex = destinationTileIndex;
     this.mediaPlayerUp = createMediaPlayer("portal.wav");
     this.mediaPlayerDown = createMediaPlayer("portal2.wav");
   }
@@ -22,20 +23,20 @@ public class LadderAction extends TileAction {
     } else {
       playSound(mediaPlayerDown);
     }
-    player.setPosition(destinationTile);
+    player.setPositionIndex(destinationTileIndex);
   }
 
-  public int getDestinationTile() {
-    return destinationTile;
+  public int getDestinationTileIndex() {
+    return destinationTileIndex;
   }
 
-  public void setDestinationTile(int destinationTile) {
-    this.destinationTile = destinationTile;
+  public void setDestinationTileIndex(int destinationTileIndex) {
+    this.destinationTileIndex = destinationTileIndex;
   }
 
   @Override
   public String toString() {
-    return "LadderAction{" + "destinationTile=" + destinationTile + '}';
+    return "LadderAction{" + "destinationTile=" + destinationTileIndex + '}';
   }
 
   private MediaPlayer createMediaPlayer(String soundFile) {

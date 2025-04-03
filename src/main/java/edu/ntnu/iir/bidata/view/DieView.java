@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Die;
+import edu.ntnu.iir.bidata.object.Observable;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.animation.AnimationTimer;
@@ -9,13 +10,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 
-public class DieView {
+
+public class DieView implements Observer {
     private final Die die;
     private final ImageView imageView;
     private AnimationTimer timer;
     private long animationStartTime;
-    private Runnable onAnimationEnd;
     private MediaPlayer mediaPlayer;
+    private Runnable runnable;
 
     public DieView(Die die) {
         this.die = die;
@@ -24,16 +26,12 @@ public class DieView {
         this.mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
     }
 
-    public Button createDieButton(Runnable onAnimationEnd) {
-        this.onAnimationEnd = onAnimationEnd;
+    public Button createDieButton(Runnable runnable) {
+        this.runnable = runnable;
         Button button = new Button();
         button.setGraphic(imageView);
         button.setBackground(Background.EMPTY);
-        button.setOnAction(e -> {
-            button.setDisable(true);
-            startRollingAnimation();
-            button.setDisable(false);
-        });
+        button.setOnAction(event -> {runnable.run();});
         return button;
     }
 
@@ -48,23 +46,23 @@ public class DieView {
             @Override
             public void handle(long now) {
                 long elapsed = System.currentTimeMillis() - animationStartTime;
-                if (elapsed < 1000) { // Roll for 1 second
-                    updateDie();
+                if (elapsed < 500) { // Roll for 1 second
+                    setToRandomDieImage();
                 } else {
                     timer.stop();
-                    die.roll();
-                    if (onAnimationEnd != null) {
-                        onAnimationEnd.run();
-                        imageView.setImage(getDieImage());
-                    }
+                    setToLastRollImage();
                 }
             }
         };
     }
 
-    private void updateDie() {
+    private void setToRandomDieImage() {
         int randomRoll = (int) (Math.random() * 6) + 1;
         imageView.setImage(new Image(getClass().getResourceAsStream("/image/die_" + randomRoll + ".png")));
+    }
+
+    private void setToLastRollImage() {
+        imageView.setImage(getDieImage());
     }
 
     private Image getDieImage() {
@@ -86,5 +84,11 @@ public class DieView {
             mediaPlayer.stop();
             mediaPlayer.play();
         }
+    }
+
+    @Override
+    public <T extends Observer> void update(Observable<T> observable, String prompt) {
+        startRollingAnimation();
+        System.out.println("Animation rolling.");
     }
 }
