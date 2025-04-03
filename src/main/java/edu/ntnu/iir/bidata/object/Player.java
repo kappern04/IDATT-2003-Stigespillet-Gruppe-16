@@ -24,9 +24,9 @@ public class Player<T extends Observer> extends Observable<T> {
     return positionIndex;
   }
 
-  public void setPositionIndex(int index) {
-    this.positionIndex = positionIndex;
+  public void setPositionIndex(int positionIndex) {
     notifyObservers();
+    this.positionIndex = positionIndex;
   }
 
   public void move(int steps) {
@@ -61,6 +61,6 @@ public class Player<T extends Observer> extends Observable<T> {
   @Override
   public void notifyObservers() {
     System.out.println(super.getObservers());
-    super.getObservers().forEach(to -> to.update(this, "MOVE"));
+    super.getObservers().forEach(to -> to.update(this, ""));
   }
 }

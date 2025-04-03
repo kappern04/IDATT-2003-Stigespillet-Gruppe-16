@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Board;
+import edu.ntnu.iir.bidata.object.LadderAction;
 import edu.ntnu.iir.bidata.object.Tile;
 
 import javafx.scene.Node;
@@ -16,9 +17,11 @@ public class LadderView {
         this.board = board;
     }
 
-    public Node createLadder(String color, int actionTile, int destinationTile) {
-        Tile startTile = board.getTiles()[actionTile];
-        Tile endTile = board.getTiles()[destinationTile];
+    public Node createLadder(Tile tile) {
+        Tile startTile = tile;
+        Tile endTile = (tile.getTileAction() instanceof LadderAction action) ? board.getTile(action.getDestinationTileIndex()) : board.getTile(0);
+
+        String color = (startTile.getIndex() < endTile.getIndex()) ? "Blue" : "Red";
 
         double startX = getTileCenterX(startTile);
         double startY = getTileCenterY(startTile);
@@ -54,19 +57,11 @@ public class LadderView {
     }
 
     private double getTileCenterX(Tile tile) {
-        int col = (tile.getTileNumber() - 1) % 9; // Get column index (0 to 8)
-
-        if (((tile.getTileNumber() - 1) / 9) % 2 == 1) {
-            col = 8 - col; // Reverse column order for odd rows (zig-zag pattern)
-        }
-
-        return col * 70 + 70; // Center of tile
+        return tile.getX() * 70 + 30;
     }
 
-
     private double getTileCenterY(Tile tile) {
-        int row = (tile.getTileNumber() - 1) / 9; // Get row index (0 to 9)
-        return (9 - row) * 70 + 70; // Center of tile
+        return tile.getY() * 70 + 100;
     }
 
 

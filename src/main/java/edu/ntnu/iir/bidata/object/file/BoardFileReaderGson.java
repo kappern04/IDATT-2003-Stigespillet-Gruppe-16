@@ -36,7 +36,7 @@ public class BoardFileReaderGson implements BoardFileReader {
     int x = tileJson.get("x").getAsInt();
     int y = tileJson.get("y").getAsInt();
 
-    TileAction action = null;
+    TileAction action = new TileAction();
     if (tileJson.has("action")) {
       JsonObject actionJson = tileJson.getAsJsonObject("action");
       String actionType = actionJson.get("type").getAsString();

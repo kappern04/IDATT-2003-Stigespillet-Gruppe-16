@@ -13,12 +13,16 @@ public class Board {
   private List<Tile> tiles;
   private String name;
   private String description;
+  private int x_dimension;
+  private int y_dimension;
 
   //empty constructor creates default board
   public Board() {
     this.name = "Stigespillet 90";
     this.description = "Standard snakes and ladders with 90 (10x9) tiles";
     tiles = new ArrayList<Tile>(91);
+    this.x_dimension = 10;
+    this.y_dimension = 9;
     createDefaultTiles();
   }
 
@@ -26,6 +30,8 @@ public class Board {
     this.name = name;
     this.description = description;
     this.tiles = tiles;
+    this.x_dimension = tiles.stream().mapToInt(Tile::getX).max().orElse(0)+1;
+    this.y_dimension = tiles.stream().mapToInt(Tile::getY).max().orElse(0)+1;
   }
 
   public String getName() {
@@ -46,21 +52,21 @@ public class Board {
         x = 9 - (i % 10);
       }
       tiles.set(i, new Tile(i, x, y, new TileAction()));
-      tiles.get(1).setTileAction(new LadderAction(40));
-      tiles.get(8).setTileAction(new LadderAction(10));
-      tiles.get(36).setTileAction(new LadderAction(52));
-      tiles.get(43).setTileAction(new LadderAction(62));
-      tiles.get(49).setTileAction(new LadderAction(79));
-      tiles.get(65).setTileAction(new LadderAction(82));
-      tiles.get(68).setTileAction(new LadderAction(85));
-      tiles.get(24).setTileAction(new LadderAction(5));
-      tiles.get(33).setTileAction(new LadderAction(3));
-      tiles.get(42).setTileAction(new LadderAction(30));
-      tiles.get(56).setTileAction(new LadderAction(37));
-      tiles.get(64).setTileAction(new LadderAction(27));
-      tiles.get(74).setTileAction(new LadderAction(12));
-      tiles.get(87).setTileAction(new LadderAction(70));
     }
+    tiles.get(1).setTileAction(new LadderAction(40));
+    tiles.get(8).setTileAction(new LadderAction(10));
+    tiles.get(36).setTileAction(new LadderAction(52));
+    tiles.get(43).setTileAction(new LadderAction(62));
+    tiles.get(49).setTileAction(new LadderAction(79));
+    tiles.get(65).setTileAction(new LadderAction(82));
+    tiles.get(68).setTileAction(new LadderAction(85));
+    tiles.get(24).setTileAction(new LadderAction(5));
+    tiles.get(33).setTileAction(new LadderAction(3));
+    tiles.get(42).setTileAction(new LadderAction(30));
+    tiles.get(56).setTileAction(new LadderAction(37));
+    tiles.get(64).setTileAction(new LadderAction(27));
+    tiles.get(74).setTileAction(new LadderAction(12));
+    tiles.get(87).setTileAction(new LadderAction(70));
   }
 
   public List<Tile> getTiles() {
@@ -71,4 +77,11 @@ public class Board {
     return tiles.get(index);
   }
 
+  public int getX_dimension() {
+    return x_dimension;
+  }
+
+  public int getY_dimension() {
+    return y_dimension;
+  }
 }
