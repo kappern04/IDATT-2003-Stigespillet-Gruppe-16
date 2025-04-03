@@ -24,7 +24,7 @@ public class PlayerSaver {
       // Write player data
       for (Player player : players) {
         writer.println(player.getName() + "," +
-            player.getPosition());
+            player.getPositionIndex());
       }
       return true;
     } catch (IOException e) {
@@ -50,7 +50,7 @@ public class PlayerSaver {
           int position = Integer.parseInt(data[1]);
 
           Player player = new Player(name);
-          player.setPosition(position);
+          player.setPositionIndex(position);
           players.add(player);
         }
       }

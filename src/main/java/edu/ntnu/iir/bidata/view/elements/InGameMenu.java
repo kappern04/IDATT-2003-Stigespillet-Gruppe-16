@@ -1,0 +1,141 @@
+package edu.ntnu.iir.bidata.view.elements;
+
+import edu.ntnu.iir.bidata.view.MainMenu;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Glow;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.animation.*;
+import javafx.geometry.Pos;
+import javafx.util.Duration;
+
+public class InGameMenu extends VBox {
+  private Stage menuStage;
+  private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
+  private final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
+  private Font orbitronFont;
+
+  public InGameMenu() {
+    loadCustomFont();
+    setupMenu();
+  }
+
+  private void loadCustomFont() {
+    try {
+      orbitronFont = Font.loadFont(getClass().getResourceAsStream("/font/Orbitron-VariableFont_wght.ttf"), 12);
+      if (orbitronFont == null) {
+        orbitronFont = Font.font("Arial");
+      }
+    } catch (Exception e) {
+      orbitronFont = Font.font("Arial");
+    }
+  }
+
+  private void setupMenu() {
+    menuStage = new Stage();
+    menuStage.initModality(Modality.APPLICATION_MODAL);
+    menuStage.initStyle(StageStyle.UNDECORATED);
+
+    setSpacing(30);
+    setAlignment(Pos.CENTER);
+    setPadding(new javafx.geometry.Insets(40));
+
+    Text title = new Text("MISSION CONTROL");
+    title.setFont(Font.font(orbitronFont.getFamily(), FontWeight.BOLD, 24));
+    title.setFill(SPACE_BLUE);
+
+    Glow glow = new Glow(0.8);
+    title.setEffect(glow);
+
+    Timeline pulse = new Timeline(
+        new KeyFrame(Duration.ZERO, new KeyValue(glow.levelProperty(), 0.3)),
+        new KeyFrame(Duration.seconds(1.5), new KeyValue(glow.levelProperty(), 0.8))
+    );
+    pulse.setCycleCount(Animation.INDEFINITE);
+    pulse.setAutoReverse(true);
+    pulse.play();
+
+    Button resumeButton = createSpaceButton("Resume Mission");
+    Button saveButton = createSpaceButton("Save Mission");
+//    Button mainMenuButton = createSpaceButton("Return to Base");
+    Button exitButton = createSpaceButton("Abort Mission");
+
+    resumeButton.setOnAction(e -> menuStage.close());
+
+    saveButton.setOnAction(e -> {
+      // TODO: Implement save functionality
+      menuStage.close();
+    });
+
+//    mainMenuButton.setOnAction(e -> {
+//      Stage primaryStage = (Stage) menuStage.getOwner();
+//      menuStage.close();
+//      new MainMenu(primaryStage);
+//    });
+
+    exitButton.setOnAction(e -> System.exit(0));
+
+    getChildren().addAll(title, resumeButton, saveButton, exitButton);
+
+    setupSpaceBackground();
+    Scene scene = new Scene(this, 400, 500);
+    scene.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    menuStage.setScene(scene);
+  }
+
+  private Button createSpaceButton(String text) {
+    Button button = new Button(text);
+    button.setPrefWidth(250);
+    button.setPrefHeight(50);
+    button.setFont(Font.font(orbitronFont.getFamily(), FontWeight.BOLD, 16));
+    button.setTextFill(Color.WHITE);
+    button.getStyleClass().add("space-button");
+
+    DropShadow shadow = new DropShadow();
+    shadow.setColor(SPACE_BLUE);
+    button.setEffect(shadow);
+
+    button.setOnMouseEntered(e -> {
+      TranslateTransition shake = new TranslateTransition(Duration.millis(50), button);
+      shake.setFromX(-3);
+      shake.setToX(3);
+      shake.setCycleCount(6);
+      shake.setAutoReverse(true);
+      shake.play();
+
+      shadow.setRadius(20);
+      shadow.setColor(SPACE_PURPLE);
+    });
+
+    button.setOnMouseExited(e -> {
+      shadow.setRadius(10);
+      shadow.setColor(SPACE_BLUE);
+    });
+
+    return button;
+  }
+
+  private void setupSpaceBackground() {
+    BackgroundImage bgImage = new BackgroundImage(
+        new Image(getClass().getResourceAsStream("/image/mainmenu.png")),
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundRepeat.NO_REPEAT,
+        BackgroundPosition.CENTER,
+        new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true));
+
+    setBackground(new Background(bgImage));
+  }
+
+  public void show() {
+    menuStage.show();
+  }
+}

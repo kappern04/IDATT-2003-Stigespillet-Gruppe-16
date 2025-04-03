@@ -32,7 +32,8 @@ public class PlayerView implements Observer{
   private Board board;
   private Map<Player, ImageView> playerSprites;
   private HashMap<Player, Integer> previousPositions;
-  private static final int STEP_DURATION_MS = 300; //
+  private static final int STEP_DURATION_MS = 300;
+  private static final int SPRITE_SIZE = 32;
 
   public PlayerView(Board board, Player[] players) {
     this.board = board;
@@ -198,37 +199,4 @@ public class PlayerView implements Observer{
   public <T extends Observer> void update(Observable<T> observable, String prompt) {
     updatePlayerPositions();
   }
-
-  protected TranslateTransition createTranslateTransition(ImageView sprite, double targetX, double targetY) {
-    TranslateTransition translate = new TranslateTransition();
-    translate.setNode(sprite);
-    translate.setToX(targetX);
-    translate.setToY(targetY);
-    translate.setInterpolator(Interpolator.EASE_BOTH);
-    return translate;
-  }
-
-  protected RotateTransition createRotateTransition(ImageView sprite, double targetRotation) {
-    RotateTransition rotate = new RotateTransition();
-    rotate.setNode(sprite);
-    rotate.setToAngle(targetRotation);
-    rotate.setInterpolator(Interpolator.EASE_BOTH);
-    return rotate;
-  }
-
-  public void movePlayer(Player player, int steps) {
-    int currentPosition = previousPositions.get(player);
-    int newPosition = Math.max(0, Math.min(board.getTiles().length - 1, currentPosition + steps));
-
-    // Update the player's position in the Player object
-    player.setPosition(newPosition);
-
-    // Update the visual representation
-    animatePlayerMovement(player, playerSprites.get(player));
-  }
-
-  // Abstract methods that must be implemented by subclasses
-  protected abstract double getTilePositionX(Tile tile);
-  protected abstract double getTilePositionY(Tile tile);
-  protected abstract double getRotationForTile(Tile tile);
 }

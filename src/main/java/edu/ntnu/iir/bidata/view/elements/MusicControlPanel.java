@@ -13,6 +13,7 @@ public class MusicControlPanel {
   private MusicPlayer musicPlayer;
   private Slider volumeSlider;
   private Button pauseButton;
+  private Button menuButton;
   private boolean isPaused = false;
 
   public MusicControlPanel(MusicPlayer musicPlayer) {
@@ -40,7 +41,12 @@ public class MusicControlPanel {
     pauseButton = new Button("", pauseIcon);
     pauseButton.setOnAction(e -> togglePause());
 
-    controlPanel.getChildren().addAll(volumeSlider, pauseButton);
+    menuButton = new Button("Menu");
+    menuButton.setOnAction(e -> {
+      openMenu();
+    });
+
+    controlPanel.getChildren().addAll(volumeSlider, pauseButton, menuButton);
     return controlPanel;
   }
 
@@ -54,5 +60,9 @@ public class MusicControlPanel {
       pauseButton.setGraphic(
           new ImageView(new Image(getClass().getResourceAsStream("/image/Pause.png"))));
     }
+  }
+
+  private void openMenu() {
+    new InGameMenu().show();
   }
 }

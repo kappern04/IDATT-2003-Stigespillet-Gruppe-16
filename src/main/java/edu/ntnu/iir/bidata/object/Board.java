@@ -51,7 +51,7 @@ public class Board {
       } else {
         x = 9 - (i % 10);
       }
-      tiles.set(i, new Tile(i, x, y, new TileAction()));
+      tiles.add(i, new Tile(i, x, y, new TileAction()));
     }
     tiles.get(1).setTileAction(new LadderAction(40));
     tiles.get(8).setTileAction(new LadderAction(10));

@@ -18,7 +18,7 @@ public class LadderAction extends TileAction {
 
   @Override
   public void performAction(Player player) {
-    if (destinationTile > player.getPosition()) {
+    if (destinationTileIndex > player.getPositionIndex()) {
       playSound(mediaPlayerUp);
     } else {
       playSound(mediaPlayerDown);

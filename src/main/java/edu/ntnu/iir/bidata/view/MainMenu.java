@@ -3,6 +3,7 @@ package edu.ntnu.iir.bidata.view;
 import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Player;
+import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainMenu {
+
   private Stage primaryStage;
   private Font orbitronFont;
   private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
@@ -120,8 +122,8 @@ public class MainMenu {
     boardLabel.setFont(getOrbitronFont(16, FontWeight.BOLD));
 
     ComboBox<String> boardSelector = new ComboBox<>();
-    boardSelector.getItems().addAll("Milky Way", "Andromeda", "Nebula Realm");
-    boardSelector.setValue("Milky Way");
+    boardSelector.getItems().addAll("Spiral Way", "Ladderia Prime");
+    boardSelector.setValue("Spiral Way");
     boardSelector.getStyleClass().add("space-combo-box");
 
     // Player selection
@@ -166,7 +168,7 @@ public class MainMenu {
     for (int i = 0; i < numPlayers; i++) {
       players[i] = new Player(playerNames.get(i));
     }
-    BoardGame game = new BoardGame(players);
+    BoardGame game = new BoardGame();
 
     // Set the players in the game
     game.setPlayers(players);
@@ -180,9 +182,16 @@ public class MainMenu {
       case "Nebula Realm":
         //board = new Board(80, "Nebula"); // Example with different theme
         break;
-      case "Milky Way":
+      case "Spiral Way":
+        board = new Board();
       default:
-        board = new Board(); // Default board
+        try {
+          board = new BoardGameFactory().createBoardGameFromFile(
+                  "C:\\Users\\alexa\\Documents\\Skole\\IDATT2003\\1\\src\\main\\resources\\boards\\spiral.json")
+              .getBoard();
+        } catch (Exception e) {
+          throw new RuntimeException(e);
+        }
         break;
     }
     game.setBoard(board);
@@ -214,11 +223,11 @@ public class MainMenu {
     // Create text fields for each player's name
     TextField[] nameFields = new TextField[numPlayers];
     for (int i = 0; i < numPlayers; i++) {
-      Label label = new Label("Traveler " + (i+1) + ":");
+      Label label = new Label("Traveler " + (i + 1) + ":");
       label.setTextFill(SPACE_BLUE);
       label.setFont(getOrbitronFont(12, FontWeight.BOLD));
 
-      nameFields[i] = new TextField("Traveler " + (i+1));
+      nameFields[i] = new TextField("Traveler " + (i + 1));
       nameFields[i].setPrefWidth(200);
 
       grid.add(label, 0, i);
@@ -226,7 +235,8 @@ public class MainMenu {
     }
 
     dialog.getDialogPane().setContent(grid);
-    dialog.getDialogPane().getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    dialog.getDialogPane().getStylesheets()
+        .add(getClass().getResource("/css/space-theme.css").toExternalForm());
 
     // Convert the result to list of names when the confirm button is clicked
     dialog.setResultConverter(dialogButton -> {
@@ -248,12 +258,10 @@ public class MainMenu {
       // If dialog was cancelled, generate default names
       List<String> defaultNames = new ArrayList<>();
       for (int i = 0; i < numPlayers; i++) {
-        defaultNames.add("Traveler " + (i+1));
+        defaultNames.add("Traveler " + (i + 1));
       }
       return defaultNames;
     });
-
-
 
     // TODO: Implement actual game start with views
   }
