@@ -1,8 +1,12 @@
-module org.example.stigespillet {
-    requires javafx.controls;
-    requires javafx.fxml;
+module edu.ntnu.iir.bidata {
+  requires javafx.controls;
+  requires jdk.compiler;
+  requires java.desktop;
+  requires javafx.media;
+  requires com.google.gson;
 
-
-    opens org.example.stigespillet to javafx.fxml;
-    exports org.example.stigespillet;
+  exports edu.ntnu.iir.bidata;
+  exports edu.ntnu.iir.bidata.view;
+  exports edu.ntnu.iir.bidata.object;
+  exports edu.ntnu.iir.bidata.controller;
 }
