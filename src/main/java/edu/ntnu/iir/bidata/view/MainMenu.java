@@ -5,6 +5,7 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
 import edu.ntnu.iir.bidata.object.file.LocalBoardRegister;
+import java.awt.Rectangle;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,8 +145,20 @@ public class MainMenu {
     boardSelector.getStyleClass().add("space-combo-box");
 
     // Board description
-
     Label boardDescription = new Label();
+    boardDescription.setTextFill(SPACE_BLUE);
+    boardDescription.setFont(getOrbitronFont(12, FontWeight.NORMAL));
+    if (boardSelector.getValue() != null) {
+      boardDescription.setText(boardSelector.getValue().getDescription());
+    }
+
+    boardSelector.setOnAction(e -> {
+      Board selectedBoard = boardSelector.getValue();
+      if (selectedBoard != null) {
+        boardDescription.setText(selectedBoard.getDescription());
+      }
+    });
+
 
     // Player selection
     Label playerLabel = new Label("SPACE TRAVELERS:");
@@ -169,7 +182,7 @@ public class MainMenu {
 
     // Layout
     VBox settingsBox = new VBox(20,
-        boardLabel, boardSelector,
+        boardLabel, boardSelector, boardDescription,
         playerLabel, playerSpinner,
         startBtn, backBtn);
     settingsBox.setAlignment(Pos.CENTER);
