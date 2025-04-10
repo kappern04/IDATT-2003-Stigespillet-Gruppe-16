@@ -1,6 +1,6 @@
 {
-  "name": "Spiral Board",
-  "description": "A spiral-shaped board that winds from the edges to the center",
+  "name": "Spiral-Way",
+  "description": "A spiral path to the center of the Spiral-Way Galaxy.",
   "tiles": [
     {"id": 0, "x": 0, "y": 8},
     {"id": 1, "x": 1, "y": 8, "action":  {"type": "LadderAction", "destinationTileIndex": 19}},

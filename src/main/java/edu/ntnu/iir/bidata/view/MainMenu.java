@@ -4,6 +4,8 @@ import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
+import edu.ntnu.iir.bidata.object.file.LocalBoardRegister;
+import java.awt.Rectangle;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,11 +32,13 @@ public class MainMenu {
 
   private Stage primaryStage;
   private Font orbitronFont;
+  private LocalBoardRegister boardRegister;
   private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
   private final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
 
   public MainMenu(Stage primaryStage) {
     this.primaryStage = primaryStage;
+    this.boardRegister = new LocalBoardRegister();
     loadCustomFont();
     showMainMenu();
   }
@@ -121,10 +125,40 @@ public class MainMenu {
     boardLabel.setTextFill(SPACE_BLUE);
     boardLabel.setFont(getOrbitronFont(16, FontWeight.BOLD));
 
-    ComboBox<String> boardSelector = new ComboBox<>();
-    boardSelector.getItems().addAll("Spiral Way", "Ladderia Prime");
-    boardSelector.setValue("Spiral Way");
+    ComboBox<Board> boardSelector = new ComboBox<>();
+    boardSelector.getItems().addAll(boardRegister.getAllBoards());
+    if (!boardSelector.getItems().isEmpty()) {
+      boardSelector.setValue(boardSelector.getItems().getFirst());
+    }
+    boardSelector.setCellFactory(cell -> new ListCell<>() {
+      @Override
+      protected void updateItem(Board board, boolean empty) {
+        super.updateItem(board, empty);
+        if (empty || board == null) {
+          setText(null);
+        } else {
+          setText(board.getName());
+        }
+      }
+    });
+    boardSelector.setButtonCell(boardSelector.getCellFactory().call(null));
     boardSelector.getStyleClass().add("space-combo-box");
+
+    // Board description
+    Label boardDescription = new Label();
+    boardDescription.setTextFill(SPACE_BLUE);
+    boardDescription.setFont(getOrbitronFont(12, FontWeight.NORMAL));
+    if (boardSelector.getValue() != null) {
+      boardDescription.setText(boardSelector.getValue().getDescription());
+    }
+
+    boardSelector.setOnAction(e -> {
+      Board selectedBoard = boardSelector.getValue();
+      if (selectedBoard != null) {
+        boardDescription.setText(selectedBoard.getDescription());
+      }
+    });
+
 
     // Player selection
     Label playerLabel = new Label("SPACE TRAVELERS:");
@@ -139,7 +173,7 @@ public class MainMenu {
     Button backBtn = createSpaceButton("Return to Base");
 
     startBtn.setOnAction(e -> {
-      String selectedBoard = boardSelector.getValue();
+      Board selectedBoard = boardSelector.getValue();
       int numPlayers = playerSpinner.getValue();
       startNewGame(selectedBoard, numPlayers);
     });
@@ -148,7 +182,7 @@ public class MainMenu {
 
     // Layout
     VBox settingsBox = new VBox(20,
-        boardLabel, boardSelector,
+        boardLabel, boardSelector, boardDescription,
         playerLabel, playerSpinner,
         startBtn, backBtn);
     settingsBox.setAlignment(Pos.CENTER);
@@ -160,46 +194,23 @@ public class MainMenu {
     primaryStage.setScene(scene);
   }
 
-  private void startNewGame(String boardType, int numPlayers) {
-    // Create dialog to collect player names
+  private void startNewGame(Board selectedBoard, int numPlayers) {
     List<String> playerNames = collectPlayerNames(numPlayers);
 
     Player[] players = new Player[numPlayers];
     for (int i = 0; i < numPlayers; i++) {
       players[i] = new Player(playerNames.get(i));
     }
+
     BoardGame game = new BoardGame();
 
     // Set the players in the game
     game.setPlayers(players);
+    game.setBoard(selectedBoard);
 
-    // Create board based on selection
-    Board board = null;
-    switch (boardType) {
-      case "Andromeda":
-        //board = new Board(100, "Andromeda"); // Example with more tiles
-        break;
-      case "Nebula Realm":
-        //board = new Board(80, "Nebula"); // Example with different theme
-        break;
-      case "Spiral Way":
-        board = new Board();
-      default:
-        try {
-          board = new BoardGameFactory().createBoardGameFromFile(
-                  "C:\\Users\\alexa\\Documents\\Skole\\IDATT2003\\1\\src\\main\\resources\\boards\\spiral.json")
-              .getBoard();
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-        break;
-    }
-    game.setBoard(board);
-
-    // Create MainView and set it up
     MainView mainView = new MainView(game);
     mainView.setUpStage(primaryStage);
-    primaryStage.setTitle("Cosmic Ladder - " + boardType);
+    primaryStage.setTitle("Cosmic Ladder - " + selectedBoard.getName());
   }
 
   private List<String> collectPlayerNames(int numPlayers) {
