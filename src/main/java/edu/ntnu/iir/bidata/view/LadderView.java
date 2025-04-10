@@ -18,7 +18,7 @@ public class LadderView {
     }
 
     public Node createLadder(Tile tile) {
-        Tile startTile = tile;
+        Tile startTile = board.getTile(tile.getIndex());
         Tile endTile = (tile.getTileAction() instanceof LadderAction action) ? board.getTile(action.getDestinationTileIndex()) : board.getTile(0);
 
         String color = (startTile.getIndex() < endTile.getIndex()) ? "Blue" : "Red";
@@ -72,5 +72,4 @@ public class LadderView {
         imageView.setFitHeight(48);
         return imageView;
     }
-
 }

@@ -4,6 +4,7 @@ import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -174,26 +175,33 @@ public class MainMenu {
     game.setPlayers(players);
 
     // Create board based on selection
-    Board board = null;
-    switch (boardType) {
-      case "Andromeda":
-        //board = new Board(100, "Andromeda"); // Example with more tiles
-        break;
-      case "Nebula Realm":
-        //board = new Board(80, "Nebula"); // Example with different theme
-        break;
-      case "Spiral Way":
-        board = new Board();
-      default:
-        try {
-          board = new BoardGameFactory().createBoardGameFromFile(
-                  "C:\\Users\\alexa\\Documents\\Skole\\IDATT2003\\1\\src\\main\\resources\\boards\\spiral.json")
-              .getBoard();
-        } catch (Exception e) {
-          throw new RuntimeException(e);
-        }
-        break;
+    // Create board based on selection
+    Board board;
+    try {
+      switch (boardType) {
+        case "Andromeda":
+          board = loadBoardFromResource("/boards/andromeda.json"); // Assuming this exists
+          break;
+        case "Ladderia Prime":
+          board = loadBoardFromResource("/boards/normal.json");
+          break;
+        case "Spiral Way":
+          board = loadBoardFromResource("/boards/spiral.json");
+          break;
+        default:
+          board = new Board(); // Fallback to default board
+          break;
+      }
+    } catch (RuntimeException e) {
+      // Handle any loading errors
+      Alert alert = new Alert(AlertType.ERROR);
+      alert.setTitle("Board Loading Error");
+      alert.setHeaderText(null);
+      alert.setContentText("Could not load board: " + e.getMessage());
+      alert.showAndWait();
+      board = new Board(); // Fallback to default board
     }
+
     game.setBoard(board);
 
     // Create MainView and set it up
@@ -315,5 +323,17 @@ public class MainMenu {
         new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true));
 
     root.setBackground(new Background(bgImage));
+  }
+
+  private Board loadBoardFromResource(String resourcePath) {
+    try {
+      InputStream inputStream = getClass().getResourceAsStream(resourcePath);
+      if (inputStream == null) {
+        throw new IOException("Resource not found: " + resourcePath);
+      }
+      return new BoardGameFactory().createBoardGameFromStream(inputStream).getBoard();
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load board from resource: " + resourcePath, e);
+    }
   }
 }

@@ -43,13 +43,16 @@ public class Board {
   }
 
   private void createDefaultTiles() {
-    for (int i = 0; i < 91; i++) {
-      int y = i / 10;
-      int x;
-      if (y % 2 == 0) {
-        x = i % 10;
+    tiles.addFirst(new Tile(0, -1, -1, new TileAction())); // Position outside the visible board
+
+    // Create tiles 1-90 for the visible board
+    for (int i = 1; i <= 90; i++) {
+      int y = (90-i) / 9;
+      int x = (90-i) % 9;
+      if (y % 2 == 1) {
+        x = 8 - x;
       } else {
-        x = 9 - (i % 10);
+        x = x;
       }
       tiles.add(i, new Tile(i, x, y, new TileAction()));
     }

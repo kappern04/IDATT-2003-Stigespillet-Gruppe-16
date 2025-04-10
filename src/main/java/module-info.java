@@ -9,4 +9,7 @@ module edu.ntnu.iir.bidata {
   exports edu.ntnu.iir.bidata.view;
   exports edu.ntnu.iir.bidata.object;
   exports edu.ntnu.iir.bidata.controller;
+
+  // Add this line to allow Gson to access your model classes
+  opens edu.ntnu.iir.bidata.object to com.google.gson;
 }

@@ -39,6 +39,10 @@ public class BoardView {
     List<Tile> tiles = boardGame.getBoard().getTiles();
 
     for (Tile tile : tiles) {
+      // Skip tile 0
+      if (tile.getIndex() == 0) {
+        continue;
+      }
       // creates tiles
       int tileIndex = tile.getIndex();
       StackPane tilePane = tileView.createTile(tileIndex);

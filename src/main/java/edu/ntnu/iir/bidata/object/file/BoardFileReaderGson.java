@@ -1,18 +1,21 @@
 package edu.ntnu.iir.bidata.object.file;
 
 import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import edu.ntnu.iir.bidata.object.*;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BoardFileReaderGson implements BoardFileReader {
 
   @Override
-  public Board readBoard(String filePath) throws IOException {
-    try (FileReader reader = new FileReader(filePath)) {
+  public Board readBoard(InputStream inputStream) throws IOException {
+    try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
       JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
 
       String name = root.get("name").getAsString();
