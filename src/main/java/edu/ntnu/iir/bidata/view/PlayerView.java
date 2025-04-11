@@ -1,15 +1,11 @@
 // Abstract base class
 package edu.ntnu.iir.bidata.view;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
+import edu.ntnu.iir.bidata.object.LadderAction;
 import edu.ntnu.iir.bidata.object.Observable;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
-import java.util.ArrayList;
-import java.util.List;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
@@ -70,61 +66,64 @@ public class PlayerView implements Observer{
       return;
     }
 
-    if (Math.abs(targetPosition - currentPosition) > 6 || targetPosition < currentPosition ) {
-      Tile endTile = board.getTiles().get(targetPosition);
-      positionPlayerAtTile(sprite, endTile);
-      previousPositions.put(player, targetPosition);
-    } else {
-      List<ParallelTransition> movementSteps = createMovementSteps(player, sprite, currentPosition, targetPosition);
-      SequentialTransition sequence = new SequentialTransition();
-      sequence.getChildren().addAll(movementSteps);
-      sequence.setOnFinished(e -> previousPositions.put(player, targetPosition));
-      sequence.play();
-    }
-
-    // Create a sequence of animations to move through each tile
-    List<ParallelTransition> movementSteps = createMovementSteps(player, sprite, currentPosition, targetPosition);
-
-    // Combine all steps into a sequential animation
+    // Create a sequential animation for multiple movement phases
     SequentialTransition sequence = new SequentialTransition();
-    sequence.getChildren().addAll(movementSteps);
 
-    // Update the player's previous position after animation completes
-    sequence.setOnFinished(e -> previousPositions.put(player, targetPosition));
+    // Handle large jumps or backward movement differently
+    if (Math.abs(targetPosition - currentPosition) > 6 || targetPosition < currentPosition) {
+      // Special jump animation (ladder/portal)
+      Tile endTile = board.getTiles().get(targetPosition);
 
-    // Play the animation
-    sequence.play();
-  }
+      // Create a special animation with arc effect
+      TranslateTransition jump = createTranslateTransition(sprite,
+          getTileCenterX(endTile),
+          getTileCenterY(endTile));
+      jump.setDuration(Duration.millis(500));
 
-  private List<ParallelTransition> createMovementSteps(Player player, ImageView sprite, int startPos, int endPos) {
-    List<ParallelTransition> steps = new ArrayList<>();
+      RotateTransition spin = createRotateTransition(sprite, getRotationForTile(endTile));
+      spin.setDuration(Duration.millis(500));
 
-    // Determine direction of movement
-    int direction = startPos < endPos ? 1 : -1;
+      ParallelTransition specialMove = new ParallelTransition(jump, spin);
+      sequence.getChildren().add(specialMove);
+    } else {
+      // Regular dice-based movement
+      int steps = targetPosition - currentPosition;
 
-    // Create animation for each step
-    for (int pos = startPos + direction; direction > 0 ? pos <= endPos : pos >= endPos; pos += direction) {
-      Tile tile = board.getTiles().get(pos);
+      for (int i = 1; i <= steps; i++) {
+        int stepPosition = currentPosition + i;
+        Tile tile = board.getTiles().get(stepPosition);
 
-      // Calculate position based on board-specific logic
-      double targetX = getTileCenterX(tile);
-      double targetY = getTileCenterY(tile);
-      double targetRotation = getRotationForTile(tile);
+        TranslateTransition translate = createTranslateTransition(sprite,
+            getTileCenterX(tile),
+            getTileCenterY(tile));
+        translate.setDuration(Duration.millis(STEP_DURATION_MS));
 
-      // Create movement animation
-      TranslateTransition translate = createTranslateTransition(sprite, targetX, targetY);
-      translate.setDuration(Duration.millis(STEP_DURATION_MS));
+        RotateTransition rotate = createRotateTransition(sprite, getRotationForTile(tile));
+        rotate.setDuration(Duration.millis(STEP_DURATION_MS));
 
-      // Create rotation animation
-      RotateTransition rotate = createRotateTransition(sprite, targetRotation);
-      rotate.setDuration(Duration.millis(STEP_DURATION_MS));
-
-      // Combine translate and rotate into a parallel animation
-      ParallelTransition step = new ParallelTransition(translate, rotate);
-      steps.add(step);
+        ParallelTransition step = new ParallelTransition(translate, rotate);
+        sequence.getChildren().add(step);
+      }
     }
 
-    return steps;
+    sequence.setOnFinished(e -> {
+      int previousPosition = previousPositions.get(player);
+      previousPositions.put(player, targetPosition);
+
+      // Check if player landed on a ladder
+      Tile currentTile = board.getTiles().get(targetPosition);
+      if (currentTile.getTileAction() instanceof LadderAction ladderAction) {
+        // Play the ladder sound after movement animation
+        ladderAction.playLadderSound(previousPosition);
+      }
+
+      // Check if position changed during animation (due to ladder)
+      if (player.getPositionIndex() != targetPosition) {
+        animatePlayerMovement(player, sprite);
+      }
+    });
+
+    sequence.play();
   }
 
   private void positionPlayerAtTile(ImageView sprite, Tile tile) {

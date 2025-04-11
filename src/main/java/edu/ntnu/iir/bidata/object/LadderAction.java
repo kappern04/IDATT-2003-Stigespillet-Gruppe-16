@@ -9,7 +9,6 @@ public class LadderAction extends TileAction {
   private MediaPlayer mediaPlayerDown;
   private int destinationTileIndex;
 
-
   public LadderAction(int destinationTileIndex) {
     this.destinationTileIndex = destinationTileIndex;
     this.mediaPlayerUp = createMediaPlayer("portal.wav");
@@ -18,12 +17,20 @@ public class LadderAction extends TileAction {
 
   @Override
   public void performAction(Player player) {
-    if (destinationTileIndex > player.getPositionIndex()) {
+    // Just update position, but don't play sound yet
+    player.setPositionIndex(destinationTileIndex);
+  }
+
+  /**
+   * Plays the appropriate ladder sound based on whether it's an up or down ladder
+   * This should be called after the animation completes
+   */
+  public void playLadderSound(int previousPosition) {
+    if (destinationTileIndex > previousPosition) {
       playSound(mediaPlayerUp);
     } else {
       playSound(mediaPlayerDown);
     }
-    player.setPositionIndex(destinationTileIndex);
   }
 
   public int getDestinationTileIndex() {
