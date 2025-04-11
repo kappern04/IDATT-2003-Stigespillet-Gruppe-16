@@ -2,16 +2,19 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.LadderAction;
+import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
 import java.util.Arrays;
 import java.util.List;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 
 public class BoardView {
@@ -64,22 +67,59 @@ public class BoardView {
     gridPane.setAlignment(Pos.CENTER);
     boardPane.getChildren().addAll(gridPane);
 
-    HBox layout = new HBox(20);
-    layout.setAlignment(Pos.CENTER);
-    layout.getChildren().addAll(boardPane);
-
-    VBox playerInfo = new VBox(10);
-
-    HBox dieBox = new HBox(10);
-    // Pass both dieView and playerView to playTurn method to handle sequencing
-    Button dieButton = dieView.createDieButton(() -> boardGame.playTurn(dieView, playerView));
-
+    // Add player sprites to the board
     playerView.addPlayersToBoard(boardPane);
 
+    // Main horizontal layout
+    HBox mainLayout = new HBox(20);
+    mainLayout.setAlignment(Pos.CENTER);
+
+    // Add board on left and controls on right
+    mainLayout.getChildren().addAll(boardPane, createControlPanel());
+
+    return new StackPane(mainLayout);
+  }
+
+  private VBox createControlPanel() {
+    // Right side VBox for player sprites and die
+    VBox controlPanel = new VBox(20);
+    controlPanel.setAlignment(Pos.CENTER);
+    controlPanel.setMinWidth(200);
+
+    Player[] players = boardGame.getPlayers();
+
+    // Add first half of players
+    for (int i = 0; i < players.length / 2; i++) {
+      controlPanel.getChildren().add(createPlayerBox(players[i]));
+    }
+
+    // Add die in the middle
+    HBox dieBox = new HBox(10);
+    Button dieButton = dieView.createDieButton(() -> boardGame.playTurn(dieView, playerView));
     dieBox.getChildren().add(dieButton);
     dieBox.setAlignment(Pos.CENTER);
-    layout.getChildren().add(dieBox);
+    controlPanel.getChildren().add(dieBox);
 
-    return new StackPane(layout);
+    // Add second half of players
+    for (int i = players.length / 2; i < players.length; i++) {
+      controlPanel.getChildren().add(createPlayerBox(players[i]));
+    }
+
+    return controlPanel;
+  }
+
+  private VBox createPlayerBox(Player player) {
+    VBox playerBox = new VBox(5);
+    playerBox.setAlignment(Pos.CENTER);
+
+    Label nameLabel = new Label(player.getName());
+    nameLabel.getStyleClass().add("player-name");
+
+    ImageView playerSprite = new ImageView(playerView.getPlayerImage(player));
+    playerSprite.setFitWidth(64);  // Make it as big as die box or we upscale our own img
+    playerSprite.setFitHeight(64); // Make it as big as die box or we upscale our own img
+
+    playerBox.getChildren().addAll(nameLabel, playerSprite);
+    return playerBox;
   }
 }

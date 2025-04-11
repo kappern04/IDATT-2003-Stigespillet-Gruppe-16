@@ -193,6 +193,13 @@ public class PlayerView implements Observer{
     return 0; // up
   }
 
+  public Image getPlayerImage(Player player) {
+    if (playerSprites.containsKey(player)) {
+      return playerSprites.get(player).getImage();
+    }
+    return playerSprites.values().iterator().next().getImage();
+  }
+
   @Override
   public <T extends Observer> void update(Observable<T> observable, String prompt) {
     updatePlayerPositions();

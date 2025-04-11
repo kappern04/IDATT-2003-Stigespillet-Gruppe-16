@@ -83,20 +83,35 @@ public class DieView implements Observer {
         return new Image(getClass().getResourceAsStream("/image/die_" + die.getLastRoll() + ".png"));
     }
 
-    private MediaPlayer createMediaPlayer(String soundFile) {
-        try {
-            Media sound = new Media(getClass().getResource("/audio/" + soundFile).toExternalForm());
-            return new MediaPlayer(sound);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    private void playSound() {
+        if (mediaPlayer != null) {
+            // Create a new MediaPlayer for each roll
+            mediaPlayer.stop();
+            mediaPlayer.dispose();
+            mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
+
+            // Set the media player to play once
+            if (mediaPlayer != null) {
+                mediaPlayer.setCycleCount(1);
+                mediaPlayer.setOnEndOfMedia(() -> {
+                    mediaPlayer.stop();
+                });
+                mediaPlayer.play();
+            }
         }
     }
 
-    private void playSound() {
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.play();
+    private MediaPlayer createMediaPlayer(String soundFile) {
+        try {
+            String resourcePath = "/audio/" + soundFile;
+            Media sound = new Media(getClass().getResource(resourcePath).toExternalForm());
+            MediaPlayer player = new MediaPlayer(sound);
+            player.setOnError(() -> System.err.println("Media error: " + player.getError()));
+            return player;
+        } catch (Exception e) {
+            System.err.println("Could not load sound file: " + soundFile);
+            e.printStackTrace();
+            return null;
         }
     }
 

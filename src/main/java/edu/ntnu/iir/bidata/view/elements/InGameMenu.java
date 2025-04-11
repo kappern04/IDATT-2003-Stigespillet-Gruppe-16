@@ -130,6 +130,7 @@ public class InGameMenu extends VBox {
     });
 
     mainMenuButton.setOnAction(e -> {
+      MusicControlPanel.stopMusic();
       menuStage.close();
 
       // Close all stages except this one

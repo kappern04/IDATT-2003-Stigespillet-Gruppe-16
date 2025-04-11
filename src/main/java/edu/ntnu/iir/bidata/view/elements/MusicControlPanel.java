@@ -10,7 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 public class MusicControlPanel {
-  private MusicPlayer musicPlayer;
+  private static MusicPlayer musicPlayer;
   private Slider volumeSlider;
   private Button pauseButton;
   private boolean isPaused = false;
@@ -57,5 +57,8 @@ public class MusicControlPanel {
       pauseButton.setGraphic(
           new ImageView(new Image(getClass().getResourceAsStream("/image/Pause.png"))));
     }
+  }
+  public static void stopMusic() {
+    musicPlayer.pause();
   }
 }
