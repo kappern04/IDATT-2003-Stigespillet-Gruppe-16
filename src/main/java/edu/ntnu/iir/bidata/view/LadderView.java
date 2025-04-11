@@ -40,15 +40,18 @@ public class LadderView {
         ImageView start = createImageView("/image/" + color + "Wormhole.png");
         ImageView end = createImageView("/image/" + color + "Wormhole.png");
 
+        int x_tile = board.getX_dimension();
+        int y_tile = board.getY_dimension();
+
         //positions, angles and flips the start wormhole
         start.setRotate(angle + 180);
-        start.setTranslateX(startEdgeX - 315);
-        start.setTranslateY(startEdgeY - 420);
+        start.setTranslateX(startEdgeX -  (x_tile + 1) * 35);
+        start.setTranslateY(startEdgeY - (y_tile +1) * 35);
 
         //positions and angles the start wormhole
         end.setRotate(angle);
-        end.setTranslateX(endEdgeX - 315);
-        end.setTranslateY(endEdgeY - 420);
+        end.setTranslateX(endEdgeX - (x_tile +1) * 35);
+        end.setTranslateY(endEdgeY - (y_tile + 1) * 35);
 
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(start, end);
@@ -57,11 +60,11 @@ public class LadderView {
     }
 
     private double getTileCenterX(Tile tile) {
-        return tile.getX() * 70 + 30;
+        return tile.getX() * 70 + 70;
     }
 
     private double getTileCenterY(Tile tile) {
-        return tile.getY() * 70 + 100;
+        return tile.getY() * 70 + 70;
     }
 
 

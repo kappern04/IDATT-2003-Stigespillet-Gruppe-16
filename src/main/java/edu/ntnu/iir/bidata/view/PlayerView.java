@@ -10,7 +10,6 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.RotateTransition;
@@ -21,9 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -169,11 +166,13 @@ public class PlayerView implements Observer{
   }
 
   private double getTileCenterX(Tile tile) {
-    return tile.getX() * 70 + 30 - 315;
+    int xDimension = board.getX_dimension();
+    return tile.getX() * 70 + 70 - (xDimension + 1) * 35;
   }
 
   private double getTileCenterY(Tile tile) {
-    return tile.getY() * 70 + 100 - 420;
+    int yDimension = board.getY_dimension();
+    return tile.getY() * 70 + 70 - (yDimension + 1) * 35;
   }
 
   private double getRotationForTile(Tile tile) {
