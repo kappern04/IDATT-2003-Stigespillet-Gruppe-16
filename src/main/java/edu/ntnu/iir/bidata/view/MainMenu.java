@@ -4,6 +4,8 @@ import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
+import edu.ntnu.iir.bidata.object.file.GameSaveReaderCSV;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -56,7 +59,6 @@ public class MainMenu {
     }
   }
 
-  // Then modify all Font.font(SPACE_FONT, ...) usage with custom sized versions:
   private Font getOrbitronFont(double size, FontWeight weight) {
     return Font.font(orbitronFont.getFamily(), weight, size);
   }
@@ -90,15 +92,7 @@ public class MainMenu {
 
     // Button actions
     newGameBtn.setOnAction(e -> showGameSetup());
-
-    loadGameBtn.setOnAction(e -> {
-      Alert alert = new Alert(AlertType.INFORMATION);
-      alert.setTitle("Transmission Interrupted");
-      alert.setHeaderText(null);
-      alert.setContentText("This feature will be available in a future update!");
-      alert.showAndWait();
-    });
-
+    loadGameBtn.setOnAction(e -> showLoadGameDialog());
     quitBtn.setOnAction(e -> Platform.exit());
 
     // Layout
@@ -162,25 +156,27 @@ public class MainMenu {
   }
 
   private void startNewGame(String boardType, int numPlayers) {
-    // Create dialog to collect player names
+    // Collect player names
     List<String> playerNames = collectPlayerNames(numPlayers);
 
+    // Create Player objects
     Player[] players = new Player[numPlayers];
     for (int i = 0; i < numPlayers; i++) {
       players[i] = new Player(playerNames.get(i));
     }
+
+    // Create a new BoardGame instance
     BoardGame game = new BoardGame();
 
     // Set the players in the game
     game.setPlayers(players);
 
-    // Create board based on selection
-    // Create board based on selection
+    // Load the selected board
     Board board;
     try {
       switch (boardType) {
         case "Andromeda":
-          board = loadBoardFromResource("/boards/andromeda.json"); // Assuming this exists
+          board = loadBoardFromResource("/boards/andromeda.json");
           break;
         case "Ladderia Prime":
           board = loadBoardFromResource("/boards/normal.json");
@@ -193,8 +189,7 @@ public class MainMenu {
           break;
       }
     } catch (RuntimeException e) {
-      // Handle any loading errors
-      Alert alert = new Alert(AlertType.ERROR);
+      Alert alert = new Alert(Alert.AlertType.ERROR);
       alert.setTitle("Board Loading Error");
       alert.setHeaderText(null);
       alert.setContentText("Could not load board: " + e.getMessage());
@@ -202,15 +197,15 @@ public class MainMenu {
       board = new Board(); // Fallback to default board
     }
 
+    // Set the board in the game
     game.setBoard(board);
 
-    // Create MainView and set it up
+    // Create MainView and set it up - no need to pass board name separately
     MainView mainView = new MainView(game);
     mainView.setUpStage(primaryStage);
-    primaryStage.setTitle("Cosmic Ladder - " + boardType);
   }
 
-  private List<String> collectPlayerNames(int numPlayers) {
+  public List<String> collectPlayerNames(int numPlayers) {
     List<String> names = new ArrayList<>();
 
     // Create a dialog pane for player names
@@ -270,8 +265,6 @@ public class MainMenu {
       }
       return defaultNames;
     });
-
-    // TODO: Implement actual game start with views
   }
 
   private Button createSpaceButton(String text) {
@@ -334,6 +327,34 @@ public class MainMenu {
       return new BoardGameFactory().createBoardGameFromStream(inputStream).getBoard();
     } catch (Exception e) {
       throw new RuntimeException("Failed to load board from resource: " + resourcePath, e);
+    }
+  }
+
+  private void showLoadGameDialog() {
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Load Saved Mission");
+    fileChooser.getExtensionFilters().add(
+        new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+    );
+    fileChooser.setInitialDirectory(new File("saves"));
+
+    File selectedFile = fileChooser.showOpenDialog(primaryStage);
+    if (selectedFile != null) {
+      try {
+        // Load the game
+        GameSaveReaderCSV saveReader = new GameSaveReaderCSV();
+        BoardGame loadedGame = saveReader.loadGame(selectedFile.getAbsolutePath());
+
+        // Create MainView with the loaded game
+        MainView mainView = new MainView(loadedGame);
+        mainView.setUpStage(primaryStage);
+      } catch (IOException ex) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Load Failed");
+        alert.setHeaderText(null);
+        alert.setContentText("Failed to load game: " + ex.getMessage());
+        alert.showAndWait();
+      }
     }
   }
 }

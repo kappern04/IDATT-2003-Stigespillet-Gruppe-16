@@ -2,7 +2,7 @@
   "name": "Spiral-Way",
   "description": "A spiral path to the center of the Spiral-Way Galaxy.",
   "tiles": [
-    {"id": 0, "x": -1, "y": -1},
+    {"id": 0, "x": -1, "y": 9},
     {"id": 1, "x": 0, "y": 9},
     {"id": 2, "x": 1, "y": 9, "action": {"type": "LadderAction", "destinationTileIndex": 19}},
     {"id": 3, "x": 2, "y": 9, "action": {"type": "LadderAction", "destinationTileIndex": 23}},

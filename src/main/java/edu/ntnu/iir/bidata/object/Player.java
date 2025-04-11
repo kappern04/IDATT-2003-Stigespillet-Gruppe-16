@@ -6,7 +6,7 @@ import edu.ntnu.iir.bidata.view.Observer;
  * Player class The player is created with a name and a position The player can move a number of
  * steps
  */
-public class Player<T extends Observer> extends Observable<T> {
+public class  Player<T extends Observer> extends Observable<T> {
 
   private String name;
   private int positionIndex;
@@ -36,6 +36,10 @@ public class Player<T extends Observer> extends Observable<T> {
 
   public String toString() {
     return "Player{" + "name='" + name + '\'' + ", position=" + positionIndex + '}';
+  }
+
+  public void numPlayers(int number) {
+    for (int i = 0; i < number; i++) {}
   }
 
   @Override

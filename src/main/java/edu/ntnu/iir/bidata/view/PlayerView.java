@@ -169,11 +169,11 @@ public class PlayerView implements Observer{
   }
 
   private double getTileCenterX(Tile tile) {
-    return tile.getX() * 70 + 30 - 350;
+    return tile.getX() * 70 + 30 - 315;
   }
 
   private double getTileCenterY(Tile tile) {
-    return tile.getY() * 70 + 100 - 385;
+    return tile.getY() * 70 + 100 - 420;
   }
 
   private double getRotationForTile(Tile tile) {

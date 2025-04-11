@@ -42,13 +42,13 @@ public class LadderView {
 
         //positions, angles and flips the start wormhole
         start.setRotate(angle + 180);
-        start.setTranslateX(startEdgeX - 350);
-        start.setTranslateY(startEdgeY - 385);
+        start.setTranslateX(startEdgeX - 315);
+        start.setTranslateY(startEdgeY - 420);
 
         //positions and angles the start wormhole
         end.setRotate(angle);
-        end.setTranslateX(endEdgeX - 350);
-        end.setTranslateY(endEdgeY - 385);
+        end.setTranslateX(endEdgeX - 315);
+        end.setTranslateY(endEdgeY - 420);
 
         StackPane stackPane = new StackPane();
         stackPane.getChildren().addAll(start, end);

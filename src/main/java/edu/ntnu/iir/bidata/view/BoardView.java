@@ -71,7 +71,8 @@ public class BoardView {
     VBox playerInfo = new VBox(10);
 
     HBox dieBox = new HBox(10);
-    Button dieButton = dieView.createDieButton(() -> boardGame.playTurn());
+    // Pass both dieView and playerView to playTurn method to handle sequencing
+    Button dieButton = dieView.createDieButton(() -> boardGame.playTurn(dieView, playerView));
 
     playerView.addPlayersToBoard(boardPane);
 

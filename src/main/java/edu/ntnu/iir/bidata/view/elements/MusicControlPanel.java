@@ -1,5 +1,6 @@
 package edu.ntnu.iir.bidata.view.elements;
 
+import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.view.MusicPlayer;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,15 +10,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 
 public class MusicControlPanel {
-
   private MusicPlayer musicPlayer;
   private Slider volumeSlider;
   private Button pauseButton;
-  private Button menuButton;
   private boolean isPaused = false;
+  private BoardGame boardGame;
+  // Remove the boardName field as it's redundant
 
-  public MusicControlPanel(MusicPlayer musicPlayer) {
+  public MusicControlPanel(MusicPlayer musicPlayer, BoardGame boardGame) {
     this.musicPlayer = musicPlayer;
+    this.boardGame = boardGame;
   }
 
   public HBox createControlPanel() {
@@ -41,12 +43,7 @@ public class MusicControlPanel {
     pauseButton = new Button("", pauseIcon);
     pauseButton.setOnAction(e -> togglePause());
 
-    menuButton = new Button("Menu");
-    menuButton.setOnAction(e -> {
-      openMenu();
-    });
-
-    controlPanel.getChildren().addAll(volumeSlider, pauseButton, menuButton);
+    controlPanel.getChildren().addAll(volumeSlider, pauseButton);
     return controlPanel;
   }
 
@@ -60,9 +57,5 @@ public class MusicControlPanel {
       pauseButton.setGraphic(
           new ImageView(new Image(getClass().getResourceAsStream("/image/Pause.png"))));
     }
-  }
-
-  private void openMenu() {
-    new InGameMenu().show();
   }
 }

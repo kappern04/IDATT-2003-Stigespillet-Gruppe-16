@@ -4,7 +4,8 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
-import edu.ntnu.iir.bidata.view.Observer;
+import edu.ntnu.iir.bidata.view.DieView;
+import edu.ntnu.iir.bidata.view.PlayerView;
 import java.util.Arrays;
 
 public class BoardGame {
@@ -15,22 +16,17 @@ public class BoardGame {
 
   public BoardGame() {
     this.board = new Board();
-    this.players = new Player[2];
-    this.players[0] = new Player("Player 1");
-    this.players[1] = new Player("Player 2");
-    this.currentPlayerIndex = 0;
-    this.die = new Die<Observer>();
-  }
-
-  public BoardGame(Board board) {
-    this.board = board;
-    this.players = new Player[2];
-    this.players[0] = new Player("Player 1");
-    this.players[1] = new Player("Player 2");
+    this.players = new Player[0]; // Initialize with an empty array
     this.currentPlayerIndex = 0;
     this.die = new Die();
   }
 
+  public BoardGame(Board board) {
+    this.board = board;
+    this.players = new Player[0]; // Initialize with an empty array
+    this.currentPlayerIndex = 0;
+    this.die = new Die();
+  }
 
   public Board getBoard() {
     return board;
@@ -41,6 +37,9 @@ public class BoardGame {
   }
 
   public void setPlayers(Player[] players) {
+    if (players == null || players.length == 0) {
+      throw new IllegalArgumentException("Players array cannot be null or empty.");
+    }
     this.players = players;
   }
 
@@ -52,24 +51,46 @@ public class BoardGame {
     return die;
   }
 
-  public void playTurn() {
-    Player currentPlayer = players[currentPlayerIndex];
-    die.roll();
-    int roll = die.getLastRoll();
-    currentPlayer.move(roll);
+public void setCurrentPlayerIndex(int currentPlayerIndex) {
+    if (currentPlayerIndex < 0 || currentPlayerIndex >= players.length) {
+      throw new IllegalArgumentException("Invalid player index.");
+    }
+    this.currentPlayerIndex = currentPlayerIndex;
+  }
 
-    // Ensure the player does not move beyond the last tile
-    if (currentPlayer.getPositionIndex() >= board.getTiles().size()) {
-      currentPlayer.setPositionIndex(board.getTiles().size() - 1);
+  public int getCurrentPlayerIndex() {
+    return currentPlayerIndex;
+}
+
+  public void playTurn(DieView dieView, PlayerView playerView) {
+    if (players == null || players.length == 0) {
+      throw new IllegalStateException("No players available to play the game.");
     }
 
-    // Perform the action on the tile the player lands on
-    Tile currentTile = board.getTiles().get(currentPlayer.getPositionIndex());
-    currentTile.landOn(currentPlayer);
-    
-    // Switch to the next player
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-    System.out.println(currentPlayer.getName() + ": " + currentPlayer.getPositionIndex());
+    Player currentPlayer = players[currentPlayerIndex];
+
+    // Set a callback to execute after the dice animation completes
+    dieView.setOnAnimationComplete(() -> {
+      int roll = die.getLastRoll();
+      currentPlayer.move(roll);
+
+      // Ensure the player does not move beyond the last tile
+      if (currentPlayer.getPositionIndex() >= board.getTiles().size()) {
+        currentPlayer.setPositionIndex(board.getTiles().size() - 1);
+      }
+
+      // Perform the action on the tile the player lands on
+      Tile currentTile = board.getTiles().get(currentPlayer.getPositionIndex());
+      currentTile.landOn(currentPlayer);
+
+      // Switch to the next player
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+
+      System.out.println(currentPlayer.getName() + " rolled " + roll + " and is now at position " + currentPlayer.getPositionIndex());
+    });
+
+    // Roll the die (this triggers the dice animation via observer pattern)
+    die.roll();
   }
 
   @Override

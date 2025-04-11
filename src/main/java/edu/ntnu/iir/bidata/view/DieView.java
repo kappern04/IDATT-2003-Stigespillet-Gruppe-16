@@ -2,6 +2,7 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Observable;
+import javafx.animation.PauseTransition;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.animation.AnimationTimer;
@@ -9,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
+import javafx.util.Duration;
 
 
 public class DieView implements Observer {
@@ -17,7 +19,7 @@ public class DieView implements Observer {
     private AnimationTimer timer;
     private long animationStartTime;
     private MediaPlayer mediaPlayer;
-    private Runnable runnable;
+    private Runnable onAnimationComplete; // New callback for animation completion
 
     public DieView(Die die) {
         this.die = die;
@@ -26,8 +28,11 @@ public class DieView implements Observer {
         this.mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
     }
 
+    public void setOnAnimationComplete(Runnable callback) {
+        this.onAnimationComplete = callback;
+    }
+
     public Button createDieButton(Runnable runnable) {
-        this.runnable = runnable;
         Button button = new Button();
         button.setGraphic(imageView);
         button.setBackground(Background.EMPTY);
@@ -46,11 +51,20 @@ public class DieView implements Observer {
             @Override
             public void handle(long now) {
                 long elapsed = System.currentTimeMillis() - animationStartTime;
-                if (elapsed < 500) { // Roll for 1 second
+                if (elapsed < 500) { // Roll for 0.5 seconds
                     setToRandomDieImage();
                 } else {
                     timer.stop();
                     setToLastRollImage();
+
+                    // Add a pause before executing the callback
+                    PauseTransition pause = new PauseTransition(Duration.millis(500)); // delay in ms
+                    pause.setOnFinished(event -> {
+                        if (onAnimationComplete != null) {
+                            onAnimationComplete.run();
+                        }
+                    });
+                    pause.play();
                 }
             }
         };

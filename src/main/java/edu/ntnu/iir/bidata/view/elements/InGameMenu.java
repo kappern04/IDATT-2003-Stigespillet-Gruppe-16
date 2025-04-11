@@ -1,7 +1,12 @@
 package edu.ntnu.iir.bidata.view.elements;
 
+import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.object.file.GameSaveWriterCSV;
 import edu.ntnu.iir.bidata.view.MainMenu;
+import java.io.IOException;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
@@ -19,12 +24,14 @@ import javafx.geometry.Pos;
 import javafx.util.Duration;
 
 public class InGameMenu extends VBox {
+  private BoardGame boardGame;
   private Stage menuStage;
   private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
   private final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
   private Font orbitronFont;
 
-  public InGameMenu() {
+  public InGameMenu(BoardGame boardGame) {
+    this.boardGame = boardGame;
     loadCustomFont();
     setupMenu();
   }
@@ -66,25 +73,42 @@ public class InGameMenu extends VBox {
 
     Button resumeButton = createSpaceButton("Resume Mission");
     Button saveButton = createSpaceButton("Save Mission");
-//    Button mainMenuButton = createSpaceButton("Return to Base");
+    Button mainMenuButton = createSpaceButton("Return to Base");
     Button exitButton = createSpaceButton("Abort Mission");
 
     resumeButton.setOnAction(e -> menuStage.close());
 
     saveButton.setOnAction(e -> {
-      // TODO: Implement save functionality
-      menuStage.close();
+      try {
+        GameSaveWriterCSV saveWriter = new GameSaveWriterCSV();
+        // Pass null to use the board's name directly
+        String savedFilePath = saveWriter.saveGame(boardGame, null);
+
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle("Mission Saved");
+        alert.setHeaderText(null);
+        alert.setContentText("Game saved successfully to: " + savedFilePath);
+        alert.showAndWait();
+
+        menuStage.close();
+      } catch (IOException ex) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Save Failed");
+        alert.setHeaderText(null);
+        alert.setContentText("Failed to save game: " + ex.getMessage());
+        alert.showAndWait();
+      }
     });
 
-//    mainMenuButton.setOnAction(e -> {
-//      Stage primaryStage = (Stage) menuStage.getOwner();
-//      menuStage.close();
-//      new MainMenu(primaryStage);
-//    });
+    mainMenuButton.setOnAction(e -> {
+      Stage primaryStage = (Stage) menuStage.getOwner();
+      menuStage.close();
+      new MainMenu(primaryStage);
+    });
 
     exitButton.setOnAction(e -> System.exit(0));
 
-    getChildren().addAll(title, resumeButton, saveButton, exitButton);
+    getChildren().addAll(title, resumeButton, mainMenuButton, saveButton, exitButton);
 
     setupSpaceBackground();
     Scene scene = new Scene(this, 400, 500);
