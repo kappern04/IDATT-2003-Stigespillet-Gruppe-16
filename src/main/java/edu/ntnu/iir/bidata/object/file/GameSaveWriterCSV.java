@@ -13,26 +13,46 @@ public class GameSaveWriterCSV {
   private static final String DELIMITER = ",";
 
   /**
-   * Saves the current game state to a CSV file.
+   * Saves the current game state to a CSV file using an auto-generated filename.
    *
    * @param boardGame The BoardGame instance to save
-   * @param boardName The name of the board being used
+   * @param boardName The name of the board being used (can be null to use board's name)
    * @return The path to the saved file
    * @throws IOException If there's an error writing the file
    */
   public String saveGame(BoardGame boardGame, String boardName) throws IOException {
+    // Generate a filename with current timestamp
+    String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+    String fileName = "game_save_" + timestamp + ".csv";
+
+    return saveGame(boardGame, boardName, fileName);
+  }
+
+  /**
+   * Saves the current game state to a CSV file with a custom filename.
+   *
+   * @param boardGame The BoardGame instance to save
+   * @param boardName The name of the board being used (can be null to use board's name)
+   * @param fileName The custom filename to use (without path)
+   * @return The path to the saved file
+   * @throws IOException If there's an error writing the file
+   */
+  public String saveGame(BoardGame boardGame, String boardName, String fileName) throws IOException {
     // Ensure the saves directory exists
     if (!ensureSavesDirectoryExists()) {
       throw new IOException("Failed to create saves directory");
     }
 
+    // Use the board's name if boardName parameter is null or unknown
     if (boardName == null || boardName.equals("Unknown Board")) {
       boardName = boardGame.getBoard().getName();
     }
 
-    // Generate a filename with current timestamp
-    String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-    String fileName = "game_save_" + timestamp + ".csv";
+    // Ensure the filename ends with .csv
+    if (!fileName.toLowerCase().endsWith(".csv")) {
+      fileName += ".csv";
+    }
+
     String filePath = "saves/" + fileName;
 
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
@@ -57,17 +77,6 @@ public class GameSaveWriterCSV {
 
       return filePath;
     }
-  }
-
-  /**
-   * Returns the current player index from the board game.
-   * Assumes the BoardGame keeps track of the current player index.
-   *
-   * @param boardGame The BoardGame instance
-   * @return The current player index or 0 if can't be determined
-   */
-  private int getCurrentPlayerIndex(BoardGame boardGame) {
-    return boardGame.getCurrentPlayerIndex();
   }
 
   /**

@@ -22,6 +22,7 @@ public class GameSaveReaderCSV {
    * @throws IOException If there's an error reading the file
    */
   public BoardGame loadGame(String filePath) throws IOException {
+    SaveFileTracker.getInstance().setCurrentSaveFilePath(filePath);
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
       String line;
       String boardName = null;

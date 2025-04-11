@@ -1,13 +1,19 @@
 package edu.ntnu.iir.bidata.view.elements;
 
+import edu.ntnu.iir.bidata.Stigespillet;
 import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.file.GameSaveWriterCSV;
-import edu.ntnu.iir.bidata.view.MainMenu;
+import edu.ntnu.iir.bidata.object.file.SaveFileTracker;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
@@ -21,6 +27,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.animation.*;
 import javafx.geometry.Pos;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 public class InGameMenu extends VBox {
@@ -81,8 +88,30 @@ public class InGameMenu extends VBox {
     saveButton.setOnAction(e -> {
       try {
         GameSaveWriterCSV saveWriter = new GameSaveWriterCSV();
-        // Pass null to use the board's name directly
-        String savedFilePath = saveWriter.saveGame(boardGame, null);
+        String savedFilePath;
+
+        // Only show the filename dialog if this is not a loaded save game
+        if (!SaveFileTracker.getInstance().wasLoadedFromSave()) {
+          // Show dialog to get custom filename
+          TextInputDialog dialog = new TextInputDialog();
+          dialog.setTitle("Save Game");
+          dialog.setHeaderText("Enter a name for your save file:");
+          dialog.setContentText("Filename:");
+
+          Optional<String> result = dialog.showAndWait();
+
+          if (result.isPresent() && !result.get().trim().isEmpty()) {
+            // Use custom filename
+            savedFilePath = saveWriter.saveGame(boardGame, null, result.get());
+          } else {
+            // Use timestamp (default behavior) if no name was provided
+            savedFilePath = saveWriter.saveGame(boardGame, null);
+          }
+        } else {
+          // Overwrite the original save file if this was loaded from a save
+          String fileName = SaveFileTracker.getInstance().getCurrentSaveFileName();
+          savedFilePath = saveWriter.saveGame(boardGame, null, fileName);
+        }
 
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Mission Saved");
@@ -101,9 +130,30 @@ public class InGameMenu extends VBox {
     });
 
     mainMenuButton.setOnAction(e -> {
-      Stage primaryStage = (Stage) menuStage.getOwner();
       menuStage.close();
-      new MainMenu(primaryStage);
+
+      // Close all stages except this one
+      List<Stage> stagesToClose = new ArrayList<>();
+      for (Window window : Stage.getWindows()) {
+        if (window instanceof Stage && window != menuStage) {
+          stagesToClose.add((Stage) window);
+        }
+      }
+
+      // Close collected stages
+      for (Stage stage : stagesToClose) {
+        stage.close();
+      }
+
+      // Start a fresh instance of the main application
+      Platform.runLater(() -> {
+        Stigespillet stigespillet = new Stigespillet();
+        try {
+          stigespillet.start(new Stage());
+        } catch (Exception ex) {
+          ex.printStackTrace();
+        }
+      });
     });
 
     exitButton.setOnAction(e -> System.exit(0));
