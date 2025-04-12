@@ -1,19 +1,13 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.file.GameSaveWriterCSV;
+import edu.ntnu.iir.bidata.view.elements.CSS;
 import edu.ntnu.iir.bidata.view.elements.InGameMenu;
 import edu.ntnu.iir.bidata.view.elements.MusicControlPanel;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -23,6 +17,7 @@ public class MainView {
   private BoardView boardView;
   private MusicPlayer musicPlayer;
   private MusicControlPanel musicControlPanel;
+  private CSS css = new CSS();
 
   public MainView(BoardGame boardGame) {
     this.boardGame = boardGame;
@@ -61,10 +56,6 @@ public class MainView {
   }
 
   private Background createBackground() {
-    Image image = new Image(getClass().getResourceAsStream("/image/background.png"));
-    BackgroundImage backgroundImage = new BackgroundImage(image, BackgroundRepeat.NO_REPEAT,
-        BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-    Background background = new Background(backgroundImage);
-    return background;
+    return css.createSpaceBackground("/image/background.png");
   }
 }

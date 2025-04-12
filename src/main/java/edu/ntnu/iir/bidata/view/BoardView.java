@@ -115,6 +115,7 @@ public class BoardView {
     Label nameLabel = new Label(player.getName());
     nameLabel.getStyleClass().add("player-name");
 
+
     ImageView playerSprite = new ImageView(playerView.getPlayerImage(player));
     playerSprite.setFitWidth(64);  // Make it as big as die box or we upscale our own img
     playerSprite.setFitHeight(64); // Make it as big as die box or we upscale our own img

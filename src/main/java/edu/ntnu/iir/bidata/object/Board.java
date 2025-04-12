@@ -1,7 +1,5 @@
 package edu.ntnu.iir.bidata.object;
 
-import edu.ntnu.iir.bidata.object.file.BoardFileReader;
-import edu.ntnu.iir.bidata.object.file.BoardFileReaderGson;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -12,4 +12,5 @@ module edu.ntnu.iir.bidata {
 
   // Add this line to allow Gson to access your model classes
   opens edu.ntnu.iir.bidata.object to com.google.gson;
+  exports edu.ntnu.iir.bidata.util;
 }

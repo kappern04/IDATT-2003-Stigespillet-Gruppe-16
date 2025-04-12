@@ -5,6 +5,7 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
 import edu.ntnu.iir.bidata.object.file.GameSaveReaderCSV;
+import edu.ntnu.iir.bidata.view.elements.CSS;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +19,9 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
@@ -33,34 +31,12 @@ import javafx.util.Duration;
 public class MainMenu {
 
   private Stage primaryStage;
-  private Font orbitronFont;
-  private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
-  private final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
+  private CSS css;
 
   public MainMenu(Stage primaryStage) {
     this.primaryStage = primaryStage;
-    loadCustomFont();
+    this.css = new CSS();
     showMainMenu();
-  }
-
-  private void loadCustomFont() {
-    try {
-      InputStream is = getClass().getResourceAsStream("/font/Orbitron-VariableFont_wght.ttf");
-      orbitronFont = Font.loadFont(is, 12); // Load with a default size
-      if (orbitronFont == null) {
-        System.err.println("Failed to load Orbitron font. Using system font.");
-        orbitronFont = Font.font("Arial"); // Fallback
-      } else {
-        System.out.println("Orbitron font loaded successfully!");
-      }
-    } catch (Exception e) {
-      System.err.println("Error loading font: " + e.getMessage());
-      orbitronFont = Font.font("Arial"); // Fallback
-    }
-  }
-
-  private Font getOrbitronFont(double size, FontWeight weight) {
-    return Font.font(orbitronFont.getFamily(), weight, size);
   }
 
   private void showMainMenu() {
@@ -69,8 +45,8 @@ public class MainMenu {
 
     // Title
     Text title = new Text("COSMIC LADDER");
-    title.setFont(getOrbitronFont(36, FontWeight.BOLD));
-    title.setFill(SPACE_BLUE);
+    title.setFont(css.getOrbitronFont(36, FontWeight.BOLD));
+    title.setFill(css.getSpaceBlue());
 
     // Add glow effect to title
     Glow glow = new Glow(0.8);
@@ -86,9 +62,9 @@ public class MainMenu {
     pulse.play();
 
     // Menu buttons
-    Button newGameBtn = createSpaceButton("New Mission");
-    Button loadGameBtn = createSpaceButton("Load Mission");
-    Button quitBtn = createSpaceButton("Abort");
+    Button newGameBtn = css.createSpaceButton("New Mission");
+    Button loadGameBtn = css.createSpaceButton("Load Mission");
+    Button quitBtn = css.createSpaceButton("Abort");
 
     // Button actions
     newGameBtn.setOnAction(e -> showGameSetup());
@@ -113,8 +89,8 @@ public class MainMenu {
 
     // Board selection
     Label boardLabel = new Label("SELECT GALAXY:");
-    boardLabel.setTextFill(SPACE_BLUE);
-    boardLabel.setFont(getOrbitronFont(16, FontWeight.BOLD));
+    boardLabel.setTextFill(css.getSpaceBlue());
+    boardLabel.setFont(css.getOrbitronFont(16, FontWeight.BOLD));
 
     ComboBox<String> boardSelector = new ComboBox<>();
     boardSelector.getItems().addAll("Spiral Way", "Ladderia Prime");
@@ -123,15 +99,15 @@ public class MainMenu {
 
     // Player selection
     Label playerLabel = new Label("SPACE TRAVELERS:");
-    playerLabel.setTextFill(SPACE_BLUE);
-    playerLabel.setFont(getOrbitronFont(16, FontWeight.BOLD));
+    playerLabel.setTextFill(css.getSpaceBlue());
+    playerLabel.setFont(css.getOrbitronFont(16, FontWeight.BOLD));
 
     Spinner<Integer> playerSpinner = new Spinner<>(2, 4, 2);
     playerSpinner.getStyleClass().add("space-spinner");
 
     // Buttons
-    Button startBtn = createSpaceButton("Launch Mission");
-    Button backBtn = createSpaceButton("Return to Base");
+    Button startBtn = css.createSpaceButton("Launch Mission");
+    Button backBtn = css.createSpaceButton("Return to Base");
 
     startBtn.setOnAction(e -> {
       String selectedBoard = boardSelector.getValue();
@@ -215,7 +191,8 @@ public class MainMenu {
 
     // Set the button types
     ButtonType confirmButtonType = new ButtonType("Launch", ButtonBar.ButtonData.OK_DONE);
-    dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, ButtonType.CANCEL);
+    ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, cancelButtonType);
 
     // Create a grid for the name fields
     GridPane grid = new GridPane();
@@ -227,8 +204,8 @@ public class MainMenu {
     TextField[] nameFields = new TextField[numPlayers];
     for (int i = 0; i < numPlayers; i++) {
       Label label = new Label("Traveler " + (i + 1) + ":");
-      label.setTextFill(SPACE_BLUE);
-      label.setFont(getOrbitronFont(12, FontWeight.BOLD));
+      label.setTextFill(css.getSpaceBlue());
+      label.setFont(css.getOrbitronFont(12, FontWeight.BOLD));
 
       nameFields[i] = new TextField("Traveler " + (i + 1));
       nameFields[i].setPrefWidth(200);
@@ -258,64 +235,12 @@ public class MainMenu {
     Optional<List<String>> result = dialog.showAndWait();
 
     return result.orElseGet(() -> {
-      // If dialog was cancelled, generate default names
-      List<String> defaultNames = new ArrayList<>();
-      for (int i = 0; i < numPlayers; i++) {
-        defaultNames.add("Traveler " + (i + 1));
-      }
-      return defaultNames;
+      return null;
     });
-  }
-
-  private Button createSpaceButton(String text) {
-    Button button = new Button(text);
-    button.setPrefWidth(250);
-    button.setPrefHeight(50);
-    button.setFont(getOrbitronFont(16, FontWeight.BOLD));
-    button.setTextFill(Color.WHITE);
-
-    // Apply CSS styling
-    button.getStyleClass().add("space-button");
-
-    // Add glow effect
-    DropShadow shadow = new DropShadow();
-    shadow.setColor(SPACE_BLUE);
-    button.setEffect(shadow);
-
-    // Add hover shake animation
-    button.setOnMouseEntered(e -> {
-      // Create shaking animation
-      TranslateTransition shake = new TranslateTransition(Duration.millis(50), button);
-      shake.setFromX(-3);
-      shake.setToX(3);
-      shake.setCycleCount(6);
-      shake.setAutoReverse(true);
-      shake.play();
-
-      // Increase glow effect
-      shadow.setRadius(20);
-      shadow.setColor(SPACE_PURPLE);
-    });
-
-    button.setOnMouseExited(e -> {
-      // Reset effects
-      shadow.setRadius(10);
-      shadow.setColor(SPACE_BLUE);
-    });
-
-    return button;
   }
 
   private void setupSpaceBackground(Pane root) {
-    // Set background with stars
-    BackgroundImage bgImage = new BackgroundImage(
-        new Image(getClass().getResourceAsStream("/image/mainmenu.png")),
-        BackgroundRepeat.NO_REPEAT,
-        BackgroundRepeat.NO_REPEAT,
-        BackgroundPosition.CENTER,
-        new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true));
-
-    root.setBackground(new Background(bgImage));
+    root.setBackground(css.createSpaceBackground("/image/mainmenu.png"));
   }
 
   private Board loadBoardFromResource(String resourcePath) {

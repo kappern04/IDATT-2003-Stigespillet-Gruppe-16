@@ -1,15 +1,12 @@
+
 package edu.ntnu.iir.bidata.view;
 
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.LadderAction;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.object.Board; import edu.ntnu.iir.bidata.object.LadderAction; import edu.ntnu.iir.bidata.object.Tile;
 
-import javafx.scene.Node;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.Node; import javafx.scene.image.Image; import javafx.scene.image.ImageView; import javafx.scene.layout.StackPane;
 
 public class LadderView {
+
 
     private Board board;
 
