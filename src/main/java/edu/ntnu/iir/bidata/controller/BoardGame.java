@@ -4,8 +4,12 @@ import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Die;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.view.BoardView;
 import edu.ntnu.iir.bidata.view.DieView;
 import edu.ntnu.iir.bidata.view.PlayerView;
+import javafx.animation.ParallelTransition;
+import javafx.scene.layout.VBox;
+
 import java.util.Arrays;
 
 public class BoardGame {
@@ -13,12 +17,14 @@ public class BoardGame {
   private Player[] players;
   private int currentPlayerIndex;
   private Die die;
+  private BoardView boardView;
 
   public BoardGame() {
     this.board = new Board();
     this.players = new Player[0]; // Initialize with an empty array
     this.currentPlayerIndex = 0;
     this.die = new Die();
+    this.boardView = new BoardView(this);
   }
 
   public BoardGame(Board board) {
@@ -62,12 +68,15 @@ public void setCurrentPlayerIndex(int currentPlayerIndex) {
     return currentPlayerIndex;
 }
 
-  public void playTurn(DieView dieView, PlayerView playerView) {
+public Player getCurrentPlayer() {
     if (players == null || players.length == 0) {
-      throw new IllegalStateException("No players available to play the game.");
+      throw new IllegalStateException("No players available to get the current player.");
     }
+    return players[currentPlayerIndex];
+  }
 
-    Player currentPlayer = players[currentPlayerIndex];
+  public void playTurn(DieView dieView, PlayerView playerView) {
+    Player currentPlayer = getCurrentPlayer();
 
     // Set a callback to execute after the dice animation completes
     dieView.setOnAnimationComplete(() -> {
@@ -97,4 +106,5 @@ public void setCurrentPlayerIndex(int currentPlayerIndex) {
   public String toString() {
     return "BoardGame{" + "board=" + board + ", players=" + Arrays.toString(players) + ", die=" + die + '}';
   }
+
 }

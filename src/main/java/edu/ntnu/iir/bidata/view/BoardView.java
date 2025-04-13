@@ -4,8 +4,11 @@ import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.object.LadderAction;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Tile;
+
 import java.util.Arrays;
 import java.util.List;
+
+import edu.ntnu.iir.bidata.view.elements.CSS;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.image.ImageView;
@@ -16,8 +19,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.paint.Color;
 
-public class BoardView {
+public class BoardView   {
 
   private BoardGame boardGame;
   private TileView tileView;
@@ -80,7 +84,7 @@ public class BoardView {
     return new StackPane(mainLayout);
   }
 
-  private VBox createControlPanel() {
+  public VBox createControlPanel() {
     // Right side VBox for player sprites and die
     VBox controlPanel = new VBox(20);
     controlPanel.setAlignment(Pos.CENTER);
@@ -114,13 +118,33 @@ public class BoardView {
 
     Label nameLabel = new Label(player.getName());
     nameLabel.getStyleClass().add("player-name");
-
+    nameLabel.setTextFill(getPlayerColor(player));
 
     ImageView playerSprite = new ImageView(playerView.getPlayerImage(player));
-    playerSprite.setFitWidth(64);  // Make it as big as die box or we upscale our own img
-    playerSprite.setFitHeight(64); // Make it as big as die box or we upscale our own img
+    playerSprite.setFitWidth(64);
+    playerSprite.setFitHeight(64);
 
     playerBox.getChildren().addAll(nameLabel, playerSprite);
     return playerBox;
   }
+
+  public Color getPlayerColor(Player player) {
+    CSS css = new CSS();
+    Player[] players = boardGame.getPlayers();
+
+    // Find player index to determine which color to use
+    for (int i = 0; i < players.length; i++) {
+      if (players[i] == player) {
+        switch (i) {
+          case 0: return css.PLAYER_1_COLOR;
+          case 1: return css.PLAYER_2_COLOR;
+          case 2: return css.PLAYER_3_COLOR;
+          case 3: return css.PLAYER_4_COLOR;
+          default: return Color.WHITE;
+        }
+      }
+    }
+    return Color.WHITE;
+  }
+
 }
