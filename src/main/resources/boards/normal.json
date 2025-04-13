@@ -1,5 +1,5 @@
 {
-  "name": "Normal Board",
+  "name": "Ladderia Prime",
   "description": "A standard 9x10 board for the snake game",
   "tiles": [
       {"id": 0, "x": -1, "y": 9},

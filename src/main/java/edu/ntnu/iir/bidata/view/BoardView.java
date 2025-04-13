@@ -20,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.paint.Color;
+import javafx.scene.text.FontWeight;
 
 public class BoardView   {
 
@@ -119,10 +120,12 @@ public class BoardView   {
     Label nameLabel = new Label(player.getName());
     nameLabel.getStyleClass().add("player-name");
     nameLabel.setTextFill(getPlayerColor(player));
+    nameLabel.setFont(new CSS().getOrbitronFont(20, FontWeight.BOLD));
+    nameLabel.setStyle("-fx-background-color: BLACK; -fx-background-radius:50px;");
 
     ImageView playerSprite = new ImageView(playerView.getPlayerImage(player));
-    playerSprite.setFitWidth(64);
-    playerSprite.setFitHeight(64);
+    playerSprite.setFitWidth(80);
+    playerSprite.setFitHeight(80);
 
     playerBox.getChildren().addAll(nameLabel, playerSprite);
     return playerBox;

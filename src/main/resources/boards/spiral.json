@@ -1,5 +1,5 @@
 {
-  "name": "Spiral-Way",
+  "name": "Spiral Way",
   "description": "A spiral path to the center of the Spiral-Way Galaxy.",
   "tiles": [
     {"id": 0, "x": -1, "y": 9},

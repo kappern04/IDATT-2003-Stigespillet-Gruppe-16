@@ -30,7 +30,20 @@ public class MainView {
     // Wrap layout in a VBox and set spacing
     VBox layout = new VBox(10, boardView.createGameBoard());
     layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
-    layout.setBackground(createBackground());
+    Background background;
+    switch (boardGame.getBoard().getName()) {
+      case "Spiral Way":
+        background = css.createSpaceBackground("/image/background/background_1.png");
+        break;
+      case "Ladderia Prime":
+        background = css.createSpaceBackground("/image/background/background_2.png");
+        break;
+      // Add more cases as needed
+      default:
+        background = css.createSpaceBackground("/image/default_background.png");
+        break;
+    }
+    layout.setBackground(background);
 
     // Create menu button
     Button menuButton = new Button("Menu");
@@ -56,6 +69,6 @@ public class MainView {
   }
 
   private Background createBackground() {
-    return css.createSpaceBackground("/image/background.png");
+    return css.createSpaceBackground("/image/background/background_1.png");
   }
 }
