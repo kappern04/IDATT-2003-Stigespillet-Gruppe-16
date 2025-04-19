@@ -1,13 +1,14 @@
-// Abstract base class
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.object.LadderAction;
 import edu.ntnu.iir.bidata.object.Observable;
+import edu.ntnu.iir.bidata.view.Observer;
 import edu.ntnu.iir.bidata.object.Player;
 import edu.ntnu.iir.bidata.object.Board;
 import edu.ntnu.iir.bidata.object.Tile;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
+import javafx.animation.PauseTransition;
 import javafx.animation.RotateTransition;
 import javafx.animation.SequentialTransition;
 import javafx.animation.TranslateTransition;
@@ -18,47 +19,95 @@ import javafx.util.Duration;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+/**
+ * Handles the visual representation and animation of players on the game board.
+ */
+public class PlayerView implements Observer {
 
-public class PlayerView implements Observer{
-
-  private Board board;
-  private Map<Player, ImageView> playerSprites;
-  private HashMap<Player, Integer> previousPositions;
   private static final int STEP_DURATION_MS = 300;
   private static final int SPRITE_SIZE = 32;
+  private static final int TILE_SIZE = 70;
+  private static final int TILE_CENTER_OFFSET = 35;
+  private static final int SPECIAL_JUMP_DURATION_MS = 500;
+  private static final int LADDER_DELAY_MS = 200;
+  private static final String PLAYER_IMAGE_PATH = "/image/Player_";
+  private static final String PLAYER_IMAGE_EXTENSION = ".png";
 
+  private final Board board;
+  private final Map<Player, ImageView> playerSprites;
+  private final HashMap<Player, Integer> previousPositions;
+
+  /**
+   * Creates a new PlayerView for the given board and players.
+   *
+   * @param board   the game board
+   * @param players array of players in the game
+   */
   public PlayerView(Board board, Player[] players) {
-    this.board = board;
+    this.board = Objects.requireNonNull(board, "Board cannot be null");
     this.playerSprites = new HashMap<>();
     this.previousPositions = new HashMap<>();
 
     for (int i = 0; i < players.length; i++) {
-      ImageView playerImage = createPlayerImage("/image/Player_" + (i + 1) + ".png");
+      if (players[i] == null) {
+        throw new IllegalArgumentException("Player at index " + i + " is null");
+      }
+
+      ImageView playerImage = createPlayerImage(PLAYER_IMAGE_PATH + (i + 1) + PLAYER_IMAGE_EXTENSION);
       playerSprites.put(players[i], playerImage);
       previousPositions.put(players[i], 0);
     }
   }
 
+  /**
+   * Creates an ImageView for a player with the specified image path.
+   *
+   * @param imagePath path to the player image resource
+   * @return the created ImageView
+   */
   protected ImageView createPlayerImage(String imagePath) {
-    Image image = new Image(getClass().getResourceAsStream(imagePath));
-    ImageView imageView = new ImageView(image);
-    imageView.setFitWidth(SPRITE_SIZE);
-    imageView.setFitHeight(SPRITE_SIZE);
-    return imageView;
+    try {
+      Image image = new Image(Objects.requireNonNull(
+          getClass().getResourceAsStream(imagePath),
+          "Could not load image: " + imagePath));
+
+      ImageView imageView = new ImageView(image);
+      imageView.setFitWidth(SPRITE_SIZE);
+      imageView.setFitHeight(SPRITE_SIZE);
+      return imageView;
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to load player image: " + imagePath, e);
+    }
   }
 
+  /**
+   * Adds all player sprites to the provided board pane.
+   *
+   * @param boardPane the StackPane representing the game board
+   */
   public void addPlayersToBoard(StackPane boardPane) {
+    Objects.requireNonNull(boardPane, "Board pane cannot be null");
     playerSprites.values().forEach(boardPane.getChildren()::add);
     updatePlayerPositions();
   }
 
+  /**
+   * Updates the positions of all players on the board.
+   */
   public void updatePlayerPositions() {
     playerSprites.forEach(this::animatePlayerMovement);
   }
 
+  /**
+   * Animates the movement of a player sprite to match the player's position.
+   *
+   * @param player the player to animate
+   * @param sprite the sprite representing the player
+   */
   private void animatePlayerMovement(Player player, ImageView sprite) {
-    int currentPosition = previousPositions.get(player);
+    int currentPosition = previousPositions.getOrDefault(player, 0);
     int targetPosition = player.getPositionIndex();
 
     if (currentPosition == targetPosition) {
@@ -66,64 +115,90 @@ public class PlayerView implements Observer{
       return;
     }
 
-    // Create a sequential animation for multiple movement phases
     SequentialTransition sequence = new SequentialTransition();
 
-    // Handle large jumps or backward movement differently
-    if (Math.abs(targetPosition - currentPosition) > 6 || targetPosition < currentPosition) {
-      // Special jump animation (ladder/portal)
-      Tile endTile = board.getTiles().get(targetPosition);
+    // Check if this is a ladder movement by checking if the tile has a ladder action
+    boolean isLadderMovement = false;
+    Tile currentTile = board.getTiles().get(currentPosition);
 
-      // Create a special animation with arc effect
-      TranslateTransition jump = createTranslateTransition(sprite,
-          getTileCenterX(endTile),
-          getTileCenterY(endTile));
-      jump.setDuration(Duration.millis(500));
-
-      RotateTransition spin = createRotateTransition(sprite, getRotationForTile(endTile));
-      spin.setDuration(Duration.millis(500));
-
-      ParallelTransition specialMove = new ParallelTransition(jump, spin);
-      sequence.getChildren().add(specialMove);
-    } else {
-      // Regular dice-based movement
-      int steps = targetPosition - currentPosition;
-
-      for (int i = 1; i <= steps; i++) {
-        int stepPosition = currentPosition + i;
-        Tile tile = board.getTiles().get(stepPosition);
-
-        TranslateTransition translate = createTranslateTransition(sprite,
-            getTileCenterX(tile),
-            getTileCenterY(tile));
-        translate.setDuration(Duration.millis(STEP_DURATION_MS));
-
-        RotateTransition rotate = createRotateTransition(sprite, getRotationForTile(tile));
-        rotate.setDuration(Duration.millis(STEP_DURATION_MS));
-
-        ParallelTransition step = new ParallelTransition(translate, rotate);
-        sequence.getChildren().add(step);
+    if (currentTile.getTileAction() instanceof LadderAction ladderAction) {
+      if (ladderAction.getDestinationTileIndex() == targetPosition) {
+        isLadderMovement = true;
       }
     }
 
-    sequence.setOnFinished(e -> {
-      int previousPosition = previousPositions.get(player);
-      previousPositions.put(player, targetPosition);
+    // Use special animation for ladders, large jumps, or backward movement
+    if (isLadderMovement || Math.abs(targetPosition - currentPosition) > 6 || targetPosition < currentPosition) {
+      animateSpecialJump(sprite, targetPosition, sequence);
+    } else {
+      animateRegularMovement(sprite, currentPosition, targetPosition, sequence);
+    }
 
-      // Check if player landed on a ladder
-      Tile currentTile = board.getTiles().get(targetPosition);
-      if (currentTile.getTileAction() instanceof LadderAction ladderAction) {
-        // Play the ladder sound after movement animation
-        ladderAction.playLadderSound(previousPosition);
-      }
-
-      // Check if position changed during animation (due to ladder)
-      if (player.getPositionIndex() != targetPosition) {
-        animatePlayerMovement(player, sprite);
-      }
-    });
-
+    sequence.setOnFinished(e -> handleAnimationFinished(player, targetPosition));
     sequence.play();
+  }
+
+  private void animateSpecialJump(ImageView sprite, int targetPosition, SequentialTransition sequence) {
+    Tile endTile = board.getTiles().get(targetPosition);
+
+    TranslateTransition jump = createTranslateTransition(sprite,
+        getTileCenterX(endTile),
+        getTileCenterY(endTile));
+    jump.setDuration(Duration.millis(SPECIAL_JUMP_DURATION_MS));
+
+    RotateTransition spin = createRotateTransition(sprite, getRotationForTile(endTile));
+    spin.setDuration(Duration.millis(SPECIAL_JUMP_DURATION_MS));
+
+    ParallelTransition specialMove = new ParallelTransition(jump, spin);
+    sequence.getChildren().add(specialMove);
+  }
+
+  private void animateRegularMovement(ImageView sprite, int currentPosition, int targetPosition,
+      SequentialTransition sequence) {
+    int steps = targetPosition - currentPosition;
+
+    for (int i = 1; i <= steps; i++) {
+      int stepPosition = currentPosition + i;
+      Tile tile = board.getTiles().get(stepPosition);
+
+      TranslateTransition translate = createTranslateTransition(sprite,
+          getTileCenterX(tile),
+          getTileCenterY(tile));
+      translate.setDuration(Duration.millis(STEP_DURATION_MS));
+
+      RotateTransition rotate = createRotateTransition(sprite, getRotationForTile(tile));
+      rotate.setDuration(Duration.millis(STEP_DURATION_MS));
+
+      ParallelTransition step = new ParallelTransition(translate, rotate);
+      sequence.getChildren().add(step);
+    }
+  }
+
+  private void handleAnimationFinished(Player player, int targetPosition) {
+    int previousPosition = previousPositions.get(player);
+    previousPositions.put(player, targetPosition);
+
+    // Check if player landed on a ladder
+    Tile currentTile = board.getTiles().get(targetPosition);
+    if (currentTile.getTileAction() instanceof LadderAction ladderAction) {
+      // Add delay before playing ladder sound and starting next animation
+      PauseTransition pause = new PauseTransition(Duration.millis(LADDER_DELAY_MS));
+      pause.setOnFinished(event -> {
+        // Play ladder sound after delay
+        ladderAction.playLadderSound(previousPosition);
+
+        // Check if position changed during animation (due to ladder)
+        if (player.getPositionIndex() != targetPosition) {
+          animatePlayerMovement(player, playerSprites.get(player));
+        }
+      });
+      pause.play();
+    } else {
+      // No ladder, so check immediately if position changed for any other reason
+      if (player.getPositionIndex() != targetPosition) {
+        animatePlayerMovement(player, playerSprites.get(player));
+      }
+    }
   }
 
   private void positionPlayerAtTile(ImageView sprite, Tile tile) {
@@ -153,29 +228,33 @@ public class PlayerView implements Observer{
     return rotate;
   }
 
+  /**
+   * Moves a player forward by the specified number of steps.
+   *
+   * @param player the player to move
+   * @param steps  the number of steps to move
+   */
   public void movePlayer(Player player, int steps) {
-    int currentPosition = previousPositions.get(player);
+    Objects.requireNonNull(player, "Player cannot be null");
+
+    int currentPosition = previousPositions.getOrDefault(player, 0);
     int newPosition = Math.max(0, Math.min(board.getTiles().size() - 1, currentPosition + steps));
 
-    // Update the player's position in the Player object
     player.setPositionIndex(newPosition);
-
-    // Update the visual representation
     animatePlayerMovement(player, playerSprites.get(player));
   }
 
   private double getTileCenterX(Tile tile) {
     int xDimension = board.getX_dimension();
-    return tile.getX() * 70 + 70 - (xDimension + 1) * 35;
+    return tile.getX() * TILE_SIZE + TILE_SIZE - (xDimension + 1) * TILE_CENTER_OFFSET;
   }
 
   private double getTileCenterY(Tile tile) {
     int yDimension = board.getY_dimension();
-    return tile.getY() * 70 + 70 - (yDimension + 1) * 35;
+    return tile.getY() * TILE_SIZE + TILE_SIZE - (yDimension + 1) * TILE_CENTER_OFFSET;
   }
 
   private double getRotationForTile(Tile tile) {
-    // find next tile to determine direction
     int currentIndex = tile.getIndex();
     if (currentIndex >= board.getTiles().size() - 1) {
       return 0; // final tile has no rotation
@@ -193,10 +272,18 @@ public class PlayerView implements Observer{
     return 0; // up
   }
 
+  /**
+   * Gets the image for the specified player.
+   *
+   * @param player the player
+   * @return the player's image
+   */
   public Image getPlayerImage(Player player) {
-    if (playerSprites.containsKey(player)) {
+    if (player != null && playerSprites.containsKey(player)) {
       return playerSprites.get(player).getImage();
     }
+
+    // Fallback to first available image
     return playerSprites.values().iterator().next().getImage();
   }
 
