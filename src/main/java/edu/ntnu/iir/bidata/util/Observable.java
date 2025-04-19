@@ -1,6 +1,5 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.util;
 
-import edu.ntnu.iir.bidata.view.Observer;
 import java.util.ArrayList;
 import java.util.List;
 

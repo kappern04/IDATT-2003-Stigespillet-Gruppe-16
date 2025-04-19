@@ -1,6 +1,7 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.model;
 
-import edu.ntnu.iir.bidata.view.Observer;
+import edu.ntnu.iir.bidata.util.Observable;
+import edu.ntnu.iir.bidata.util.Observer;
 
 /**
  * Player class The player is created with a name and a position The player can move a number of

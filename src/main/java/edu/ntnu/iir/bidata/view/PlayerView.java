@@ -1,11 +1,11 @@
 package edu.ntnu.iir.bidata.view;
 
-import edu.ntnu.iir.bidata.object.LadderAction;
-import edu.ntnu.iir.bidata.object.Observable;
-import edu.ntnu.iir.bidata.view.Observer;
-import edu.ntnu.iir.bidata.object.Player;
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.model.LadderAction;
+import edu.ntnu.iir.bidata.util.Observable;
+import edu.ntnu.iir.bidata.model.Player;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Tile;
+import edu.ntnu.iir.bidata.util.Observer;
 import javafx.animation.Interpolator;
 import javafx.animation.ParallelTransition;
 import javafx.animation.PauseTransition;
@@ -32,7 +32,7 @@ public class PlayerView implements Observer {
   private static final int TILE_CENTER_OFFSET = 35;
   private static final int SPECIAL_JUMP_DURATION_MS = 500;
   private static final int LADDER_DELAY_MS = 200;
-  private static final String PLAYER_IMAGE_PATH = "/image/Player_";
+  private static final String PLAYER_IMAGE_PATH = "/image/player/Player_";
   private static final String PLAYER_IMAGE_EXTENSION = ".png";
 
   private final Board board;

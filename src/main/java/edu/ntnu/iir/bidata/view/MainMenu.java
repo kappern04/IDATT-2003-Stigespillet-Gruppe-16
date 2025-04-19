@@ -1,10 +1,10 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.Player;
-import edu.ntnu.iir.bidata.object.file.BoardGameFactory;
-import edu.ntnu.iir.bidata.object.file.GameSaveReaderCSV;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Player;
+import edu.ntnu.iir.bidata.file.BoardGameFactory;
+import edu.ntnu.iir.bidata.file.GameSaveReaderCSV;
 import edu.ntnu.iir.bidata.view.elements.CSS;
 import java.io.File;
 import java.io.IOException;
@@ -20,7 +20,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.effect.Glow;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -240,7 +239,7 @@ public class MainMenu {
   }
 
   private void setupSpaceBackground(Pane root) {
-    root.setBackground(css.createSpaceBackground("/image/mainmenu.png"));
+    root.setBackground(css.createSpaceBackground("/image/background/mainmenu.png"));
   }
 
   private Board loadBoardFromResource(String resourcePath) {

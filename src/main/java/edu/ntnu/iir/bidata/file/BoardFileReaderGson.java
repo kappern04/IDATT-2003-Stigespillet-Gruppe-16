@@ -1,10 +1,12 @@
-package edu.ntnu.iir.bidata.object.file;
+package edu.ntnu.iir.bidata.file;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
-import edu.ntnu.iir.bidata.object.*;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Tile;
+import edu.ntnu.iir.bidata.model.TileAction;
+import edu.ntnu.iir.bidata.model.LadderAction;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;

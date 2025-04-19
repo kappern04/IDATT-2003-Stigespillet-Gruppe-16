@@ -37,7 +37,7 @@ public class MusicControlPanel {
     });
 
     ImageView pauseIcon = new ImageView(
-        new Image(getClass().getResourceAsStream("/image/Pause.png")));
+        new Image(getClass().getResourceAsStream("/image/music/Pause.png")));
     pauseIcon.setFitWidth(24);
     pauseIcon.setFitHeight(24);
     pauseButton = new Button("", pauseIcon);
@@ -51,11 +51,11 @@ public class MusicControlPanel {
     if (musicPlayer.isPlaying()) {
       musicPlayer.pause();
       pauseButton.setGraphic(
-          new ImageView(new Image(getClass().getResourceAsStream("/image/Play.png"))));
+          new ImageView(new Image(getClass().getResourceAsStream("/image/music/Play.png"))));
     } else {
       musicPlayer.play();
       pauseButton.setGraphic(
-          new ImageView(new Image(getClass().getResourceAsStream("/image/Pause.png"))));
+          new ImageView(new Image(getClass().getResourceAsStream("/image/music/Pause.png"))));
     }
   }
   public static void stopMusic() {

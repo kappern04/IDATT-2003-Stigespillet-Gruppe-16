@@ -1,6 +1,4 @@
-package edu.ntnu.iir.bidata.view;
-
-import edu.ntnu.iir.bidata.object.Observable;
+package edu.ntnu.iir.bidata.util;
 
 public interface Observer {
   <T extends Observer> void update(Observable<T> observable, String prompt);

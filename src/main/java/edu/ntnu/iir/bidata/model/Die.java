@@ -1,6 +1,7 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.model;
 
-import edu.ntnu.iir.bidata.view.Observer;
+import edu.ntnu.iir.bidata.util.Observable;
+import edu.ntnu.iir.bidata.util.Observer;
 import java.util.Random;
 
 /** Die class have last roll value and can be rolled. */

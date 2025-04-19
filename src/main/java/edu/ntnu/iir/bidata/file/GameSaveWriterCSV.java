@@ -1,7 +1,7 @@
-package edu.ntnu.iir.bidata.object.file;
+package edu.ntnu.iir.bidata.file;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.object.Player;
+import edu.ntnu.iir.bidata.model.Player;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

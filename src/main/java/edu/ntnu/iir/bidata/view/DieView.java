@@ -1,7 +1,8 @@
 package edu.ntnu.iir.bidata.view;
 
-import edu.ntnu.iir.bidata.object.Die;
-import edu.ntnu.iir.bidata.object.Observable;
+import edu.ntnu.iir.bidata.model.Die;
+import edu.ntnu.iir.bidata.util.Observable;
+import edu.ntnu.iir.bidata.util.Observer;
 import javafx.animation.PauseTransition;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -72,7 +73,7 @@ public class DieView implements Observer {
 
     private void setToRandomDieImage() {
         int randomRoll = (int) (Math.random() * 6) + 1;
-        imageView.setImage(new Image(getClass().getResourceAsStream("/image/die_" + randomRoll + ".png")));
+        imageView.setImage(new Image(getClass().getResourceAsStream("/image/die/die_" + randomRoll + ".png")));
     }
 
     private void setToLastRollImage() {
@@ -80,7 +81,7 @@ public class DieView implements Observer {
     }
 
     private Image getDieImage() {
-        return new Image(getClass().getResourceAsStream("/image/die_" + die.getLastRoll() + ".png"));
+        return new Image(getClass().getResourceAsStream("/image/die/die_" + die.getLastRoll() + ".png"));
     }
 
     private void playSound() {

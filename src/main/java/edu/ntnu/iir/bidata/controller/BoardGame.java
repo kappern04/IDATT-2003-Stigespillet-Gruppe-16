@@ -1,14 +1,12 @@
 package edu.ntnu.iir.bidata.controller;
 
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.Die;
-import edu.ntnu.iir.bidata.object.Player;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Die;
+import edu.ntnu.iir.bidata.model.Player;
+import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.view.BoardView;
 import edu.ntnu.iir.bidata.view.DieView;
 import edu.ntnu.iir.bidata.view.PlayerView;
-import javafx.animation.ParallelTransition;
-import javafx.scene.layout.VBox;
 
 import java.util.Arrays;
 

@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.model;
 
 /**
  * This class is a placeholder for the different actions that can be performed on a tile. The

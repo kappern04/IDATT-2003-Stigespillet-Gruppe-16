@@ -5,9 +5,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.LadderAction;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.LadderAction;
+import edu.ntnu.iir.bidata.model.Tile;
 
 public class TileView {
   private Board board;

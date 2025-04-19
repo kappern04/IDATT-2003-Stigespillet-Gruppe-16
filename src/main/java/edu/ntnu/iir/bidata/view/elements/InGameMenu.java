@@ -2,8 +2,8 @@ package edu.ntnu.iir.bidata.view.elements;
 
 import edu.ntnu.iir.bidata.Stigespillet;
 import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.object.file.GameSaveWriterCSV;
-import edu.ntnu.iir.bidata.object.file.SaveFileTracker;
+import edu.ntnu.iir.bidata.file.GameSaveWriterCSV;
+import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -201,7 +201,7 @@ public class InGameMenu extends VBox {
 
   private void setupSpaceBackground() {
     BackgroundImage bgImage = new BackgroundImage(
-        new Image(getClass().getResourceAsStream("/image/mainmenu.png")),
+        new Image(getClass().getResourceAsStream("/image/background/mainmenu.png")),
         BackgroundRepeat.NO_REPEAT,
         BackgroundRepeat.NO_REPEAT,
         BackgroundPosition.CENTER,

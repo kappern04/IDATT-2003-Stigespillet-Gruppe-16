@@ -1,7 +1,9 @@
-package edu.ntnu.iir.bidata.object.file;
+package edu.ntnu.iir.bidata.file;
 
 import com.google.gson.*;
-import edu.ntnu.iir.bidata.object.*;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Tile;
+import edu.ntnu.iir.bidata.model.LadderAction;
 
 import java.io.FileWriter;
 import java.io.IOException;

@@ -1,7 +1,7 @@
 package edu.ntnu.iir.bidata.util;
 
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Tile;
 
 public class Utils {
 

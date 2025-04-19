@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.model;
 
 /**
  * Tile class represents the different tiles in the game. Each tile has a different action.

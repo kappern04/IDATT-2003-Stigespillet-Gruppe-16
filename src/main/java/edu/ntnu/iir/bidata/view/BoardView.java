@@ -1,9 +1,9 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.object.LadderAction;
-import edu.ntnu.iir.bidata.object.Player;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.model.LadderAction;
+import edu.ntnu.iir.bidata.model.Player;
+import edu.ntnu.iir.bidata.model.Tile;
 
 import java.util.Arrays;
 import java.util.List;

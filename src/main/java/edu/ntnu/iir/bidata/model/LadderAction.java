@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.object;
+package edu.ntnu.iir.bidata.model;
 
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;

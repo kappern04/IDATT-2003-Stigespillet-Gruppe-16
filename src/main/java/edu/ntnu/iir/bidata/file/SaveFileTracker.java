@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.object.file;
+package edu.ntnu.iir.bidata.file;
 
 /**
  * Singleton class that tracks the currently loaded save file.

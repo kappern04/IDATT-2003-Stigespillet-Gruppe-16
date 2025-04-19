@@ -1,8 +1,8 @@
 package edu.ntnu.iir.bidata.view;
 
-import edu.ntnu.iir.bidata.object.Board;
-import edu.ntnu.iir.bidata.object.LadderAction;
-import edu.ntnu.iir.bidata.object.Tile;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.LadderAction;
+import edu.ntnu.iir.bidata.model.Tile;
 
 import javafx.scene.Node;
 import javafx.scene.image.Image;
@@ -80,7 +80,7 @@ public class LadderView {
      * @return the configured wormhole ImageView
      */
     private ImageView createWormholeImage(String color, double angle, double x, double y) {
-        ImageView wormhole = createImageView("/image/" + color + "Wormhole.png");
+        ImageView wormhole = createImageView("/image/wormhole/" + color + "Wormhole.png");
         wormhole.setRotate(angle);
         wormhole.setTranslateX(x - BOARD_OFFSET_X);
         wormhole.setTranslateY(y - BOARD_OFFSET_Y);
