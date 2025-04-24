@@ -7,12 +7,13 @@ import edu.ntnu.iir.bidata.model.Player;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class GameSaveReaderCSV {
   private static final String DELIMITER = ",";
+  private static final Logger LOGGER = Logger.getLogger(GameSaveReaderCSV.class.getName());
 
   /**
    * Reads a saved game state from a CSV file and reconstructs the BoardGame object.
@@ -78,43 +79,15 @@ public class GameSaveReaderCSV {
    * @param boardName The name of the board
    * @return A Board object
    */
-  private Board loadBoardByName(String boardName) {
-    // Map board names to resource paths
-    String resourcePath;
-    switch (boardName) {
-      case "Spiral Way":
-        resourcePath = "/boards/spiral.json";
-        break;
-      case "Ladderia Prime":
-      case "Normal Board":  // Add support for legacy saved game format
-        resourcePath = "/boards/normal.json";
-        break;
-      default:
-        // For unknown board names, attempt to use default board
-        System.out.println("Warning: Unknown board name '" + boardName + "', using default board");
-        return new Board();
-    }
+  private Board loadBoardByName(String boardName) throws IOException {
+    BoardRegistry registry = BoardRegistry.getInstance();
+    Board board = registry.getBoardByName(boardName);
 
-    return loadBoardFromResource(resourcePath);
-  }
-
-  /**
-   * Loads a board from a resource file.
-   *
-   * @param resourcePath The path to the resource file
-   * @return A Board object
-   */
-  private Board loadBoardFromResource(String resourcePath) {
-    try {
-      InputStream inputStream = getClass().getResourceAsStream(resourcePath);
-      if (inputStream == null) {
-        throw new IOException("Resource not found: " + resourcePath);
-      }
-      return new BoardGameFactory().createBoardGameFromStream(inputStream).getBoard();
-    } catch (Exception e) {
-      // Instead of propagating the exception, log and return default board
-      System.err.println("Failed to load board from resource: " + resourcePath + " - " + e.getMessage());
+    if (board == null) {
+      LOGGER.warning("Unknown board name: '" + boardName + "', using default board");
       return new Board();
     }
+
+    return board;
   }
 }

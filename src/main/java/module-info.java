@@ -4,6 +4,7 @@ module edu.ntnu.iir.bidata {
   requires java.desktop;
   requires javafx.media;
   requires com.google.gson;
+  requires java.logging;
 
   exports edu.ntnu.iir.bidata;
   exports edu.ntnu.iir.bidata.view;

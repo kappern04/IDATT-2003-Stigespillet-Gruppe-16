@@ -4,6 +4,8 @@ import edu.ntnu.iir.bidata.controller.BoardGame;
 import edu.ntnu.iir.bidata.view.elements.CSS;
 import edu.ntnu.iir.bidata.view.elements.InGameMenu;
 import edu.ntnu.iir.bidata.view.elements.MusicControlPanel;
+import java.util.HashMap;
+import java.util.Map;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -18,6 +20,14 @@ public class MainView {
   private MusicPlayer musicPlayer;
   private MusicControlPanel musicControlPanel;
   private CSS css = new CSS();
+  private static final Map<String, String> BOARD_BACKGROUNDS = new HashMap<>();
+  static {
+    BOARD_BACKGROUNDS.put("Spiral Way", "/image/background/background_1.png");
+    BOARD_BACKGROUNDS.put("Ladderia Prime", "/image/background/background_2.png");
+    BOARD_BACKGROUNDS.put("ZigZag Heights", "/image/background/background_3.png");
+  }
+  private static final String DEFAULT_BACKGROUND = "/image/default_background.png";
+
 
   public MainView(BoardGame boardGame) {
     this.boardGame = boardGame;
@@ -30,19 +40,11 @@ public class MainView {
     // Wrap layout in a VBox and set spacing
     VBox layout = new VBox(10, boardView.createGameBoard());
     layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
-    Background background;
-    switch (boardGame.getBoard().getName()) {
-      case "Spiral Way":
-        background = css.createSpaceBackground("/image/background/background_1.png");
-        break;
-      case "Ladderia Prime":
-        background = css.createSpaceBackground("/image/background/background_2.png");
-        break;
-      // Add more cases as needed
-      default:
-        background = css.createSpaceBackground("/image/default_background.png");
-        break;
-    }
+
+    // Get background for the current board using the map
+    String boardName = boardGame.getBoard().getName();
+    String backgroundPath = BOARD_BACKGROUNDS.getOrDefault(boardName, DEFAULT_BACKGROUND);
+    Background background = css.createSpaceBackground(backgroundPath);
     layout.setBackground(background);
 
     // Create menu button

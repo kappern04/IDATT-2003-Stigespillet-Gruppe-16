@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.file.BoardRegistry;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.file.BoardGameFactory;
@@ -92,8 +93,8 @@ public class MainMenu {
     boardLabel.setFont(css.getOrbitronFont(16, FontWeight.BOLD));
 
     ComboBox<String> boardSelector = new ComboBox<>();
-    boardSelector.getItems().addAll("Spiral Way", "Ladderia Prime");
-    boardSelector.setValue("Spiral Way");
+    boardSelector.getItems().addAll(BoardRegistry.getInstance().getBoardNames());
+    boardSelector.setValue(boardSelector.getItems().isEmpty() ? "" : boardSelector.getItems().get(0));
     boardSelector.getStyleClass().add("space-combo-box");
 
     // Player selection
@@ -146,22 +147,12 @@ public class MainMenu {
     // Set the players in the game
     game.setPlayers(players);
 
-    // Load the selected board
+    // Load the selected board using BoardRegistry
     Board board;
     try {
-      switch (boardType) {
-        case "Andromeda":
-          board = loadBoardFromResource("/boards/andromeda.json");
-          break;
-        case "Ladderia Prime":
-          board = loadBoardFromResource("/boards/normal.json");
-          break;
-        case "Spiral Way":
-          board = loadBoardFromResource("/boards/spiral.json");
-          break;
-        default:
-          board = new Board(); // Fallback to default board
-          break;
+      board = BoardRegistry.getInstance().getBoardByName(boardType);
+      if (board == null) {
+        throw new RuntimeException("Board not found: " + boardType);
       }
     } catch (RuntimeException e) {
       Alert alert = new Alert(Alert.AlertType.ERROR);

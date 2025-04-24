@@ -17,8 +17,6 @@ public class LadderView {
 
     private static final int WORMHOLE_SIZE = 48;
     private static final int TILE_SIZE = 70;
-    private static final int BOARD_OFFSET_X = 315;
-    private static final int BOARD_OFFSET_Y = 350;
     private static final int TILE_CENTER_OFFSET = 35;
     private static final int TILE_VERTICAL_OFFSET = 35;
 
@@ -82,8 +80,10 @@ public class LadderView {
     private ImageView createWormholeImage(String color, double angle, double x, double y) {
         ImageView wormhole = createImageView("/image/wormhole/" + color + "Wormhole.png");
         wormhole.setRotate(angle);
-        wormhole.setTranslateX(x - BOARD_OFFSET_X);
-        wormhole.setTranslateY(y - BOARD_OFFSET_Y);
+        double boardOffsetX = getBoardOffsetX();
+        double boardOffsetY = getBoardOffsetY();
+        wormhole.setTranslateX(x - boardOffsetX);
+        wormhole.setTranslateY(y - boardOffsetY);
         return wormhole;
     }
 
@@ -105,6 +105,14 @@ public class LadderView {
      */
     private double getTileCenterY(Tile tile) {
         return tile.getY() * TILE_SIZE + TILE_VERTICAL_OFFSET;
+    }
+
+    private double getBoardOffsetX(){
+        return (double) (TILE_SIZE * board.getX_dimension()) /2;
+    }
+
+    private double getBoardOffsetY(){
+        return (double) (TILE_SIZE * board.getY_dimension()) /2;
     }
 
     /**

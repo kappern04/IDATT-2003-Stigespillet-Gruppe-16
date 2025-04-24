@@ -142,8 +142,8 @@ public class PlayerView implements Observer {
     Tile endTile = board.getTiles().get(targetPosition);
 
     TranslateTransition jump = createTranslateTransition(sprite,
-        getTileCenterX(endTile),
-        getTileCenterY(endTile));
+        getBoardOffsetX(endTile),
+        getBoardOffsetY(endTile));
     jump.setDuration(Duration.millis(SPECIAL_JUMP_DURATION_MS));
 
     RotateTransition spin = createRotateTransition(sprite, getRotationForTile(endTile));
@@ -162,8 +162,8 @@ public class PlayerView implements Observer {
       Tile tile = board.getTiles().get(stepPosition);
 
       TranslateTransition translate = createTranslateTransition(sprite,
-          getTileCenterX(tile),
-          getTileCenterY(tile));
+          getBoardOffsetX(tile),
+          getBoardOffsetY(tile));
       translate.setDuration(Duration.millis(STEP_DURATION_MS));
 
       RotateTransition rotate = createRotateTransition(sprite, getRotationForTile(tile));
@@ -202,8 +202,8 @@ public class PlayerView implements Observer {
   }
 
   private void positionPlayerAtTile(ImageView sprite, Tile tile) {
-    double targetX = getTileCenterX(tile);
-    double targetY = getTileCenterY(tile);
+    double targetX = getBoardOffsetX(tile);
+    double targetY = getBoardOffsetY(tile);
     double targetRotation = getRotationForTile(tile);
 
     sprite.setTranslateX(targetX);
@@ -244,12 +244,12 @@ public class PlayerView implements Observer {
     animatePlayerMovement(player, playerSprites.get(player));
   }
 
-  private double getTileCenterX(Tile tile) {
+  private double getBoardOffsetX(Tile tile) {
     int xDimension = board.getX_dimension();
     return tile.getX() * TILE_SIZE + TILE_SIZE - (xDimension + 1) * TILE_CENTER_OFFSET;
   }
 
-  private double getTileCenterY(Tile tile) {
+  private double getBoardOffsetY(Tile tile) {
     int yDimension = board.getY_dimension();
     return tile.getY() * TILE_SIZE + TILE_SIZE - (yDimension + 1) * TILE_CENTER_OFFSET;
   }
