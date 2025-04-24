@@ -288,7 +288,7 @@ public class PlayerView implements Observer {
   }
 
   @Override
-  public <T extends Observer> void update(Observable<T> observable, String prompt) {
+  public <T extends Observer> void update() {
     updatePlayerPositions();
   }
 }

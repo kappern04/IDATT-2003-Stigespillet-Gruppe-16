@@ -4,13 +4,15 @@ import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Die;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
+import edu.ntnu.iir.bidata.util.Observable;
+import edu.ntnu.iir.bidata.util.Observer;
 import edu.ntnu.iir.bidata.view.BoardView;
 import edu.ntnu.iir.bidata.view.DieView;
 import edu.ntnu.iir.bidata.view.PlayerView;
 
 import java.util.Arrays;
 
-public class BoardGame {
+public class BoardGame<T extends Observer> extends Observable<Observer> {
   private Board board;
   private Player[] players;
   private int currentPlayerIndex;
@@ -103,6 +105,32 @@ public Player getCurrentPlayer() {
   @Override
   public String toString() {
     return "BoardGame{" + "board=" + board + ", players=" + Arrays.toString(players) + ", die=" + die + '}';
+  }
+
+  @Override
+  public void addObserver(Observer observer) {
+    if (observer == null) {
+      throw new IllegalArgumentException("Observer can not be null");
+    }
+    if (!super.getObservers().contains(observer)) {
+      super.getObservers().add(observer);
+    }
+  }
+
+  @Override
+  public void removeObserver(Observer observer) {
+    if (observer == null) {
+      throw new IllegalArgumentException("Observer can not be null");
+    }
+    if (super.getObservers().contains(observer)) {
+      super.getObservers().remove(observer);
+    }
+  }
+
+  @Override
+  public void notifyObservers() {
+    System.out.println(super.getObservers());
+    super.getObservers().forEach(to -> to.update());
   }
 
 }

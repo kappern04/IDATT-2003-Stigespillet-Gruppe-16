@@ -66,6 +66,6 @@ public class  Player<T extends Observer> extends Observable<T> {
   @Override
   public void notifyObservers() {
     System.out.println(super.getObservers());
-    super.getObservers().forEach(to -> to.update(this, ""));
+    super.getObservers().forEach(Observer::update);
   }
 }

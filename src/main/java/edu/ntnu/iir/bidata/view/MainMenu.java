@@ -1,11 +1,13 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.controller.PointBoardGame;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.file.BoardGameFactory;
 import edu.ntnu.iir.bidata.file.GameSaveReaderCSV;
 import edu.ntnu.iir.bidata.view.elements.CSS;
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,11 +21,13 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.effect.Glow;
 import javafx.scene.layout.*;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -92,7 +96,7 @@ public class MainMenu {
     boardLabel.setFont(css.getOrbitronFont(16, FontWeight.BOLD));
 
     ComboBox<String> boardSelector = new ComboBox<>();
-    boardSelector.getItems().addAll("Spiral Way", "Ladderia Prime");
+    boardSelector.getItems().addAll("Spiral Way", "Orbital Racetrack", "Ladderia Prime");
     boardSelector.setValue("Spiral Way");
     boardSelector.getStyleClass().add("space-combo-box");
 
@@ -104,6 +108,13 @@ public class MainMenu {
     Spinner<Integer> playerSpinner = new Spinner<>(2, 4, 2);
     playerSpinner.getStyleClass().add("space-spinner");
 
+    ToggleGroup gameModeGroup = new ToggleGroup();
+    RadioButton ladderGameMode = new RadioButton("Ladder Game");
+    ladderGameMode.setToggleGroup(gameModeGroup);
+    ladderGameMode.setSelected(true);
+    RadioButton pointGameMode = new RadioButton("Point Game");
+    pointGameMode.setToggleGroup(gameModeGroup);
+
     // Buttons
     Button startBtn = css.createSpaceButton("Launch Mission");
     Button backBtn = css.createSpaceButton("Return to Base");
@@ -111,7 +122,11 @@ public class MainMenu {
     startBtn.setOnAction(e -> {
       String selectedBoard = boardSelector.getValue();
       int numPlayers = playerSpinner.getValue();
-      startNewGame(selectedBoard, numPlayers);
+      if (ladderGameMode.isSelected()) {
+        startNewGame(selectedBoard, numPlayers, "Ladder");
+      } else if (pointGameMode.isSelected()) {
+        startNewGame(selectedBoard, numPlayers, "Point");
+      }
     });
 
     backBtn.setOnAction(e -> showMainMenu());
@@ -119,7 +134,7 @@ public class MainMenu {
     // Layout
     VBox settingsBox = new VBox(20,
         boardLabel, boardSelector,
-        playerLabel, playerSpinner,
+        playerLabel, playerSpinner, ladderGameMode,pointGameMode,
         startBtn, backBtn);
     settingsBox.setAlignment(Pos.CENTER);
     settingsBox.setSpacing(25);
@@ -130,7 +145,7 @@ public class MainMenu {
     primaryStage.setScene(scene);
   }
 
-  private void startNewGame(String boardType, int numPlayers) {
+  private void startNewGame(String boardType, int numPlayers, String gameMode) {
     // Collect player names
     List<String> playerNames = collectPlayerNames(numPlayers);
 
@@ -140,18 +155,12 @@ public class MainMenu {
       players[i] = new Player(playerNames.get(i));
     }
 
-    // Create a new BoardGame instance
-    BoardGame game = new BoardGame();
-
-    // Set the players in the game
-    game.setPlayers(players);
-
     // Load the selected board
     Board board;
     try {
       switch (boardType) {
-        case "Andromeda":
-          board = loadBoardFromResource("/boards/andromeda.json");
+        case "Orbital Racetrack":
+          board = loadBoardFromResource("/boards/racetrack.json");
           break;
         case "Ladderia Prime":
           board = loadBoardFromResource("/boards/normal.json");
@@ -164,7 +173,7 @@ public class MainMenu {
           break;
       }
     } catch (RuntimeException e) {
-      Alert alert = new Alert(Alert.AlertType.ERROR);
+      Alert alert = new Alert(AlertType.ERROR);
       alert.setTitle("Board Loading Error");
       alert.setHeaderText(null);
       alert.setContentText("Could not load board: " + e.getMessage());
@@ -172,8 +181,15 @@ public class MainMenu {
       board = new Board(); // Fallback to default board
     }
 
-    // Set the board in the game
-    game.setBoard(board);
+    // Create a new BoardGame instance
+    BoardGame game = new BoardGame(board);
+
+    if (gameMode.equals("Point")) {
+      game = new PointBoardGame(board);
+    }
+
+    // Set the players in the game
+    game.setPlayers(players);
 
     // Create MainView and set it up - no need to pass board name separately
     MainView mainView = new MainView(game);
@@ -189,8 +205,8 @@ public class MainMenu {
     dialog.setHeaderText("Enter names for your " + numPlayers + " space travelers:");
 
     // Set the button types
-    ButtonType confirmButtonType = new ButtonType("Launch", ButtonBar.ButtonData.OK_DONE);
-    ButtonType cancelButtonType = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+    ButtonType confirmButtonType = new ButtonType("Launch", ButtonData.OK_DONE);
+    ButtonType cancelButtonType = new ButtonType("Cancel", ButtonData.CANCEL_CLOSE);
     dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, cancelButtonType);
 
     // Create a grid for the name fields
@@ -258,7 +274,7 @@ public class MainMenu {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Load Saved Mission");
     fileChooser.getExtensionFilters().add(
-        new FileChooser.ExtensionFilter("CSV Files", "*.csv")
+        new ExtensionFilter("CSV Files", "*.csv")
     );
     fileChooser.setInitialDirectory(new File("saves"));
 

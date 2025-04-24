@@ -53,6 +53,6 @@ public class Die <T extends Observer> extends Observable<T> {
   @Override
   public void notifyObservers() {
     System.out.println(super.getObservers());
-    super.getObservers().forEach(to -> to.update(this, "ROLL"));
+    super.getObservers().forEach(Observer::update);
   }
 }

@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.controller.PointBoardGame;
 import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
@@ -29,6 +30,7 @@ public class BoardView   {
   private LadderView ladderView;
   private DieView dieView;
   private PlayerView playerView;
+  private PointItemView pointItemView;
 
   public BoardView(BoardGame boardGame) {
     this.boardGame = boardGame;
@@ -38,6 +40,10 @@ public class BoardView   {
     this.dieView = new DieView(boardGame.getDie());
     boardGame.getDie().addObserver(this.dieView);
     Arrays.stream(boardGame.getPlayers()).forEach(p -> p.addObserver(this.playerView));
+    if (boardGame instanceof PointBoardGame) {
+      this.pointItemView = new PointItemView((PointBoardGame) boardGame);
+      this.boardGame.addObserver(this.pointItemView);
+    }
   }
 
   public StackPane createGameBoard() {
@@ -74,6 +80,10 @@ public class BoardView   {
 
     // Add player sprites to the board
     playerView.addPlayersToBoard(boardPane);
+
+    if (pointItemView != null) {
+      pointItemView.addToBoard(boardPane);
+    }
 
     // Main horizontal layout
     HBox mainLayout = new HBox(20);
