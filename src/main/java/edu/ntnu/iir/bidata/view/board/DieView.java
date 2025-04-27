@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.view;
+package edu.ntnu.iir.bidata.view.board;
 
 import edu.ntnu.iir.bidata.model.Die;
 import edu.ntnu.iir.bidata.util.Observable;
@@ -20,7 +20,7 @@ public class DieView implements Observer {
     private AnimationTimer timer;
     private long animationStartTime;
     private MediaPlayer mediaPlayer;
-    private Runnable onAnimationComplete; // New callback for animation completion
+    private Runnable onAnimationComplete;
 
     public DieView(Die die) {
         this.die = die;

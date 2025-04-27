@@ -13,7 +13,7 @@ public class BoardFileWriterGson implements BoardFileWriter {
   @Override
   public void writeBoard(Board board, String filePath) throws IOException {
     JsonObject root = new JsonObject();
-    root.addProperty("name", board.getName());
+    root.addProperty("name", board.getBoardName());
     root.addProperty("description", board.getDescription());
 
     JsonArray tilesArray = new JsonArray();

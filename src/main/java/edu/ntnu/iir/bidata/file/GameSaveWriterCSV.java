@@ -1,6 +1,6 @@
 package edu.ntnu.iir.bidata.file;
 
-import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Player;
 
 import java.io.BufferedWriter;
@@ -15,29 +15,29 @@ public class GameSaveWriterCSV {
   /**
    * Saves the current game state to a CSV file using an auto-generated filename.
    *
-   * @param boardGame The BoardGame instance to save
+   * @param boardGameController The BoardGame instance to save
    * @param boardName The name of the board being used (can be null to use board's name)
    * @return The path to the saved file
    * @throws IOException If there's an error writing the file
    */
-  public String saveGame(BoardGame boardGame, String boardName) throws IOException {
+  public String saveGame(BoardGameController boardGameController, String boardName) throws IOException {
     // Generate a filename with current timestamp
     String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     String fileName = "game_save_" + timestamp + ".csv";
 
-    return saveGame(boardGame, boardName, fileName);
+    return saveGame(boardGameController, boardName, fileName);
   }
 
   /**
    * Saves the current game state to a CSV file with a custom filename.
    *
-   * @param boardGame The BoardGame instance to save
+   * @param boardGameController The BoardGame instance to save
    * @param boardName The name of the board being used (can be null to use board's name)
    * @param fileName The custom filename to use (without path)
    * @return The path to the saved file
    * @throws IOException If there's an error writing the file
    */
-  public String saveGame(BoardGame boardGame, String boardName, String fileName) throws IOException {
+  public String saveGame(BoardGameController boardGameController, String boardName, String fileName) throws IOException {
     // Ensure the saves directory exists
     if (!ensureSavesDirectoryExists()) {
       throw new IOException("Failed to create saves directory");
@@ -45,7 +45,7 @@ public class GameSaveWriterCSV {
 
     // Use the board's name if boardName parameter is null or unknown
     if (boardName == null || boardName.equals("Unknown Board")) {
-      boardName = boardGame.getBoard().getName();
+      boardName = boardGameController.getBoard().getBoardName();
     }
 
     // Ensure the filename ends with .csv
@@ -61,7 +61,7 @@ public class GameSaveWriterCSV {
       writer.newLine();
 
       // Write current player index
-      int currentPlayerIndex = boardGame.getCurrentPlayerIndex();
+      int currentPlayerIndex = boardGameController.getCurrentPlayerIndex();
       writer.write("currentPlayerIndex" + DELIMITER + currentPlayerIndex);
       writer.newLine();
 
@@ -70,7 +70,7 @@ public class GameSaveWriterCSV {
       writer.newLine();
 
       // Write each player's data
-      for (Player player : boardGame.getPlayers()) {
+      for (Player player : boardGameController.getPlayers()) {
         writer.write(player.getName() + DELIMITER + player.getPositionIndex());
         writer.newLine();
       }

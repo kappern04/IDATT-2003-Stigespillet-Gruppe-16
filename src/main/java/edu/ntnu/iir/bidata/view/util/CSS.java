@@ -1,8 +1,9 @@
-package edu.ntnu.iir.bidata.view.elements;
+package edu.ntnu.iir.bidata.view.util;
 
 import java.io.InputStream;
 import javafx.animation.TranslateTransition;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
@@ -25,7 +26,6 @@ public class CSS {
   public final Color PLAYER_3_COLOR = Color.rgb(0, 174, 239);
   public final Color PLAYER_4_COLOR = Color.rgb(239, 128, 0);
 
-
   public CSS() {
     loadCustomFont();
   }
@@ -46,8 +46,39 @@ public class CSS {
     }
   }
 
+  /**
+   * Get Orbitron font with specified size and weight.
+   *
+   * @param size font size
+   * @param weight font weight
+   * @return the configured font
+   */
   public Font getOrbitronFont(double size, FontWeight weight) {
-    return Font.font(orbitronFont.getFamily(), weight, size);
+    return Font.font("Orbitron", weight, size);
+  }
+
+  public Color getSpaceBlue() {
+    return SPACE_BLUE;
+  }
+
+  public Color getSpacePurple() {
+    return SPACE_PURPLE;
+  }
+
+  /**
+   * Creates a styled label with custom font, weight, size and color.
+   *
+   * @param text the text to display
+   * @param weight the font weight (bold, normal, etc.)
+   * @param size the font size
+   * @param color the text color
+   * @return styled Label
+   */
+  public Label createStyledLabel(String text, FontWeight weight, double size, Color color) {
+    Label label = new Label(text);
+    label.setFont(getOrbitronFont(size, weight));
+    label.setTextFill(color);
+    return label;
   }
 
   public Button createSpaceButton(String text) {
@@ -90,29 +121,26 @@ public class CSS {
     return button;
   }
 
-  public Color getSpaceBlue() {
-    return SPACE_BLUE;
-  }
-
-  public Color getSpacePurple() {
-    return SPACE_PURPLE;
-  }
-
-  // Add to CSS.java
   public Background createSpaceBackground(String imagePath) {
     try {
       Image image = new Image(getClass().getResourceAsStream(imagePath));
       BackgroundImage bgImage = new BackgroundImage(
-          image,
-          BackgroundRepeat.NO_REPEAT,
-          BackgroundRepeat.NO_REPEAT,
-          BackgroundPosition.CENTER,
-          new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, false, false, true, true)
+              image,
+              BackgroundRepeat.NO_REPEAT,
+              BackgroundRepeat.NO_REPEAT,
+              BackgroundPosition.CENTER,
+              new BackgroundSize(100, 100, true, true, true, true)
       );
       return new Background(bgImage);
     } catch (Exception e) {
-      System.err.println("Could not load background image: " + imagePath);
-      return null;
+      System.err.println("Failed to load background image: " + e.getMessage());
+      return Background.EMPTY;
     }
+  }
+
+  public TranslateTransition createHoverAnimation(Button button) {
+    TranslateTransition hover = new TranslateTransition(Duration.millis(200), button);
+    hover.setByY(-5);
+    return hover;
   }
 }

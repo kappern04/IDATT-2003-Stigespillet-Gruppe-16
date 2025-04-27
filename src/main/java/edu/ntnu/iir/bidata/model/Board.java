@@ -32,7 +32,7 @@ public class Board {
     this.y_dimension = tiles.stream().mapToInt(Tile::getY).max().orElse(0)+1;
   }
 
-  public String getName() {
+  public String getBoardName() {
     return name;
   }
 

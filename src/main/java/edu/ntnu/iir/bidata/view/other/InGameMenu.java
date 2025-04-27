@@ -1,22 +1,16 @@
-package edu.ntnu.iir.bidata.view.elements;
+// InGameMenuView.java
+package edu.ntnu.iir.bidata.view.other;
 
-import edu.ntnu.iir.bidata.Stigespillet;
-import edu.ntnu.iir.bidata.controller.BoardGame;
-import edu.ntnu.iir.bidata.file.GameSaveWriterCSV;
-import edu.ntnu.iir.bidata.file.SaveFileTracker;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import edu.ntnu.iir.bidata.controller.other.InGameMenuController;
+import edu.ntnu.iir.bidata.view.util.CSS;
+
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.effect.Glow;
@@ -26,16 +20,18 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.Window;
 import javafx.util.Duration;
 
+import java.io.IOException;
+import java.util.Optional;
+
 public class InGameMenu extends VBox {
-  private BoardGame boardGame;
+  private InGameMenuController controller;
   private Stage menuStage;
   private CSS css;
 
-  public InGameMenu(BoardGame boardGame) {
-    this.boardGame = boardGame;
+  public InGameMenu(InGameMenuController controller) {
+    this.controller = controller;
     this.css = new CSS();
     setupMenu();
   }
@@ -101,28 +97,16 @@ public class InGameMenu extends VBox {
 
   private void handleSaveAction() {
     try {
-      GameSaveWriterCSV saveWriter = new GameSaveWriterCSV();
-      String savedFilePath = saveGame(saveWriter);
+      TextInputDialog dialog = createSaveDialog();
+      Optional<String> result = dialog.showAndWait();
+
+      String fileName = result.isPresent() ? result.get() : null;
+      String savedFilePath = controller.saveGame(fileName);
+
       showSaveSuccessMessage(savedFilePath);
       menuStage.close();
     } catch (IOException ex) {
       showSaveErrorMessage(ex.getMessage());
-    }
-  }
-
-  private String saveGame(GameSaveWriterCSV saveWriter) throws IOException {
-    if (!SaveFileTracker.getInstance().wasLoadedFromSave()) {
-      TextInputDialog dialog = createSaveDialog();
-      Optional<String> result = dialog.showAndWait();
-
-      if (result.isPresent() && !result.get().trim().isEmpty()) {
-        return saveWriter.saveGame(boardGame, null, result.get());
-      } else {
-        return saveWriter.saveGame(boardGame, null);
-      }
-    } else {
-      String fileName = SaveFileTracker.getInstance().getCurrentSaveFileName();
-      return saveWriter.saveGame(boardGame, null, fileName);
     }
   }
 
@@ -135,7 +119,7 @@ public class InGameMenu extends VBox {
   }
 
   private void showSaveSuccessMessage(String savedFilePath) {
-    Alert alert = new Alert(AlertType.INFORMATION);
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Mission Saved");
     alert.setHeaderText(null);
     alert.setContentText("Game saved successfully to: " + savedFilePath);
@@ -143,53 +127,25 @@ public class InGameMenu extends VBox {
   }
 
   private void showSaveErrorMessage(String errorMessage) {
-    Alert alert = new Alert(AlertType.ERROR);
+    Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Save Failed");
     alert.setHeaderText(null);
     alert.setContentText("Failed to save game: " + errorMessage);
     alert.showAndWait();
   }
 
-  public Button createMainMenuButton() {
+  private Button createMainMenuButton() {
     Button button = css.createSpaceButton("Return to Base");
-    button.setOnAction(e -> handleMainMenuAction());
-    return button;
-  }
-
-  private void handleMainMenuAction() {
-    MusicControlPanel.stopMusic();
-    menuStage.close();
-    closeAllStagesExcept(menuStage);
-    restartApplication();
-  }
-
-  private void closeAllStagesExcept(Stage exceptStage) {
-    List<Stage> stagesToClose = new ArrayList<>();
-    for (Window window : Stage.getWindows()) {
-      if (window instanceof Stage && window != exceptStage) {
-        stagesToClose.add((Stage) window);
-      }
-    }
-
-    for (Stage stage : stagesToClose) {
-      stage.close();
-    }
-  }
-
-  private void restartApplication() {
-    Platform.runLater(() -> {
-      Stigespillet stigespillet = new Stigespillet();
-      try {
-        stigespillet.start(new Stage());
-      } catch (Exception ex) {
-        ex.printStackTrace();
-      }
+    button.setOnAction(e -> {
+      menuStage.close();
+      controller.returnToMainMenu();
     });
+    return button;
   }
 
   private Button createExitButton() {
     Button button = css.createSpaceButton("Abort Mission");
-    button.setOnAction(e -> System.exit(0));
+    button.setOnAction(e -> controller.exitGame());
     return button;
   }
 

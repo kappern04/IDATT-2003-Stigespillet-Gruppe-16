@@ -1,6 +1,6 @@
 package edu.ntnu.iir.bidata.file;
 
-import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 
@@ -22,7 +22,7 @@ public class GameSaveReaderCSV {
    * @return A reconstructed BoardGame object
    * @throws IOException If there's an error reading the file
    */
-  public BoardGame loadGame(String filePath) throws IOException {
+  public BoardGameController loadGame(String filePath) throws IOException {
     SaveFileTracker.getInstance().setCurrentSaveFilePath(filePath);
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
       String line;
@@ -58,17 +58,17 @@ public class GameSaveReaderCSV {
       }
 
       // Reconstruct the BoardGame object
-      BoardGame boardGame = new BoardGame();
+      BoardGameController boardGameController = new BoardGameController();
 
       // Load the board first
       Board board = loadBoardByName(boardName);
-      boardGame.setBoard(board);
+      boardGameController.setBoard(board);
 
       // Then set players and current player index
-      boardGame.setPlayers(players.toArray(new Player[0]));
-      boardGame.setCurrentPlayerIndex(currentPlayerIndex);
+      boardGameController.setPlayers(players.toArray(new Player[0]));
+      boardGameController.setCurrentPlayerIndex(currentPlayerIndex);
 
-      return boardGame;
+      return boardGameController;
     }
   }
 

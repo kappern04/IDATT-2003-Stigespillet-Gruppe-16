@@ -91,8 +91,8 @@ public class BoardRegistry {
         }
 
         Board board = reader.readBoard(stream);
-        boardPathMap.put(board.getName(), resourcePath);
-        LOGGER.fine("Loaded native board: " + board.getName());
+        boardPathMap.put(board.getBoardName(), resourcePath);
+        LOGGER.fine("Loaded native board: " + board.getBoardName());
       } catch (IOException e) {
         LOGGER.log(Level.WARNING, "Failed to load native board: " + resourcePath, e);
       }
@@ -117,8 +117,8 @@ public class BoardRegistry {
       try {
         Board board = reader.readBoard(Files.newInputStream(file.toPath()));
         String filePath = file.getAbsolutePath();
-        boardPathMap.put(board.getName(), filePath);
-        LOGGER.fine("Loaded user board: " + board.getName());
+        boardPathMap.put(board.getBoardName(), filePath);
+        LOGGER.fine("Loaded user board: " + board.getBoardName());
       } catch (IOException e) {
         LOGGER.log(Level.WARNING, "Failed to load user board: " + file.getName(), e);
       }
@@ -194,27 +194,27 @@ public class BoardRegistry {
    * @return true if added successfully, false otherwise
    */
   public boolean addBoard(Board board, boolean saveToFile) {
-    if (board == null || board.getName() == null || board.getName().isEmpty()) {
+    if (board == null || board.getBoardName() == null || board.getBoardName().isEmpty()) {
       return false;
     }
 
     if (saveToFile) {
       try {
-        String fileName = board.getName().replaceAll("[^a-zA-Z0-9-_]", "_") + ".json";
+        String fileName = board.getBoardName().replaceAll("[^a-zA-Z0-9-_]", "_") + ".json";
         Path filePath = Paths.get(userBoardsDirectory, fileName);
 
         BoardFileWriterGson writer = new BoardFileWriterGson();
         writer.writeBoard(board, filePath.toString());
 
-        boardPathMap.put(board.getName(), filePath.toString());
+        boardPathMap.put(board.getBoardName(), filePath.toString());
         return true;
       } catch (IOException e) {
-        LOGGER.log(Level.WARNING, "Failed to save board: " + board.getName(), e);
+        LOGGER.log(Level.WARNING, "Failed to save board: " + board.getBoardName(), e);
         return false;
       }
     } else {
       // Just add to memory without saving
-      boardPathMap.put(board.getName(), null);
+      boardPathMap.put(board.getBoardName(), null);
       return true;
     }
   }

@@ -1,6 +1,6 @@
 package edu.ntnu.iir.bidata.file;
 
-import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Board;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,21 +15,21 @@ public class BoardGameFactory {
     this.writer = new BoardFileWriterGson();
   }
 
-  public BoardGame createBoardGameFromFile(InputStream inputStream) throws IOException {
+  public BoardGameController createBoardGameFromFile(InputStream inputStream) throws IOException {
     Board board = reader.readBoard(inputStream);
-    return new BoardGame(board);
+    return new BoardGameController(board);
   }
 
-  public BoardGame createDefaultBoardGame() {
-    return new BoardGame();
+  public BoardGameController createDefaultBoardGame() {
+    return new BoardGameController();
   }
 
-  public void saveBoardGame(BoardGame boardGame, String filePath) throws IOException {
-    writer.writeBoard(boardGame.getBoard(), filePath);
+  public void saveBoardGame(BoardGameController boardGameController, String filePath) throws IOException {
+    writer.writeBoard(boardGameController.getBoard(), filePath);
   }
 
-  public BoardGame createBoardGameFromStream(InputStream inputStream) throws IOException {
+  public BoardGameController createBoardGameFromStream(InputStream inputStream) throws IOException {
     Board board = reader.readBoard(inputStream);
-    return new BoardGame(board);
+    return new BoardGameController(board);
   }
 }

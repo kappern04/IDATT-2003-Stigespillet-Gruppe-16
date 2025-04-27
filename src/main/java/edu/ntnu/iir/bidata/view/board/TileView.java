@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.view;
+package edu.ntnu.iir.bidata.view.board;
 
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

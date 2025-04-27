@@ -1,18 +1,21 @@
-package edu.ntnu.iir.bidata.view;
+package edu.ntnu.iir.bidata.view.other;
 
-import edu.ntnu.iir.bidata.controller.BoardGame;
+import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.file.BoardGameFactory;
 import edu.ntnu.iir.bidata.file.GameSaveReaderCSV;
-import edu.ntnu.iir.bidata.view.elements.CSS;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import edu.ntnu.iir.bidata.view.util.CSS;
+import edu.ntnu.iir.bidata.view.BoardGameView;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -142,7 +145,7 @@ public class MainMenu {
     }
 
     // Create a new BoardGame instance
-    BoardGame game = new BoardGame();
+    BoardGameController game = new BoardGameController();
 
     // Set the players in the game
     game.setPlayers(players);
@@ -167,8 +170,8 @@ public class MainMenu {
     game.setBoard(board);
 
     // Create MainView and set it up - no need to pass board name separately
-    MainView mainView = new MainView(game);
-    mainView.setUpStage(primaryStage);
+    BoardGameView boardGameView = new BoardGameView(game);
+    boardGameView.setUpStage(primaryStage);
   }
 
   public List<String> collectPlayerNames(int numPlayers) {
@@ -258,11 +261,11 @@ public class MainMenu {
       try {
         // Load the game
         GameSaveReaderCSV saveReader = new GameSaveReaderCSV();
-        BoardGame loadedGame = saveReader.loadGame(selectedFile.getAbsolutePath());
+        BoardGameController loadedGame = saveReader.loadGame(selectedFile.getAbsolutePath());
 
         // Create MainView with the loaded game
-        MainView mainView = new MainView(loadedGame);
-        mainView.setUpStage(primaryStage);
+        BoardGameView boardGameView = new BoardGameView(loadedGame);
+        boardGameView.setUpStage(primaryStage);
       } catch (IOException ex) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle("Load Failed");
