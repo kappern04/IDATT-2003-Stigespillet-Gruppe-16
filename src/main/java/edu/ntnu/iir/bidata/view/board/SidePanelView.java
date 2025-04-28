@@ -91,7 +91,7 @@ public class SidePanelView {
         if (enabled) {
             dieButton.setStyle("-fx-opacity: 1.0;");
         } else {
-            dieButton.setStyle("-fx-opacity: 0.7;");
+            dieButton.setStyle("-fx-opacity: 1.0;");
         }
     }
 

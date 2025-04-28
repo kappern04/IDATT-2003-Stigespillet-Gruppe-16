@@ -14,10 +14,12 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.Scene;
 import javafx.util.Duration;
 
 public class CSS {
   private Font orbitronFont;
+  private static final String DEFAULT_CSS_PATH = "/css/space-theme.css";
   private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
   private final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
 
@@ -82,6 +84,7 @@ public class CSS {
   }
 
   public Button createSpaceButton(String text) {
+
     Button button = new Button(text);
     button.setPrefWidth(250);
     button.setPrefHeight(50);
@@ -142,5 +145,24 @@ public class CSS {
     TranslateTransition hover = new TranslateTransition(Duration.millis(200), button);
     hover.setByY(-5);
     return hover;
+  }
+
+  /**
+   * Applies the default space theme CSS to a scene.
+   *
+   * @param scene The scene to apply CSS to
+   */
+  public void applyDefaultStylesheet(Scene scene) {
+    scene.getStylesheets().add(getClass().getResource(DEFAULT_CSS_PATH).toExternalForm());
+  }
+
+  /**
+   * Applies a custom CSS stylesheet to a scene.
+   *
+   * @param scene The scene to apply CSS to
+   * @param cssPath The path to the CSS resource
+   */
+  public void applyStylesheet(Scene scene, String cssPath) {
+    scene.getStylesheets().add(getClass().getResource(cssPath).toExternalForm());
   }
 }

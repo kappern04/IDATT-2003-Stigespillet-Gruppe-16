@@ -2,100 +2,85 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.controller.board.BoardController;
-import edu.ntnu.iir.bidata.controller.other.InGameMenuController;
 import edu.ntnu.iir.bidata.controller.other.MusicController;
 import edu.ntnu.iir.bidata.model.MusicPlayer;
+import edu.ntnu.iir.bidata.view.util.CSS;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import edu.ntnu.iir.bidata.view.board.BoardView;
 import edu.ntnu.iir.bidata.view.board.SidePanelView;
-import edu.ntnu.iir.bidata.view.other.InGameMenu;
-import edu.ntnu.iir.bidata.view.other.MusicControlPanel;
-import edu.ntnu.iir.bidata.view.util.CSS;
+import edu.ntnu.iir.bidata.view.other.ControlPanel;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class BoardGameView {
   private BoardGameController boardGameController;
-  private BoardController boardController;
   private BoardView boardView;
   private SidePanelView sidePanelView;
-  private MusicPlayer musicPlayer;
+  private ControlPanel controlPanel;
   private MusicController musicController;
-  private MusicControlPanel musicControlPanel;
-  private CSS css;
-  private static final Map<String, String> BOARD_BACKGROUNDS = new HashMap<>();
-  static {
-    BOARD_BACKGROUNDS.put("Spiral Way", "/image/background/background_1.png");
-    BOARD_BACKGROUNDS.put("Ladderia Prime", "/image/background/background_2.png");
-    BOARD_BACKGROUNDS.put("ZigZag Heights", "/image/background/background_3.png");
-  }
-  private static final String DEFAULT_BACKGROUND = "/image/default_background.png";
+    private CSS css = new CSS();
 
   public BoardGameView(BoardGameController boardGameController) {
     this.boardGameController = boardGameController;
 
-    // Create the board controller with the board and players from the game controller
-    this.boardController = new BoardController(
+    // Create the board controller
+    BoardController boardController = new BoardController(
             boardGameController.getBoard(),
             Arrays.asList(boardGameController.getPlayers())
     );
 
-    // Now initialize the views with proper controllers
+    // Initialize music components
+    MusicPlayer musicPlayer = new MusicPlayer("/audio/bgmusic.wav");
+    this.musicController = new MusicController(musicPlayer);
+
+    // Initialize view components
     this.boardView = new BoardView(boardController);
     this.sidePanelView = new SidePanelView(boardGameController);
+    this.controlPanel = new ControlPanel(boardGameController, musicController);
 
-    // Initialize music components
-    this.musicPlayer = new MusicPlayer("/audio/bgmusic.wav");
-    this.musicController = new MusicController(musicPlayer);
-    this.musicControlPanel = new MusicControlPanel(musicController);
-    this.css = new CSS();
+
   }
 
   public Stage setUpStage(Stage stage) {
-    // Compose board and control panels in an HBox
-    HBox mainLayout = new HBox(20, boardView.createBoardPanel(), sidePanelView.createControlPanel());
-    mainLayout.setAlignment(Pos.CENTER);
+    // Create main layout
+    VBox mainLayout = new VBox(10);
+    mainLayout.setStyle("-fx-padding: 20px;");
 
-    VBox layout = new VBox(10, mainLayout);
-    layout.setStyle("-fx-padding: 20px; -fx-alignment: center;");
+    // Create game area with board and side panel
+    HBox gameArea = new HBox(20);
+    gameArea.setAlignment(Pos.CENTER);
+    gameArea.getChildren().addAll(boardView.createBoardPanel(), sidePanelView.createControlPanel());
+
+    // Create control panel and set to align left
+    HBox controlPanelBox = controlPanel.createControlPanel();
+    controlPanelBox.setAlignment(Pos.CENTER_LEFT);
+
+    // Add game area FIRST
+    mainLayout.getChildren().add(gameArea);
+
+    // Add control panel SECOND (to place it under the board)
+    mainLayout.getChildren().add(controlPanelBox);
 
     // Set background
     String boardName = boardGameController.getBoard().getBoardName();
-    String backgroundPath = BOARD_BACKGROUNDS.getOrDefault(boardName, DEFAULT_BACKGROUND);
-    Background background = css.createSpaceBackground(backgroundPath);
-    layout.setBackground(background);
+    mainLayout.setBackground(boardView.getBackgroundForBoard(boardName));
 
-    // Menu button and music panel
-    Button menuButton = css.createSpaceButton("Menu");
-    menuButton.setOnAction(e -> showInGameMenu());
+    // Setup stage
+    Scene scene = new Scene(mainLayout);
+    // Apply stylesheet
+    css.applyDefaultStylesheet(scene);
 
-    HBox musicPanel = musicControlPanel.createControlPanel();
-    musicPanel.setAlignment(Pos.TOP_LEFT);
-    musicPanel.getChildren().add(menuButton);
-
-    layout.getChildren().addAll(musicPanel);
-
-    Scene scene = new Scene(layout);
     stage.setTitle("Cosmic Ladder - " + boardGameController.getBoard().getBoardName());
     stage.setScene(scene);
     stage.setMaximized(true);
-    musicController.play();
-    return stage;
-  }
 
-  private void showInGameMenu() {
-    // Create controller with board game and music controller
-    InGameMenuController controller = new InGameMenuController(boardGameController, musicController);
-    // Pass controller to view
-    InGameMenu menu = new InGameMenu(controller);
-    menu.show();
+    // Start music
+    musicController.play();
+
+    return stage;
   }
 }
