@@ -125,8 +125,9 @@ public class SidePanelView {
         ImageView playerImage = new ImageView(
                 sidePanelController.getPlayerImage(player)
         );
-        playerImage.setFitWidth(64);
-        playerImage.setFitHeight(64);
+        playerImage.setFitWidth(96);
+        playerImage.setFitHeight(96);
+
 
         Label nameLabel = css.createStyledLabel(player.getName(), FontWeight.BOLD, 14, getPlayerColor(player));
 

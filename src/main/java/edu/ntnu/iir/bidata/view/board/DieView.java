@@ -37,6 +37,8 @@ public class DieView implements Observer {
         Button button = new Button();
         button.setGraphic(imageView);
         button.setBackground(Background.EMPTY);
+        button.setMinSize(96, 96);
+        button.setPrefSize(96, 96);
         button.setOnAction(event -> {runnable.run();});
         return button;
     }
