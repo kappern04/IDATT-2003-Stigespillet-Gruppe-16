@@ -4,11 +4,11 @@ import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.controller.board.BoardController;
 import edu.ntnu.iir.bidata.controller.other.MusicController;
 import edu.ntnu.iir.bidata.model.MusicPlayer;
+import edu.ntnu.iir.bidata.view.board.BoardView;
+import edu.ntnu.iir.bidata.view.board.SidePanelView;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import java.util.Arrays;
 
-import edu.ntnu.iir.bidata.view.board.BoardView;
-import edu.ntnu.iir.bidata.view.board.SidePanelView;
 import edu.ntnu.iir.bidata.view.other.ControlPanel;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -22,7 +22,7 @@ public class BoardGameView {
   private SidePanelView sidePanelView;
   private ControlPanel controlPanel;
   private MusicController musicController;
-    private CSS css = new CSS();
+  private CSS css = new CSS();
 
   public BoardGameView(BoardGameController boardGameController) {
     this.boardGameController = boardGameController;
@@ -45,32 +45,25 @@ public class BoardGameView {
 
   }
 
-  public Stage setUpStage(Stage stage) {
+  public void setUpStage(Stage stage) {
     // Create main layout
     VBox mainLayout = new VBox(10);
     mainLayout.setStyle("-fx-padding: 20px;");
+    mainLayout.getChildren().addAll(boardView.createBoardPanel(), controlPanel.createControlPanel());
+    mainLayout.setAlignment(Pos.CENTER_LEFT);
 
     // Create game area with board and side panel
     HBox gameArea = new HBox(20);
     gameArea.setAlignment(Pos.CENTER);
-    gameArea.getChildren().addAll(boardView.createBoardPanel(), sidePanelView.createControlPanel());
+    gameArea.getChildren().addAll(mainLayout, sidePanelView.createControlPanel());
 
-    // Create control panel and set to align left
-    HBox controlPanelBox = controlPanel.createControlPanel();
-    controlPanelBox.setAlignment(Pos.CENTER_LEFT);
-
-    // Add game area FIRST
-    mainLayout.getChildren().add(gameArea);
-
-    // Add control panel SECOND (to place it under the board)
-    mainLayout.getChildren().add(controlPanelBox);
 
     // Set background
     String boardName = boardGameController.getBoard().getBoardName();
-    mainLayout.setBackground(boardView.getBackgroundForBoard(boardName));
+    gameArea.setBackground(boardView.getBackgroundForBoard(boardName));
 
     // Setup stage
-    Scene scene = new Scene(mainLayout);
+    Scene scene = new Scene(gameArea);
     // Apply stylesheet
     css.applyDefaultStylesheet(scene);
 
@@ -81,6 +74,5 @@ public class BoardGameView {
     // Start music
     musicController.play();
 
-    return stage;
   }
 }
