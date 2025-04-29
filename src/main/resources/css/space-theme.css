@@ -1,17 +1,35 @@
+/* ===== FONT DECLARATION ===== */
+@font-face {
+  font-family: 'Orbitron';
+  src: url('../font/Orbitron-VariableFont_wght.ttf');
+}
+
+/* ===== BUTTONS ===== */
+/* Used in CSS.createSpaceButton() for all main menu buttons */
 .space-button {
   -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-background-radius: 10;
   -fx-border-color: rgba(64, 224, 208, 0.8);
   -fx-border-width: 2;
   -fx-border-radius: 10;
+  -fx-font-family: 'Orbitron';
+  -fx-text-fill: white;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-pref-width: 250px;
+  -fx-pref-height: 50px;
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
 }
 
 .space-button:hover {
   -fx-background-color: rgba(30, 30, 60, 0.9);
   -fx-border-color: rgba(138, 43, 226, 0.9);
   -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
 }
 
+/* ===== FORM CONTROLS ===== */
+/* Used in MainMenu.showGameSetup() for board selector and player count spinner */
 .space-combo-box, .space-spinner {
   -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-text-fill: white;
@@ -28,13 +46,130 @@
   -fx-background-color: rgba(64, 224, 208, 0.3);
 }
 
-/* In your space-theme.css */
-@font-face {
-  font-family: 'Orbitron';
-  src: url('../font/Orbitron-VariableFont_wght.ttf');
+/* Used in MainMenu.showGameSetup() for form labels */
+.space-label {
+  -fx-font-family: 'Orbitron';
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: #40E0D0;
+  -fx-padding: 0 0 5 0;
 }
 
-.space-button {
+/* Used in MainMenu.collectPlayerNames() and InGameMenu.createSaveDialog() for text inputs */
+.space-text-field {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-text-fill: white;
+  -fx-border-color: #40E0D0;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
   -fx-font-family: 'Orbitron';
-  /* other styles... */
+  -fx-font-size: 14px;
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 5, 0.5, 0, 0);
+}
+
+.space-text-field:hover {
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 5, 0.7, 0, 0);
+}
+
+/* ===== CONTAINERS ===== */
+/* Used in MainMenu.collectPlayerNames() for the dialog grid layout */
+.space-dialog-grid {
+  -fx-background-color: rgba(10, 10, 30, 0.95);
+  -fx-background-radius: 12;
+  -fx-padding: 20;
+}
+
+/* Used in MainMenu.showGameSetup() for the settings container */
+.space-settings-box {
+  -fx-background-color: rgba(10, 10, 30, 0.7);
+  -fx-background-radius: 16;
+  -fx-padding: 30;
+}
+
+/* Used for button containers in dialog button bars */
+.space-button-bar .button {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-font-family: 'Orbitron';
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
+}
+
+.space-button-bar .button:hover {
+  -fx-background-color: rgba(30, 30, 60, 0.9);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-cursor: hand;
+}
+
+/* ===== DIALOG STYLING ===== */
+/* Used in multiple dialogs: MainMenu.collectPlayerNames(), InGameMenu.createSaveDialog(), etc. */
+.space-dialog-pane {
+  -fx-background-color: rgba(10, 10, 30, 0.95);
+  -fx-background-radius: 15;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 2;
+  -fx-border-radius: 15;
+  -fx-padding: 20;
+  -fx-font-family: 'Orbitron';
+}
+
+.space-dialog-pane .button-bar {
+  -fx-background-color: transparent;
+}
+
+.space-dialog-pane .button {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-background-radius: 10;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 2;
+  -fx-border-radius: 10;
+  -fx-text-fill: white;
+  -fx-font-family: 'Orbitron';
+  -fx-font-weight: bold;
+  -fx-font-size: 12px;
+  -fx-padding: 8 15 8 15;
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
+  -fx-transition: -fx-effect 0.3s;
+}
+
+.space-dialog-pane .button:hover {
+  -fx-background-color: rgba(30, 30, 60, 0.9);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 15, 0.7, 0, 0);
+}
+
+/* Critical for fixing white backgrounds in dialogs */
+.space-dialog-pane .header-panel {
+  -fx-background-color: transparent;
+}
+
+.space-dialog-pane .content {
+  -fx-background-color: transparent;
+  -fx-padding: 15;
+}
+
+.space-dialog-pane .label {
+  -fx-background-color: transparent;
+  -fx-text-fill: #40E0D0;
+  -fx-font-family: 'Orbitron';
+  -fx-font-weight: bold;
+}
+
+/* Used for text fields in dialogs like InGameMenu.createSaveDialog() */
+.space-dialog-pane .text-field {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-text-fill: white;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 1.5;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
+  -fx-font-family: 'Orbitron';
+  -fx-font-size: 14px;
+  -fx-padding: 8 12 8 12;
+}
+
+.space-dialog-pane .text-field:focused {
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-border-width: 2;
 }

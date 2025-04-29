@@ -15,8 +15,8 @@ import javafx.scene.layout.StackPane;
  */
 public class LadderView {
 
-    private static final int WORMHOLE_WIDTH = 36;
-    private static final int WORMHOLE_HEIGHT = 40;
+    private static final int WORMHOLE_WIDTH = 27;
+    private static final int WORMHOLE_HEIGHT = 30;
     private static final int TILE_SIZE = 70;
     private static final int TILE_CENTER_OFFSET = 35;
     private static final int TILE_VERTICAL_OFFSET = 35;

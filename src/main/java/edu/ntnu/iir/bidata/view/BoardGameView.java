@@ -50,7 +50,7 @@ public class BoardGameView {
     VBox mainLayout = new VBox(10);
     mainLayout.setStyle("-fx-padding: 20px;");
     mainLayout.getChildren().addAll(boardView.createBoardPanel(), controlPanel.createControlPanel());
-    mainLayout.setAlignment(Pos.CENTER_LEFT);
+    mainLayout.setAlignment(Pos.CENTER);
 
     // Create game area with board and side panel
     HBox gameArea = new HBox(20);

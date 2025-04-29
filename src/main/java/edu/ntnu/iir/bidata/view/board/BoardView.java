@@ -69,8 +69,8 @@ public class BoardView {
                 boardPane.getChildren().add(ladder);
             }
         }
-        gridPane.setHgap(4);
-        gridPane.setVgap(4);
+        gridPane.setHgap(6);
+        gridPane.setVgap(6);
         gridPane.setAlignment(Pos.CENTER);
         boardPane.getChildren().addAll(gridPane);
 

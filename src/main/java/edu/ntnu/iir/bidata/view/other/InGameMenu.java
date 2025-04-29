@@ -1,18 +1,13 @@
-// InGameMenuView.java
 package edu.ntnu.iir.bidata.view.other;
 
 import edu.ntnu.iir.bidata.controller.other.InGameMenuController;
+import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.view.util.CSS;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.effect.Glow;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.FontWeight;
@@ -96,13 +91,20 @@ public class InGameMenu extends VBox {
   }
 
   private void handleSaveAction() {
-    try {
+    String fileName = null;
+    if (!SaveFileTracker.getInstance().wasLoadedFromSave()) {
       TextInputDialog dialog = createSaveDialog();
       Optional<String> result = dialog.showAndWait();
 
-      String fileName = result.isPresent() ? result.get() : null;
-      String savedFilePath = controller.saveGame(fileName);
+      if (!result.isPresent()) {
+        return;
+      }
 
+      fileName = result.get().trim().isEmpty() ? null : result.get();
+    }
+
+    try {
+      String savedFilePath = controller.saveGame(fileName);
       showSaveSuccessMessage(savedFilePath);
       menuStage.close();
     } catch (IOException ex) {
@@ -112,15 +114,57 @@ public class InGameMenu extends VBox {
 
   private TextInputDialog createSaveDialog() {
     TextInputDialog dialog = new TextInputDialog();
-    dialog.setTitle("Save Game");
-    dialog.setHeaderText("Enter a name for your save file:");
-    dialog.setContentText("Filename:");
+    dialog.setTitle("Save Mission");
+
+    // Apply space theme to dialog
+    DialogPane dialogPane = dialog.getDialogPane();
+    dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    dialogPane.getStyleClass().add("space-dialog-pane");
+
+    // Style the text field
+    dialog.getEditor().getStyleClass().add("space-text-field");
+
+    dialog.setHeaderText("ENTER MISSION NAME:");
+    dialog.setContentText("Designation:");
+
+    // Add shake animations to buttons
+    Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
+    Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
+
+    okButton.setText("SAVE MISSION");
+    cancelButton.setText("ABORT");
+
+    // Add shake animation to buttons
+    okButton.setOnMouseEntered(e -> {
+      TranslateTransition shake = new TranslateTransition(Duration.millis(50), okButton);
+      shake.setFromX(-2);
+      shake.setToX(2);
+      shake.setCycleCount(4);
+      shake.setAutoReverse(true);
+      shake.play();
+    });
+
+    cancelButton.setOnMouseEntered(e -> {
+      TranslateTransition shake = new TranslateTransition(Duration.millis(50), cancelButton);
+      shake.setFromX(-2);
+      shake.setToX(2);
+      shake.setCycleCount(4);
+      shake.setAutoReverse(true);
+      shake.play();
+    });
+
     return dialog;
   }
 
   private void showSaveSuccessMessage(String savedFilePath) {
     Alert alert = new Alert(Alert.AlertType.INFORMATION);
     alert.setTitle("Mission Saved");
+
+    // Apply space theme to alert
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    dialogPane.getStyleClass().add("space-dialog-pane");
+
     alert.setHeaderText(null);
     alert.setContentText("Game saved successfully to: " + savedFilePath);
     alert.showAndWait();
@@ -129,6 +173,12 @@ public class InGameMenu extends VBox {
   private void showSaveErrorMessage(String errorMessage) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle("Save Failed");
+
+    // Apply space theme to alert
+    DialogPane dialogPane = alert.getDialogPane();
+    dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    dialogPane.getStyleClass().add("space-dialog-pane");
+
     alert.setHeaderText(null);
     alert.setContentText("Failed to save game: " + errorMessage);
     alert.showAndWait();
@@ -151,7 +201,7 @@ public class InGameMenu extends VBox {
 
   private void setupScene() {
     Scene scene = new Scene(this, 400, 500);
-    scene.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    css.applyDefaultStylesheet(scene);
     menuStage.setScene(scene);
   }
 

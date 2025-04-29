@@ -18,10 +18,10 @@ public class TileView {
 
   public StackPane createTile(int tileIndex) {
     StackPane stackPane = new StackPane();
-    Rectangle rect = new Rectangle(64, 64);
+    Rectangle rect = new Rectangle(61, 61);
     rect.setStroke(Color.rgb(254, 241, 0));
     rect.setFill(Color.TRANSPARENT);
-    rect.setStrokeWidth(2); //Stroke Thickness
+    rect.setStrokeWidth(3); //Stroke Thickness
     Label tileLabel = new Label(Integer.toString(tileIndex));
     tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-text-fill: white; -fx-padding: 3px 5px;");
     stackPane.getChildren().addAll(rect, tileLabel);
@@ -30,15 +30,15 @@ public class TileView {
   }
 
   public void colorTile(int tileIndex, Rectangle rect) {
-      if (tileIndex == 90) {
-        rect.setStroke(Color.rgb(109, 208, 247));
-      }
+    if (tileIndex == 90) {
+      rect.setStroke(Color.rgb(109, 208, 247));
     }
+  }
 
   public void colorDestinationTile(int tileIndex, Rectangle rect) {
     for (Tile destinationT : board.getTiles()) {
       if (destinationT.getTileAction() instanceof LadderAction action
-          && action.getDestinationTileIndex() == tileIndex) {
+              && action.getDestinationTileIndex() == tileIndex) {
         if (tileIndex > destinationT.getIndex()) {
           rect.setStroke(Color.rgb(166, 206, 58));
         } else {
@@ -52,7 +52,7 @@ public class TileView {
   public void colorActionTile(int tileIndex, Rectangle rect) {
     for (Tile actionT : board.getTiles()) {
       if (actionT.getTileAction() instanceof LadderAction action
-          && actionT.getIndex() == tileIndex) {
+              && actionT.getIndex() == tileIndex) {
         if (action.getDestinationTileIndex() > tileIndex) {
           rect.setStroke(Color.rgb(15, 177, 77));
         } else {

@@ -34,16 +34,12 @@ public class InGameMenuController {
 
     public String saveGame(String fileName) throws IOException {
         GameSaveWriterCSV saveWriter = new GameSaveWriterCSV();
-
         if (!SaveFileTracker.getInstance().wasLoadedFromSave()) {
-            if (fileName != null && !fileName.trim().isEmpty()) {
-                return saveWriter.saveGame(boardGameController, null, fileName);
-            } else {
-                return saveWriter.saveGame(boardGameController, null);
-            }
+            return fileName != null ? saveWriter.saveGame(boardGameController, null, fileName)
+                    : saveWriter.saveGame(boardGameController, null);
         } else {
-            String existingFileName = SaveFileTracker.getInstance().getCurrentSaveFileName();
-            return saveWriter.saveGame(boardGameController, null, existingFileName);
+            String currentFileName = SaveFileTracker.getInstance().getCurrentSaveFileName();
+            return saveWriter.saveGame(boardGameController, null, currentFileName);
         }
     }
 

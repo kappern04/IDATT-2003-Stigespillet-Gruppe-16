@@ -125,14 +125,14 @@ public class SidePanelView {
         ImageView playerImage = new ImageView(
                 sidePanelController.getPlayerImage(player)
         );
-        playerImage.setFitWidth(96);
-        playerImage.setFitHeight(96);
+        playerImage.setFitWidth(80);
+        playerImage.setFitHeight(80);
 
 
-        Label nameLabel = css.createStyledLabel(player.getName(), FontWeight.BOLD, 14, getPlayerColor(player));
+        Label nameLabel = css.createStyledLabel(player.getName(), FontWeight.BOLD, 16, getPlayerColor(player));
 
         Label positionLabel = css.createStyledLabel("Position: " + player.getPositionIndex(),
-                FontWeight.NORMAL, 12, Color.WHITE);
+                FontWeight.NORMAL, 14, Color.WHITE);
 
         // Store position label for updates
         positionLabels.put(player, positionLabel);

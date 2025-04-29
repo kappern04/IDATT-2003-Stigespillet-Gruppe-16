@@ -80,45 +80,23 @@ public class CSS {
     Label label = new Label(text);
     label.setFont(getOrbitronFont(size, weight));
     label.setTextFill(color);
+    label.setStyle("-fx-background-color: BLACK; -fx-padding: 5; -fx-background-radius: 10px;");
     return label;
   }
 
   public Button createSpaceButton(String text) {
-
     Button button = new Button(text);
-    button.setPrefWidth(250);
-    button.setPrefHeight(50);
-    button.setFont(getOrbitronFont(16, FontWeight.BOLD));
-    button.setTextFill(Color.WHITE);
+    button.getStyleClass().add("space-button");
     button.setFocusTraversable(Boolean.FALSE);
 
-    // Apply CSS styling
-    button.getStyleClass().add("space-button");
-
-    // Add glow effect
-    DropShadow shadow = new DropShadow();
-    shadow.setColor(SPACE_BLUE);
-    button.setEffect(shadow);
-
-    // Add hover shake animation
+    // Only keep the shake animation
     button.setOnMouseEntered(e -> {
-      // Create shaking animation
       TranslateTransition shake = new TranslateTransition(Duration.millis(50), button);
       shake.setFromX(-3);
       shake.setToX(3);
       shake.setCycleCount(6);
       shake.setAutoReverse(true);
       shake.play();
-
-      // Increase glow effect
-      shadow.setRadius(20);
-      shadow.setColor(SPACE_PURPLE);
-    });
-
-    button.setOnMouseExited(e -> {
-      // Reset effects
-      shadow.setRadius(10);
-      shadow.setColor(SPACE_BLUE);
     });
 
     return button;
