@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class PlayerView {
 
-  public static final int SPRITE_SIZE = 32;
+  public static final int SPRITE_SIZE = 64;
   public static final int TILE_SIZE = 70;
   public static final int TILE_CENTER_OFFSET = 35;
 
@@ -25,7 +25,7 @@ public class PlayerView {
     this.playerSprites = new HashMap<>();
     for (int i = 0; i < players.length; i++) {
       if (players[i] == null) throw new IllegalArgumentException("Player at index " + i + " is null");
-      ImageView playerImage = createPlayerImage("/image/player/Player_" + (i + 1) + ".png");
+      ImageView playerImage = createPlayerImage("/image/player/sprite_" + (i + 1) + ".png");
       playerSprites.put(players[i], playerImage);
     }
   }

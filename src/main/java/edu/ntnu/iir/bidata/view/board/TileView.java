@@ -18,10 +18,10 @@ public class TileView {
 
   public StackPane createTile(int tileIndex) {
     StackPane stackPane = new StackPane();
-    Rectangle rect = new Rectangle(61, 61);
+    Rectangle rect = new Rectangle(64, 64);
     rect.setStroke(Color.rgb(254, 241, 0));
     rect.setFill(Color.TRANSPARENT);
-    rect.setStrokeWidth(3); //Stroke Thickness
+    rect.setStrokeWidth(2); //Stroke Thickness
     Label tileLabel = new Label(Integer.toString(tileIndex));
     tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 12px;-fx-text-fill: white; -fx-padding: 3px 5px;");
     stackPane.getChildren().addAll(rect, tileLabel);

@@ -73,6 +73,7 @@ public class MainMenu {
 
     Spinner<Integer> playerSpinner = new Spinner<>(2, 4, 2);
     playerSpinner.getStyleClass().add("space-spinner");
+    playerSpinner.getStyleClass().add("split-arrows-horizontal");
 
     Button startBtn = createLaunchMissionButton(boardSelector, playerSpinner);
     Button backBtn = createReturnToBaseButton();

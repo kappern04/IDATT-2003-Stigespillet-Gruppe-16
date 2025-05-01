@@ -29,12 +29,55 @@
 }
 
 /* ===== FORM CONTROLS ===== */
-/* Used in MainMenu.showGameSetup() for board selector and player count spinner */
-.space-combo-box, .space-spinner {
+/* Used in MainMenu.showGameSetup() for player count spinner */
+.space-spinner {
   -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-text-fill: white;
+  -fx-font-family: 'Orbitron';
+  -fx-font-size: 16px;
   -fx-border-color: rgba(64, 224, 208, 0.8);
   -fx-border-width: 2;
+  -fx-border-radius: 10;
+  -fx-background-radius: 10;
+}
+
+/* Additional spinner-specific styling for inner components */
+.space-spinner .text-field {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-font-size: 16px;
+  -fx-font-family: 'Orbitron';
+}
+
+.space-spinner .increment-arrow-button,
+.space-spinner .decrement-arrow-button {
+  -fx-background-color: rgba(20, 20, 40, 0.9);
+  -fx-border-color: rgba(64, 224, 208, 0.6);
+  -fx-border-width: 1;
+}
+
+.space-spinner .increment-arrow,
+.space-spinner .decrement-arrow {
+  -fx-background-color: rgba(64, 224, 208, 0.8);
+}
+
+.space-spinner .increment-arrow-button:hover,
+.space-spinner .decrement-arrow-button:hover {
+  -fx-background-color: rgba(30, 30, 60, 0.9);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-cursor: hand;
+}
+
+/* Used in MainMenu.showGameSetup() for the board selector */
+.space-combo-box {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-text-fill: white;
+  -fx-font-family: 'Orbitron';
+  -fx-font-size: 16px;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 2;
+  -fx-border-radius: 8;
+  -fx-background-radius: 8;
 }
 
 .space-combo-box .list-cell {
