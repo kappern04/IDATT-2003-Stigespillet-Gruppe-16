@@ -8,6 +8,8 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 /**
  * Handles the visual representation of ladders (wormholes) on the game board.
@@ -15,8 +17,8 @@ import javafx.scene.layout.StackPane;
  */
 public class LadderView {
 
-    private static final int WORMHOLE_WIDTH = 27;
-    private static final int WORMHOLE_HEIGHT = 30;
+    private static final int WORMHOLE_WIDTH = 36;
+    private static final int WORMHOLE_HEIGHT = 40;
     private static final int TILE_SIZE = 70;
     private static final int TILE_CENTER_OFFSET = 35;
     private static final int TILE_VERTICAL_OFFSET = 35;
@@ -40,7 +42,7 @@ public class LadderView {
      */
     public Node createLadder(Tile tile) {
         if (!(tile.getTileAction() instanceof LadderAction action)) {
-            return new StackPane(); // Return empty pane if no ladder action
+            return new StackPane();
         }
 
         Tile startTile = board.getTile(tile.getIndex());
@@ -62,9 +64,12 @@ public class LadderView {
         ImageView startWormhole = createWormholeImage(color, angle + 180, startX, startY);
         ImageView endWormhole = createWormholeImage(color, angle, endX, endY);
 
+        // Create and position the connecting line
+        Line line = line(startX, startY, endX, endY);
+
         // Combine both wormholes into one container
         StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(startWormhole, endWormhole);
+        stackPane.getChildren().addAll(line, startWormhole, endWormhole);
 
         return stackPane;
     }
@@ -81,12 +86,46 @@ public class LadderView {
     private ImageView createWormholeImage(String color, double angle, double x, double y) {
         ImageView wormhole = createImageView("/image/wormhole/" + color + "Wormhole.png");
         wormhole.setRotate(angle);
-        double boardOffsetX = getBoardOffsetX();
-        double boardOffsetY = getBoardOffsetY();
-        wormhole.setTranslateX(x - boardOffsetX);
-        wormhole.setTranslateY(y - boardOffsetY);
+        wormhole.setTranslateX(x - getBoardOffsetX());
+        wormhole.setTranslateY(y - getBoardOffsetY());
         return wormhole;
     }
+
+    /**
+     * Creates a line connecting two points, representing the ladder.
+     *
+     * @param startX the x-coordinate of the start point
+     * @param startY the y-coordinate of the start point
+     * @param endX   the x-coordinate of the end point
+     * @param endY   the y-coordinate of the end point
+     * @return a Line object representing the ladder
+     */
+    private Line line(double startX, double startY, double endX, double endY) {
+        Line line = new Line();
+
+        // Calculate midpoint between the two positions
+        double midX = (startX + endX) / 2;
+        double midY = (startY + endY) / 2;
+
+        // Position the line at the midpoint
+        line.setTranslateX(midX - getBoardOffsetX());
+        line.setTranslateY(midY - getBoardOffsetY());
+
+        // Define endpoints relative to the midpoint
+        line.setStartX((startX - midX));
+        line.setStartY((startY - midY));
+        line.setEndX((endX - midX));
+        line.setEndY((endY - midY));
+
+        // Set line properties
+        line.setStrokeWidth(2);
+
+        // Set color based on the direction of the line
+        boolean isBlue = line.getStartY() > line.getEndY();
+        line.setStroke(isBlue ? Color.web("00A1C5") : Color.web("C50055"));
+        return line;
+    }
+
 
     /**
      * Calculates the center x-coordinate of a tile.
@@ -107,6 +146,12 @@ public class LadderView {
     private double getTileCenterY(Tile tile) {
         return tile.getY() * TILE_SIZE + TILE_VERTICAL_OFFSET;
     }
+
+    /**
+     * Calculates the offset for the board's center.
+     *
+     * @return the offset for the board's center
+     */
 
     private double getBoardOffsetX(){
         return (double) (TILE_SIZE * board.getX_dimension()) /2;

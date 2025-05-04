@@ -141,18 +141,14 @@ public class SidePanelView {
         return playerBox;
     }
 
+    /**
+     * @param player The player whose color is to be retrieved.
+     * @return The color of the player.
+     */
     private Color getPlayerColor(Player player) {
-        Player[] players = sidePanelController.getPlayers();
-        for (int i = 0; i < players.length; i++) {
-            if (players[i] == player) {
-                switch (i) {
-                    case 0: return css.PLAYER_1_COLOR;
-                    case 1: return css.PLAYER_2_COLOR;
-                    case 2: return css.PLAYER_3_COLOR;
-                    case 3: return css.PLAYER_4_COLOR;
-                    default: return Color.WHITE;
-                }
-            }
+
+        if (player.getColor() != null) {
+            return player.getColor();
         }
         return Color.WHITE;
     }

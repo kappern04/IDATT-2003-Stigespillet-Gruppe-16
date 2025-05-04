@@ -2,6 +2,7 @@ package edu.ntnu.iir.bidata.view.other;
 
 import edu.ntnu.iir.bidata.controller.other.MainMenuController;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
+import edu.ntnu.iir.bidata.file.PlayerData;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import javafx.animation.*;
 import javafx.application.Platform;
@@ -17,6 +18,11 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.PixelWriter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -92,8 +98,8 @@ public class MainMenu {
     primaryStage.setScene(scene);
   }
 
-  private List<String> collectPlayerNames(int numPlayers) {
-    Dialog<List<String>> dialog = new Dialog<>();
+  private List<PlayerData> collectPlayerDetails(int numPlayers) {
+    Dialog<List<PlayerData>> dialog = new Dialog<>();
     dialog.setTitle("Space Traveler Identification");
 
     // Apply space theme to the dialog pane
@@ -101,14 +107,12 @@ public class MainMenu {
     dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
     dialogPane.getStyleClass().add("space-dialog-pane");
 
-    // Set up a custom header with space styling
     Label headerLabel = css.createStyledLabel(
-            "ENTER NAMES FOR YOUR " + numPlayers + " SPACE TRAVELERS",
+            "ENTER DETAILS FOR YOUR " + numPlayers + " SPACE TRAVELERS",
             FontWeight.BOLD,
             16,
             css.getSpaceBlue());
 
-    // Add glow effect to the header
     Glow glow = new Glow(0.5);
     headerLabel.setEffect(glow);
 
@@ -116,7 +120,6 @@ public class MainMenu {
     headerBox.setAlignment(Pos.CENTER);
     dialogPane.setHeader(headerBox);
 
-    // Content grid
     GridPane grid = new GridPane();
     grid.setHgap(15);
     grid.setVgap(15);
@@ -124,61 +127,139 @@ public class MainMenu {
     grid.setAlignment(Pos.CENTER);
     grid.getStyleClass().add("space-dialog-grid");
 
+    // Add column headers
+    Label nameHeader = css.createStyledLabel("NAME:", FontWeight.NORMAL, 14, Color.WHITE);
+    Label colorHeader = css.createStyledLabel("COLOR:", FontWeight.NORMAL, 14, Color.WHITE);
+    Label shipHeader = css.createStyledLabel("SHIP:", FontWeight.NORMAL, 14, Color.WHITE);
+    grid.add(nameHeader, 1, 0);
+    grid.add(colorHeader, 2, 0);
+    grid.add(shipHeader, 3, 0);
+
     TextField[] nameFields = new TextField[numPlayers];
+    ColorPicker[] colorPickers = new ColorPicker[numPlayers];
+    Button[] shipButtons = new Button[numPlayers];
+    int[] selectedShips = new int[numPlayers]; // Track selected ship (1-5)
+    Color[] defaultColors = {Color.RED, Color.BLUE, Color.PURPLE, Color.ORANGE};
+
     for (int i = 0; i < numPlayers; i++) {
       Label label = css.createStyledLabel("TRAVELER " + (i + 1) + ":", FontWeight.NORMAL, 14, Color.WHITE);
 
       nameFields[i] = new TextField("Traveler " + (i + 1));
       nameFields[i].getStyleClass().add("space-text-field");
-      nameFields[i].setPrefWidth(250);
+      nameFields[i].setPrefWidth(200);
 
-      grid.add(label, 0, i);
-      grid.add(nameFields[i], 1, i);
+      colorPickers[i] = new ColorPicker(defaultColors[i % defaultColors.length]);
+      colorPickers[i].getStyleClass().add("space-color-picker");
+      colorPickers[i].setStyle("-fx-color-label-visible: false;");
+
+      // Ship selector button with initial ship (Ship_1)
+      selectedShips[i] = 1; // Start with Ship_1
+      int playerIndex = i; // Capture for lambda
+
+      shipButtons[i] = createShipSelectorButton(selectedShips, playerIndex, colorPickers);
+
+      // Update button when color changes
+      colorPickers[i].valueProperty().addListener((obs, oldVal, newVal) ->
+              updateShipButtonImage(shipButtons[playerIndex], selectedShips[playerIndex], newVal));
+
+      grid.add(label, 0, i + 1);
+      grid.add(nameFields[i], 1, i + 1);
+      grid.add(colorPickers[i], 2, i + 1);
+      grid.add(shipButtons[i], 3, i + 1);
     }
 
     dialog.getDialogPane().setContent(grid);
 
-    // Custom buttons
     ButtonType confirmButtonType = new ButtonType("LAUNCH MISSION", ButtonBar.ButtonData.OK_DONE);
     ButtonType cancelButtonType = new ButtonType("ABORT", ButtonBar.ButtonData.CANCEL_CLOSE);
     dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, cancelButtonType);
 
-    // Style buttons - only add shake animations
-    Button confirmButton = (Button) dialogPane.lookupButton(confirmButtonType);
-    Button cancelButton = (Button) dialogPane.lookupButton(cancelButtonType);
-
-    confirmButton.setOnMouseEntered(e -> {
-      TranslateTransition shake = new TranslateTransition(Duration.millis(50), confirmButton);
-      shake.setFromX(-2);
-      shake.setToX(2);
-      shake.setCycleCount(4);
-      shake.setAutoReverse(true);
-      shake.play();
-    });
-
-    cancelButton.setOnMouseEntered(e -> {
-      TranslateTransition shake = new TranslateTransition(Duration.millis(50), cancelButton);
-      shake.setFromX(-2);
-      shake.setToX(2);
-      shake.setCycleCount(4);
-      shake.setAutoReverse(true);
-      shake.play();
-    });
-
     dialog.setResultConverter(dialogButton -> {
       if (dialogButton == confirmButtonType) {
-        List<String> result = new ArrayList<>();
-        for (TextField field : nameFields) {
-          String name = field.getText().trim();
-          result.add(name.isEmpty() ? "Anonymous Traveler" : name);
+        List<PlayerData> result = new ArrayList<>();
+        for (int i = 0; i < numPlayers; i++) {
+          String name = nameFields[i].getText().trim();
+          if (name.isEmpty()) name = "Anonymous Traveler";
+          Color color = colorPickers[i].getValue();
+          result.add(new PlayerData(name, color, selectedShips[i]));
         }
         return result;
       }
       return null;
     });
 
-    Optional<List<String>> result = dialog.showAndWait();
+    Optional<List<PlayerData>> result = dialog.showAndWait();
     return result.orElse(null);
+  }
+
+  private Button createShipSelectorButton(int[] selectedShips, int playerIndex, ColorPicker[] colorPickers) {
+    Button button = new Button();
+    button.setPrefSize(48, 48);
+    button.getStyleClass().add("ship-selector-button");
+
+    // Set initial ship preview image
+    updateShipButtonImage(button, selectedShips[playerIndex], colorPickers[playerIndex].getValue());
+
+    // Add click handler to cycle through ships
+    button.setOnAction(e -> {
+      selectedShips[playerIndex] = (selectedShips[playerIndex] % 5) + 1;
+      updateShipButtonImage(button, selectedShips[playerIndex], colorPickers[playerIndex].getValue());
+    });
+
+    return button;
+  }
+
+  private void updateShipButtonImage(Button button, int shipType, Color color) {
+    String shipPath = "/image/player/Ship_" + shipType + ".png";
+
+    try {
+      // Create a temporary ship view to generate the colored preview
+      Image baseShip = new Image(getClass().getResourceAsStream(shipPath));
+      WritableImage coloredShip = applyColorToShip(baseShip, color);
+
+      ImageView shipView = new ImageView(coloredShip);
+      shipView.setFitWidth(36);
+      shipView.setFitHeight(36);
+
+      button.setGraphic(shipView);
+      button.setText("");
+    } catch (Exception ex) {
+      button.setText("Ship " + shipType);
+    }
+  }
+
+  private WritableImage applyColorToShip(Image baseImage, Color targetColor) {
+    int width = (int)baseImage.getWidth();
+    int height = (int)baseImage.getHeight();
+    WritableImage coloredImage = new WritableImage(width, height);
+    PixelReader reader = baseImage.getPixelReader();
+    PixelWriter writer = coloredImage.getPixelWriter();
+
+    double targetHue = targetColor.getHue();
+
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        Color pixel = reader.getColor(x, y);
+
+        if (pixel.getOpacity() < 0.1) {
+          writer.setColor(x, y, pixel);
+          continue;
+        }
+
+        if (pixel.getSaturation() > 0.15) {
+          Color newColor = Color.hsb(
+                  targetHue,
+                  pixel.getSaturation(),
+                  pixel.getBrightness(),
+                  pixel.getOpacity()
+          );
+          writer.setColor(x, y, newColor);
+        } else {
+          writer.setColor(x, y, pixel);
+        }
+      }
+    }
+    return coloredImage;
   }
 
   private void showLoadGameDialog() {
@@ -243,9 +324,9 @@ public class MainMenu {
     startBtn.setOnAction(e -> {
       String selectedBoard = boardSelector.getValue();
       int numPlayers = playerSpinner.getValue();
-      List<String> playerNames = collectPlayerNames(numPlayers);
-      if (playerNames != null) {
-        controller.startNewGame(selectedBoard, numPlayers, playerNames);
+      List<PlayerData> playerDetails = collectPlayerDetails(numPlayers);
+      if (playerDetails != null) {
+        controller.startNewGame(selectedBoard, numPlayers, playerDetails);
       }
     });
     return startBtn;

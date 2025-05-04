@@ -216,3 +216,50 @@
   -fx-border-color: rgba(138, 43, 226, 0.9);
   -fx-border-width: 2;
 }
+
+/* ===== COLOR PICKER ===== */
+/* Used in MainMenu.showGameSetup() for the color picker */
+.space-color-picker {
+  -fx-background-color: #0a1429;
+  -fx-background-radius: 5px;
+  -fx-border-color: #4a90e2;
+  -fx-border-radius: 5px;
+  -fx-border-width: 1px;
+  -fx-effect: dropshadow(three-pass-box, #4a90e2, 5, 0.3, 0, 0);
+}
+
+.space-color-picker .color-picker-label {
+  -fx-text-fill: white;
+}
+
+.space-color-picker .arrow-button {
+  -fx-background-color: #4a90e2;
+  -fx-background-radius: 0 5px 5px 0;
+}
+
+.space-color-picker .arrow {
+  -fx-background-color: white;
+}
+
+.space-color-picker-grid {
+  -fx-background-color: #0a1429;
+  -fx-border-color: #4a90e2;
+  -fx-border-width: 1px;
+}
+
+/* Style the color dialog */
+.custom-color-dialog {
+  -fx-background-color: #0a1429;
+}
+
+.custom-color-dialog .label {
+  -fx-text-fill: white;
+}
+
+.custom-color-dialog .slider .track {
+  -fx-background-color: #2a3b57;
+}
+
+.custom-color-dialog .slider .thumb {
+  -fx-background-color: #4a90e2;
+}

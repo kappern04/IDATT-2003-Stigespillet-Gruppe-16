@@ -2,23 +2,44 @@ package edu.ntnu.iir.bidata.model;
 
 import edu.ntnu.iir.bidata.util.Observable;
 import edu.ntnu.iir.bidata.util.Observer;
+import javafx.scene.paint.Color;
 
-/**
- * Player class The player is created with a name and a position The player can move a number of
- * steps
- */
-public class  Player<T extends Observer> extends Observable<T> {
+public class Player<T extends Observer> extends Observable<T> {
 
   private String name;
   private int positionIndex;
+  private Color color;
+    private int shipType;
 
   public Player(String name) {
     this.name = name;
     this.positionIndex = 0;
+    this.color = null; // Default color will be assigned in PlayerView
+    this.shipType = 1; // Default to Ship_1
+  }
+
+  public Player(String name, Color color) {
+    this.name = name;
+    this.positionIndex = 0;
+    this.color = color;
+    this.shipType = 1; // Default to Ship_1
+  }
+
+  // Add a new constructor that accepts shipType
+  public Player(String name, Color color, int shipType) {
+    this.name = name;
+    this.positionIndex = 0;
+    this.color = color;
+    this.shipType = shipType;
   }
 
   public String getName() {
     return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+    notifyObservers();
   }
 
   public int getPositionIndex() {
@@ -28,6 +49,24 @@ public class  Player<T extends Observer> extends Observable<T> {
   public void setPositionIndex(int positionIndex) {
     notifyObservers();
     this.positionIndex = positionIndex;
+  }
+
+  public Color getColor() {
+    return color;
+  }
+
+  public void setColor(Color color) {
+    this.color = color;
+    notifyObservers();
+  }
+
+  public int getShipType() {
+    return shipType;
+  }
+
+  public void setShipType(int shipType) {
+    this.shipType = shipType;
+    notifyObservers();
   }
 
   public void move(int steps) {

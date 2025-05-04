@@ -42,12 +42,43 @@ public class GameSaveReaderCSV {
         else if (parts[0].equals("currentPlayerIndex")) {
           currentPlayerIndex = Integer.parseInt(parts[1]);
         }
-        // Parse player data
-        else if (!parts[0].equals("playerName") && parts.length == 2) {
+        // Parse player data - check if this is a player data line and not a header
+        else if (!parts[0].equals("playerName") && parts.length >= 2) {
           String playerName = parts[0];
           int positionIndex = Integer.parseInt(parts[1]);
+
+          // Create player with default values
           Player player = new Player(playerName);
           player.setPositionIndex(positionIndex);
+
+          // Check if color data exists (column 3)
+          if (parts.length >= 3 && !parts[2].isEmpty()) {
+            try {
+              // Parse color in format "r,g,b,a" or similar
+              String[] colorParts = parts[2].split(";");
+              if (colorParts.length >= 3) {
+                double r = Double.parseDouble(colorParts[0]);
+                double g = Double.parseDouble(colorParts[1]);
+                double b = Double.parseDouble(colorParts[2]);
+                double a = colorParts.length > 3 ? Double.parseDouble(colorParts[3]) : 1.0;
+                player.setColor(new javafx.scene.paint.Color(r, g, b, a));
+              }
+            } catch (Exception e) {
+              LOGGER.warning("Could not parse color for player " + playerName);
+            }
+          }
+
+          // Check if ship type exists (column 4)
+          if (parts.length >= 4 && !parts[3].isEmpty()) {
+            try {
+              int shipType = Integer.parseInt(parts[3]);
+              // Add the setter to Player class to support this
+              player.setShipType(shipType);
+            } catch (NumberFormatException e) {
+              LOGGER.warning("Could not parse ship type for player " + playerName);
+            }
+          }
+
           players.add(player);
         }
       }

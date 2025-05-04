@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.controller.other;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
+import edu.ntnu.iir.bidata.file.PlayerData;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
@@ -25,18 +26,20 @@ public class MainMenuController {
         view.showMainMenu();
     }
 
-    public void startNewGame(String boardType, int numPlayers, List<String> playerNames) {
+    public void startNewGame(String boardName, int numPlayers, List<PlayerData> playerDetails) {
+        // Create players with their chosen names, colors, and ships
         Player[] players = new Player[numPlayers];
         for (int i = 0; i < numPlayers; i++) {
-            players[i] = new Player(playerNames.get(i));
+            PlayerData data = playerDetails.get(i);
+            players[i] = new Player(data.getName(), data.getColor(), data.getShipType());
         }
         BoardGameController game = new BoardGameController();
         game.setPlayers(players);
 
         Board board;
         try {
-            board = BoardRegistry.getInstance().getBoardByName(boardType);
-            if (board == null) throw new RuntimeException("Board not found: " + boardType);
+            board = BoardRegistry.getInstance().getBoardByName(boardName);
+            if (board == null) throw new RuntimeException("Board not found: " + boardName);
         } catch (RuntimeException e) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Board Loading Error");
