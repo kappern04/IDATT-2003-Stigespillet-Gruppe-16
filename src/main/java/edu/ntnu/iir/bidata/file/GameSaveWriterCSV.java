@@ -11,105 +11,103 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Handles saving the current game state to a CSV file in a true tabular format.
+ * Each value is written in its own cell (column).
+ */
 public class GameSaveWriterCSV {
   private static final String DELIMITER = ",";
   private static final Logger LOGGER = Logger.getLogger(GameSaveWriterCSV.class.getName());
   private final String savesDirectory;
+  private final DecimalFormat colorFormat;
 
   public GameSaveWriterCSV() {
     this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
     ensureSavesDirectoryExists();
+
+    // Create a decimal format with period as decimal separator regardless of locale
+    DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+    this.colorFormat = new DecimalFormat("0.000", symbols);
   }
 
-  /**
-   * Saves the current game state to a CSV file using an auto-generated filename.
-   *
-   * @param boardGameController The BoardGame instance to save
-   * @param boardName The name of the board being used (can be null to use board's name)
-   * @return The path to the saved file
-   * @throws IOException If there's an error writing the file
-   */
   public String saveGame(BoardGameController boardGameController, String boardName) throws IOException {
-    // Generate a filename with current timestamp
     String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     String fileName = "game_save_" + timestamp + ".csv";
-
     return saveGame(boardGameController, boardName, fileName);
   }
 
-  /**
-   * Saves the current game state to a CSV file with a custom filename.
-   *
-   * @param boardGameController The BoardGame instance to save
-   * @param boardName The name of the board being used (can be null to use board's name)
-   * @param fileName The custom filename to use (without path)
-   * @return The path to the saved file
-   * @throws IOException If there's an error writing the file
-   */
   public String saveGame(BoardGameController boardGameController, String boardName, String fileName) throws IOException {
-    // Use the board's name if boardName parameter is null or unknown
     if (boardName == null || boardName.equals("Unknown Board")) {
       boardName = boardGameController.getBoard().getBoardName();
     }
-
-    // Ensure the filename ends with .csv
     if (!fileName.toLowerCase().endsWith(".csv")) {
       fileName += ".csv";
     }
-
     String filePath = savesDirectory + File.separator + fileName;
 
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-      // Write board information
-      writer.write("boardName" + DELIMITER + boardName);
+      // Row 1: boardName,"Board Name"
+      writer.write("boardName" + DELIMITER + "\"" + boardName + "\"");
+      writer.newLine();
+      // Row 2: currentPlayerIndex,0
+      writer.write("currentPlayerIndex" + DELIMITER + boardGameController.getCurrentPlayerIndex());
+      writer.newLine();
+      // Row 3: playerName,position,color,shipTypeId
+      writer.write("playerName" + DELIMITER + "position" + DELIMITER + "color" + DELIMITER + "shipTypeId");
       writer.newLine();
 
-      // Write current player index
-      int currentPlayerIndex = boardGameController.getCurrentPlayerIndex();
-      writer.write("currentPlayerIndex" + DELIMITER + currentPlayerIndex);
-      writer.newLine();
-
-      // Write header for player data, now including color and shipType
-      writer.write("playerName" + DELIMITER + "position" + DELIMITER + "color" + DELIMITER + "shipType");
-      writer.newLine();
-
-      // Write each player's data including color and shipType
+      // Row 4+: player data
       for (Player player : boardGameController.getPlayers()) {
-        StringBuilder line = new StringBuilder();
-        line.append(player.getName()).append(DELIMITER);
-        line.append(player.getPositionIndex()).append(DELIMITER);
+        String formattedName = "\"" + player.getName() + "\"";
+        int position = player.getPositionIndex();
 
-        // Format color as "r;g;b;a"
-        Color color = player.getColor();
-        if (color != null) {
-          line.append(color.getRed()).append(";")
-                  .append(color.getGreen()).append(";")
-                  .append(color.getBlue()).append(";")
-                  .append(color.getOpacity());
-        }
-        line.append(DELIMITER);
+        // Color as r;g;b;a with consistent decimal format
+        String colorStr = formatPlayerColor(player.getColor());
 
-        // Add ship type
-        line.append(player.getShipType());
+        // Get shipTypeId
+        int shipTypeId = player.getShipType();
 
-        writer.write(line.toString());
+        writer.write(formattedName + DELIMITER +
+                position + DELIMITER +
+                colorStr + DELIMITER +
+                shipTypeId);
         writer.newLine();
+
+        LOGGER.fine("Saved player: " + player.getName() +
+                ", position: " + position +
+                ", color: " + colorStr +
+                ", shipTypeId: " + shipTypeId);
       }
 
+      SaveFileTracker.getInstance().setCurrentSaveFilePath(filePath);
+      LOGGER.info("Game saved to: " + filePath);
       return filePath;
     }
   }
 
   /**
-   * Helper method to ensure the saves directory exists
-   *
-   * @return true if the directory exists or was created successfully
+   * Format player color with consistent decimal notation using US locale
+   * to avoid issues with different decimal separators.
    */
+  private String formatPlayerColor(Color color) {
+    if (color == null) {
+      return "";
+    }
+
+    return colorFormat.format(color.getRed()) + ";" +
+            colorFormat.format(color.getGreen()) + ";" +
+            colorFormat.format(color.getBlue()) + ";" +
+            colorFormat.format(color.getOpacity());
+  }
+
   private boolean ensureSavesDirectoryExists() {
     Path path = Paths.get(savesDirectory);
     if (!Files.exists(path)) {

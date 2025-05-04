@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.view.other;
 
 import edu.ntnu.iir.bidata.controller.other.MainMenuController;
+import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
 import edu.ntnu.iir.bidata.file.PlayerData;
 import edu.ntnu.iir.bidata.view.util.CSS;
@@ -268,7 +269,26 @@ public class MainMenu {
     fileChooser.getExtensionFilters().add(
             new FileChooser.ExtensionFilter("CSV Files", "*.csv")
     );
-    fileChooser.setInitialDirectory(new File("saves"));
+
+    // Use the standardized save directory path
+    String savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
+    File savesDir = new File(savesDirectory);
+
+    // If directory exists, use it as initial directory
+    if (savesDir.exists() && savesDir.isDirectory()) {
+      fileChooser.setInitialDirectory(savesDir);
+
+      // If there's a current save file, preselect it
+      if (SaveFileTracker.getInstance().wasLoadedFromSave()) {
+        String currentFileName = SaveFileTracker.getInstance().getCurrentSaveFileName();
+        if (currentFileName != null) {
+          File initialFile = new File(savesDir, currentFileName);
+          if (initialFile.exists()) {
+            fileChooser.setInitialFileName(currentFileName);
+          }
+        }
+      }
+    }
 
     File selectedFile = fileChooser.showOpenDialog(primaryStage);
     if (selectedFile != null) {
