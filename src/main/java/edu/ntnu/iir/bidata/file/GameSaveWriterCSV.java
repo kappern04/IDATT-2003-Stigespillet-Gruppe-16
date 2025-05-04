@@ -2,15 +2,29 @@ package edu.ntnu.iir.bidata.file;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Player;
+import javafx.scene.paint.Color;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameSaveWriterCSV {
   private static final String DELIMITER = ",";
+  private static final Logger LOGGER = Logger.getLogger(GameSaveWriterCSV.class.getName());
+  private final String savesDirectory;
+
+  public GameSaveWriterCSV() {
+    this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
+    ensureSavesDirectoryExists();
+  }
 
   /**
    * Saves the current game state to a CSV file using an auto-generated filename.
@@ -38,11 +52,6 @@ public class GameSaveWriterCSV {
    * @throws IOException If there's an error writing the file
    */
   public String saveGame(BoardGameController boardGameController, String boardName, String fileName) throws IOException {
-    // Ensure the saves directory exists
-    if (!ensureSavesDirectoryExists()) {
-      throw new IOException("Failed to create saves directory");
-    }
-
     // Use the board's name if boardName parameter is null or unknown
     if (boardName == null || boardName.equals("Unknown Board")) {
       boardName = boardGameController.getBoard().getBoardName();
@@ -53,7 +62,7 @@ public class GameSaveWriterCSV {
       fileName += ".csv";
     }
 
-    String filePath = "saves/" + fileName;
+    String filePath = savesDirectory + File.separator + fileName;
 
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
       // Write board information
@@ -65,13 +74,30 @@ public class GameSaveWriterCSV {
       writer.write("currentPlayerIndex" + DELIMITER + currentPlayerIndex);
       writer.newLine();
 
-      // Write header for player data
-      writer.write("playerName" + DELIMITER + "position");
+      // Write header for player data, now including color and shipType
+      writer.write("playerName" + DELIMITER + "position" + DELIMITER + "color" + DELIMITER + "shipType");
       writer.newLine();
 
-      // Write each player's data
+      // Write each player's data including color and shipType
       for (Player player : boardGameController.getPlayers()) {
-        writer.write(player.getName() + DELIMITER + player.getPositionIndex());
+        StringBuilder line = new StringBuilder();
+        line.append(player.getName()).append(DELIMITER);
+        line.append(player.getPositionIndex()).append(DELIMITER);
+
+        // Format color as "r;g;b;a"
+        Color color = player.getColor();
+        if (color != null) {
+          line.append(color.getRed()).append(";")
+                  .append(color.getGreen()).append(";")
+                  .append(color.getBlue()).append(";")
+                  .append(color.getOpacity());
+        }
+        line.append(DELIMITER);
+
+        // Add ship type
+        line.append(player.getShipType());
+
+        writer.write(line.toString());
         writer.newLine();
       }
 
@@ -85,9 +111,16 @@ public class GameSaveWriterCSV {
    * @return true if the directory exists or was created successfully
    */
   private boolean ensureSavesDirectoryExists() {
-    java.io.File savesDir = new java.io.File("saves");
-    if (!savesDir.exists()) {
-      return savesDir.mkdirs();
+    Path path = Paths.get(savesDirectory);
+    if (!Files.exists(path)) {
+      try {
+        Files.createDirectories(path);
+        LOGGER.info("Created saves directory at " + path);
+        return true;
+      } catch (IOException e) {
+        LOGGER.log(Level.WARNING, "Could not create saves directory: " + e.getMessage(), e);
+        return false;
+      }
     }
     return true;
   }
