@@ -80,6 +80,9 @@ public class SidePanelView {
     // Initially highlight current player
     highlightCurrentPlayer();
 
+    // initializes rankings for saved games with winners
+    updateRankingLabels();
+
     return controlPanel;
   }
 
@@ -137,6 +140,13 @@ public class SidePanelView {
 
   private void updateRankingLabels() {
     List<Player> playerRanks = sidePanelController.getPlayerRanks();
+    System.out.println("Player ranks: " + playerRanks);
+
+    rankLabels.values().forEach(label -> {
+      label.setText("");
+      label.setEffect(null);
+    });
+
     for (Player player : playerRanks) {
       Label rankLabel = rankLabels.get(player);
       if (rankLabel != null) {

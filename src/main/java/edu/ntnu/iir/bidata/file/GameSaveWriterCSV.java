@@ -63,8 +63,15 @@ public class GameSaveWriterCSV {
       // Row 3: playerName,position,color,shipTypeId
       writer.write("playerName" + DELIMITER + "position" + DELIMITER + "color" + DELIMITER + "shipTypeId");
       writer.newLine();
+      // Row 4: player ranking
+      StringBuilder rankings = new StringBuilder("rankings");
+      for (Player rankedPlayer : boardGameController.getPlayerRanks()) {
+        rankings.append(DELIMITER).append("\"").append(rankedPlayer.getName()).append("\"");
+      }
+      writer.write(rankings.toString());
+      writer.newLine();
 
-      // Row 4+: player data
+      // Row 5+: player data
       for (Player player : boardGameController.getPlayers()) {
         String formattedName = "\"" + player.getName() + "\"";
         int position = player.getPositionIndex();

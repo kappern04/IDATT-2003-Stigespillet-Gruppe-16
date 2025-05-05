@@ -85,6 +85,10 @@ public class BoardGameController {
     return playerRanks;
   }
 
+  public void setPlayerRanks(List<Player> playerRanks) {
+    this.playerRanks = new ArrayList<>(playerRanks);
+  }
+
   /**
    * Handles the next active player's turn by rolling the die and updating player position.
    *
