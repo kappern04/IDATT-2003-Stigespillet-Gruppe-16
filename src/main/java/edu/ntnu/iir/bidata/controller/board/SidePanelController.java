@@ -1,10 +1,10 @@
 package edu.ntnu.iir.bidata.controller.board;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
-import edu.ntnu.iir.bidata.model.Die;
 import edu.ntnu.iir.bidata.model.Player;
-import edu.ntnu.iir.bidata.view.board.DieView;
 import javafx.scene.image.Image;
+
+import java.util.List;
 
 /**
  * Controller for the side panel that displays player information and dice controls.
@@ -40,8 +40,8 @@ public class SidePanelController {
         return playerController.getPlayerView().getPlayerImage(player);
     }
 
-    public Die getDie() {
-        return boardGameController.getDie();
+    public List<Player> getPlayerRanks() {
+        return boardGameController.getPlayerRanks();
     }
 
     /**
