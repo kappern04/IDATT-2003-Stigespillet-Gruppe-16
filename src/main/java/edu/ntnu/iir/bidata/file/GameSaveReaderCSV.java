@@ -3,6 +3,7 @@ package edu.ntnu.iir.bidata.file;
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
+import java.util.Arrays;
 import javafx.scene.paint.Color;
 
 import java.io.BufferedReader;
@@ -49,61 +50,31 @@ public class GameSaveReaderCSV {
     SaveFileTracker.getInstance().setCurrentSaveFilePath(filePath);
 
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-      String line;
-      String boardName = null;
-      int currentPlayerIndex = 0;
+      String[] boardNameParts = parseCsvLine(reader.readLine());
+      String boardName = boardNameParts[1].replaceAll("^\"|\"$", "");
+
+      String[] indexParts = parseCsvLine(reader.readLine());
+      int currentPlayerIndex = Integer.parseInt(indexParts[1].trim());
+
+      // skips first line
+      reader.readLine();
+
+      String[] rankingParts = parseCsvLine(reader.readLine());
       List<Player> players = new ArrayList<>();
-      boolean readingPlayerData = false;
+      List<Player> rankings = new ArrayList<>();
 
+      // reads player data
+      String line;
       while ((line = reader.readLine()) != null) {
-        if (line.trim().isEmpty()) {
-          continue;
-        }
-
+        if (line.trim().isEmpty()) continue;
         String[] parts = parseCsvLine(line);
-
-        if (parts.length == 0) continue;
-
-        if (parts[0].equals("boardName")) {
-          boardName = parts[1].replaceAll("^\"|\"$", "");
-          LOGGER.info("Loading board: " + boardName);
-        } else if (parts[0].equals("currentPlayerIndex")) {
-          currentPlayerIndex = Integer.parseInt(parts[1].trim());
-          LOGGER.info("Current player index: " + currentPlayerIndex);
-        } else if (parts[0].equals("playerName")) {
-          readingPlayerData = true;
-        } else if (readingPlayerData && parts.length >= 2) {
-          String playerName = parts[0].replaceAll("^\"|\"$", "");
-          int positionIndex = Integer.parseInt(parts[1].trim());
-
-          Player player = new Player(playerName);
-          player.setPositionIndex(positionIndex);
-
-          // Parse color with improved error handling
-          if (parts.length >= 3 && !parts[2].trim().isEmpty()) {
-            Color color = parsePlayerColor(parts[2].trim(), playerName);
-            if (color != null) {
-              player.setColor(color);
-              LOGGER.info("Player " + playerName + " color loaded: rgba(" +
-                      color.getRed() + "," + color.getGreen() + "," +
-                      color.getBlue() + "," + color.getOpacity() + ")");
-            }
-          } else {
-            LOGGER.warning("No color data for player: " + playerName);
-          }
-
-          // Parse shipTypeId
-          if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
-            try {
-              int shipType = Integer.parseInt(parts[3].trim());
-              player.setShipType(shipType);
-              LOGGER.info("Player " + playerName + " ship type: " + shipType);
-            } catch (NumberFormatException e) {
-              LOGGER.warning("Could not parse ship type for player " + playerName + ": " + e.getMessage());
-            }
-          }
-
+        if (parts.length >= 2) {
+          Player player = parsePlayerFromData(parts);
           players.add(player);
+          String playerName = player.getName();
+          if (Arrays.asList(rankingParts).contains("\"" + playerName + "\"")) {
+            rankings.add(player);
+          }
         }
       }
 
@@ -112,10 +83,10 @@ public class GameSaveReaderCSV {
       }
 
       BoardGameController boardGameController = new BoardGameController();
-      Board board = loadBoardByName(boardName);
-      boardGameController.setBoard(board);
+      boardGameController.setBoard(loadBoardByName(boardName));
       boardGameController.setPlayers(players.toArray(new Player[0]));
       boardGameController.setCurrentPlayerIndex(currentPlayerIndex);
+      boardGameController.setPlayerRanks(rankings);
 
       LOGGER.info("Successfully loaded game with " + players.size() + " players");
       return boardGameController;
@@ -153,6 +124,32 @@ public class GameSaveReaderCSV {
     }
   }
 
+  private Player parsePlayerFromData(String[] parts) {
+    String playerName = parts[0].replaceAll("^\"|\"$", "");
+    int position = Integer.parseInt(parts[1].trim());
+
+    Player player = new Player(playerName);
+    player.setPositionIndex(position);
+
+    if (parts.length >= 3 && !parts[2].trim().isEmpty()) {
+      Color color = parsePlayerColor(parts[2].trim(), playerName);
+      if (color != null) {
+        player.setColor(color);
+      }
+    }
+
+    if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
+      try {
+        int shipType = Integer.parseInt(parts[3].trim());
+        player.setShipType(shipType);
+      } catch (NumberFormatException e) {
+        LOGGER.warning("Could not parse ship type for player " + playerName);
+      }
+    }
+
+    return player;
+  }
+
   /**
    * Parse double values using US locale to ensure consistent handling of decimal points
    */
@@ -187,6 +184,25 @@ public class GameSaveReaderCSV {
     result.add(current.toString().trim());
     return result.toArray(new String[0]);
   }
+
+  private List<Player> parsePlayerRanks(String[] parts, List<Player> players) {
+    List<Player> rankings = new ArrayList<>();
+    if (parts.length <= 1) {
+      return rankings;
+    }
+
+    for (int i = 1; i < parts.length; i++) {
+      String playerName = parts[i].replaceAll("\"", "");
+      for (Player player : players) {
+        if (player.getName().equals(playerName)) {
+          rankings.add(player);
+          break;
+        }
+      }
+    }
+    return rankings;
+  }
+
 
   private Board loadBoardByName(String boardName) throws IOException {
     BoardRegistry registry = BoardRegistry.getInstance();

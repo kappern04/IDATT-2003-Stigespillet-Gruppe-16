@@ -23,7 +23,7 @@ public class BoardView {
     private LadderView ladderView;
     private PlayerController playerController;
     private static final Map<String, String> BOARD_BACKGROUNDS = new HashMap<>();
-    private static final String DEFAULT_BACKGROUND = "/image/default_background.png";
+    private static final String DEFAULT_BACKGROUND = "/image/background/background_1.png";
     private CSS css;
     static {
         BOARD_BACKGROUNDS.put("Spiral Way", "/image/background/background_1.png");

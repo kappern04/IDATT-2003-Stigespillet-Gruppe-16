@@ -1,0 +1,17 @@
+{
+  "name": "Debug Station",
+  "description": "Short debugging board for testing purposes",
+  "tiles": [
+    {"id": 0, "x": -1, "y": 9},
+    {"id": 1, "x": 0, "y": 9},
+    {"id": 2, "x": 1, "y": 9},
+    {"id": 3, "x": 2, "y": 9},
+    {"id": 4, "x": 3, "y": 9},
+    {"id": 5, "x": 4, "y": 9},
+    {"id": 6, "x": 5, "y": 9},
+    {"id": 7, "x": 6, "y": 9},
+    {"id": 8, "x": 7, "y": 8},
+    {"id": 9, "x": 8, "y": 7},
+    {"id": 10, "x": 8, "y": 6}
+  ]
+}

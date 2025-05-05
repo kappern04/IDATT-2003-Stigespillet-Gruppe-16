@@ -83,6 +83,11 @@ public class BoardGameController {
     return playerRanks;
   }
 
+  public void setPlayerRanks(List<Player> playerRanks) {
+    this.playerRanks = new ArrayList<>(playerRanks);
+  }
+
+
   /**
    * Handles a player's turn by rolling the die and updating the game state.
    * @param dieController The controller for the die

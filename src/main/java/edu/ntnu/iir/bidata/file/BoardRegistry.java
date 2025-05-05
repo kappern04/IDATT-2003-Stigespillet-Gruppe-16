@@ -29,7 +29,8 @@ public class BoardRegistry {
   private static final String[] NATIVE_BOARDS = {
       "/boards/spiral.json",
       "/boards/normal.json",
-      "/boards/zigzag.json"
+      "/boards/zigzag.json",
+      "/boards/debugboard.json",
   };
 
   // Default directory for user-created boards

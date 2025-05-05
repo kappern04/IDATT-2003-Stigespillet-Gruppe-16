@@ -69,6 +69,7 @@ public class SidePanelView {
         }
 
         highlightCurrentPlayer();
+        updateRankingLabels();
         return controlPanel;
     }
 
