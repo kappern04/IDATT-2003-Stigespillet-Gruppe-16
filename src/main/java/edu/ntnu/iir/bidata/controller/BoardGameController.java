@@ -6,19 +6,25 @@ import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.view.board.DieView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class BoardGameController {
+
   private Board board;
   private Player[] players;
   private int currentPlayerIndex;
   private Die die;
+  private ArrayList<Player> playerRanks;
 
   public BoardGameController() {
     this.board = new Board();
     this.players = new Player[0];
     this.currentPlayerIndex = 0;
     this.die = new Die();
+    this.playerRanks = new ArrayList<>();
   }
 
   public BoardGameController(Board board) {
@@ -26,6 +32,7 @@ public class BoardGameController {
     this.players = new Player[0];
     this.currentPlayerIndex = 0;
     this.die = new Die();
+    this.playerRanks = new ArrayList<>();
   }
 
   public Board getBoard() {
@@ -58,39 +65,89 @@ public class BoardGameController {
     this.currentPlayerIndex = currentPlayerIndex;
   }
 
+  /**
+   * Returns the index of the current player and null if all players are finished.
+   *
+   * @return Index of the current player or null
+   */
   public int getCurrentPlayerIndex() {
     return currentPlayerIndex;
   }
 
   public Player getCurrentPlayer() {
-    if (players == null || players.length == 0) {
-      throw new IllegalStateException("No players available to get the current player.");
+    if (players == null || players.length == 0 || currentPlayerIndex == -1) {
+      return null;
     }
     return players[currentPlayerIndex];
   }
 
+  public List<Player> getPlayerRanks() {
+    return playerRanks;
+  }
+
   /**
-   * Handles a player's turn by rolling the die and updating the game state.
-   * @param dieView The view for the die
+   * Handles the next active player's turn by rolling the die and updating player position.
+   *
+   * @param dieView             The view for the die
    * @param onAnimationComplete Callback for when animations complete
    */
   public void playTurn(DieView dieView, Runnable onAnimationComplete) {
+    // skip finished players before the turn
+    boolean allFinished = true;
+
+    for (Player p : players) {
+      if (p.getPositionIndex() < board.getTiles().size() - 1) {
+        allFinished = false;
+        break;
+      }
+    }
+
+    if (allFinished) {
+      currentPlayerIndex = -1;
+      if (onAnimationComplete != null) {
+        onAnimationComplete.run();
+      }
+      return;
+    }
+
+    if (players[currentPlayerIndex].getPositionIndex() >= board.getTiles().size() - 1) {
+      do {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      } while (players[currentPlayerIndex].getPositionIndex() >= board.getTiles().size() - 1);
+    }
+
     Player currentPlayer = getCurrentPlayer();
+    die.roll();
 
     dieView.setOnAnimationComplete(() -> {
       int roll = die.getLastRoll();
-      currentPlayer.move(roll);
-
-      if (currentPlayer.getPositionIndex() >= board.getTiles().size()) {
-        currentPlayer.setPositionIndex(board.getTiles().size() - 1);
+      if (currentPlayer.getPositionIndex() + roll >= board.getTiles().size() - 1) {
+        roll = board.getTiles().size() - 1 - currentPlayer.getPositionIndex();
+        playerRanks.add(currentPlayer);
       }
+      currentPlayer.move(roll);
 
       Tile currentTile = board.getTiles().get(currentPlayer.getPositionIndex());
       currentTile.landOn(currentPlayer);
 
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+      boolean gameFinished = true;
+      for (Player p : players) {
+        if (p.getPositionIndex() < board.getTiles().size() - 1) {
+          gameFinished = false;
+          break;
+        }
+      }
 
-      System.out.println(currentPlayer.getName() + " rolled " + roll + " and is now at position " + currentPlayer.getPositionIndex());
+      if (gameFinished) {
+        currentPlayerIndex = -1;
+      } else {
+        // skip to the next unfinished player
+        do {
+          currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+        } while (players[currentPlayerIndex].getPositionIndex() >= board.getTiles().size() - 1);
+      }
+      System.out.println(currentPlayer.getName() + " rolled " + roll + " and is now at position "
+          + currentPlayer.getPositionIndex());
 
       if (onAnimationComplete != null) {
         onAnimationComplete.run();
@@ -102,6 +159,7 @@ public class BoardGameController {
 
   @Override
   public String toString() {
-    return "BoardGame{" + "board=" + board + ", players=" + Arrays.toString(players) + ", die=" + die + '}';
+    return "BoardGame{" + "board=" + board + ", players=" + Arrays.toString(players) + ", die="
+        + die + '}';
   }
 }

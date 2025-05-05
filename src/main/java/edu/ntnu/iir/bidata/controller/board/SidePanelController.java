@@ -4,6 +4,7 @@ import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Die;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.view.board.DieView;
+import java.util.List;
 import javafx.scene.image.Image;
 
 /**
@@ -51,5 +52,9 @@ public class SidePanelController {
      */
     public void playTurn(DieView dieView, Runnable onAnimationComplete) {
         boardGameController.playTurn(dieView, onAnimationComplete);
+    }
+
+    public List<Player> getPlayerRanks() {
+        return boardGameController.getPlayerRanks();
     }
 }

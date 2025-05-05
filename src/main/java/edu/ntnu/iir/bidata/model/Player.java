@@ -47,8 +47,8 @@ public class Player<T extends Observer> extends Observable<T> {
   }
 
   public void setPositionIndex(int positionIndex) {
-    notifyObservers();
     this.positionIndex = positionIndex;
+    notifyObservers();
   }
 
   public Color getColor() {
