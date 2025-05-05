@@ -1,5 +1,6 @@
 module edu.ntnu.iir.bidata {
   requires javafx.controls;
+  requires javafx.swing;
   requires jdk.compiler;
   requires java.desktop;
   requires javafx.media;
