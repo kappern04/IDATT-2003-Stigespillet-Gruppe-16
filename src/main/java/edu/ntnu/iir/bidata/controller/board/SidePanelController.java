@@ -46,10 +46,10 @@ public class SidePanelController {
 
     /**
      * Delegates the turn logic to BoardGameController.
-     * @param dieView The view for the die
+     * @param dieController The controller for the die
      * @param onAnimationComplete Callback for when animations complete
      */
-    public void playTurn(DieView dieView, Runnable onAnimationComplete) {
-        boardGameController.playTurn(dieView, onAnimationComplete);
+    public void playTurn(DieController dieController, Runnable onAnimationComplete) {
+        boardGameController.playTurn(dieController, onAnimationComplete);
     }
 }

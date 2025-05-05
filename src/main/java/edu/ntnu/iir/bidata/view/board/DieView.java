@@ -1,126 +1,38 @@
 package edu.ntnu.iir.bidata.view.board;
 
-import edu.ntnu.iir.bidata.model.Die;
-import edu.ntnu.iir.bidata.util.Observable;
-import edu.ntnu.iir.bidata.util.Observer;
-import javafx.animation.PauseTransition;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-import javafx.animation.AnimationTimer;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
-import javafx.util.Duration;
 
-
-public class DieView implements Observer {
-    private final Die die;
+public class DieView {
     private final ImageView imageView;
-    private AnimationTimer timer;
-    private long animationStartTime;
-    private MediaPlayer mediaPlayer;
-    private Runnable onAnimationComplete;
 
-    public DieView(Die die) {
-        this.die = die;
-        initializeAnimationTimer();
-        this.imageView = new ImageView(getDieImage());
-        this.mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
+    public DieView() {
+        this.imageView = new ImageView(getDieImage(0)); // Default to 0
     }
 
-    public void setOnAnimationComplete(Runnable callback) {
-        this.onAnimationComplete = callback;
-    }
-
-    public Button createDieButton(Runnable runnable) {
+    public Button createDieButton(Runnable onClickAction) {
         Button button = new Button();
         button.setGraphic(imageView);
         button.setBackground(Background.EMPTY);
         button.setMinSize(96, 96);
         button.setPrefSize(96, 96);
-        button.setOnAction(event -> {runnable.run();});
+        button.setOnAction(event -> onClickAction.run());
+        button.getStyleClass().add("die-button-enabled");
         return button;
     }
 
-    private void startRollingAnimation() {
-        animationStartTime = System.currentTimeMillis();
-        timer.start();
-        playSound();
+    public void updateDieImage(int faceValue) {
+        imageView.setImage(getDieImage(faceValue));
     }
 
-    private void initializeAnimationTimer() {
-        timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                long elapsed = System.currentTimeMillis() - animationStartTime;
-                if (elapsed < 500) { // Roll for 0.5 seconds
-                    setToRandomDieImage();
-                } else {
-                    timer.stop();
-                    setToLastRollImage();
-
-                    // Add a pause before executing the callback
-                    PauseTransition pause = new PauseTransition(Duration.millis(500)); // delay in ms
-                    pause.setOnFinished(event -> {
-                        if (onAnimationComplete != null) {
-                            onAnimationComplete.run();
-                        }
-                    });
-                    pause.play();
-                }
-            }
-        };
-    }
-
-    private void setToRandomDieImage() {
+    public void setToRandomDieImage() {
         int randomRoll = (int) (Math.random() * 6) + 1;
-        imageView.setImage(new Image(getClass().getResourceAsStream("/image/die/die_" + randomRoll + ".png")));
+        imageView.setImage(getDieImage(randomRoll));
     }
 
-    private void setToLastRollImage() {
-        imageView.setImage(getDieImage());
-    }
-
-    private Image getDieImage() {
-        return new Image(getClass().getResourceAsStream("/image/die/die_" + die.getLastRoll() + ".png"));
-    }
-
-    private void playSound() {
-        if (mediaPlayer != null) {
-            // Create a new MediaPlayer for each roll
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-            mediaPlayer = createMediaPlayer("dice-roll-sound.wav");
-
-            // Set the media player to play once
-            if (mediaPlayer != null) {
-                mediaPlayer.setCycleCount(1);
-                mediaPlayer.setOnEndOfMedia(() -> {
-                    mediaPlayer.stop();
-                });
-                mediaPlayer.play();
-            }
-        }
-    }
-
-    private MediaPlayer createMediaPlayer(String soundFile) {
-        try {
-            String resourcePath = "/audio/" + soundFile;
-            Media sound = new Media(getClass().getResource(resourcePath).toExternalForm());
-            MediaPlayer player = new MediaPlayer(sound);
-            player.setOnError(() -> System.err.println("Media error: " + player.getError()));
-            return player;
-        } catch (Exception e) {
-            System.err.println("Could not load sound file: " + soundFile);
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    @Override
-    public <T extends Observer> void update(Observable<T> observable, String prompt) {
-        startRollingAnimation();
-        System.out.println("Animation rolling.");
+    private Image getDieImage(int faceValue) {
+        return new Image(getClass().getResourceAsStream("/image/die/die_" + faceValue + ".png"));
     }
 }

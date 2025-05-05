@@ -4,7 +4,7 @@ import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Die;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
-import edu.ntnu.iir.bidata.view.board.DieView;
+import edu.ntnu.iir.bidata.controller.board.DieController;
 
 import java.util.Arrays;
 
@@ -71,13 +71,13 @@ public class BoardGameController {
 
   /**
    * Handles a player's turn by rolling the die and updating the game state.
-   * @param dieView The view for the die
+   * @param dieController The controller for the die
    * @param onAnimationComplete Callback for when animations complete
    */
-  public void playTurn(DieView dieView, Runnable onAnimationComplete) {
+  public void playTurn(DieController dieController, Runnable onAnimationComplete) {
     Player currentPlayer = getCurrentPlayer();
 
-    dieView.setOnAnimationComplete(() -> {
+    dieController.setOnAnimationComplete(() -> {
       int roll = die.getLastRoll();
       currentPlayer.move(roll);
 

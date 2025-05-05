@@ -2,6 +2,7 @@ package edu.ntnu.iir.bidata.view.board;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.controller.board.SidePanelController;
+import edu.ntnu.iir.bidata.controller.board.DieController;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.util.PixelArtUpscaler;
 import edu.ntnu.iir.bidata.view.util.CSS;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class SidePanelView {
     private SidePanelController sidePanelController;
     private DieView dieView;
+    private DieController dieController;
     private Button dieButton;
     private CSS css;
     private Map<Player, VBox> playerBoxes;
@@ -31,11 +33,11 @@ public class SidePanelView {
 
     public SidePanelView(BoardGameController boardGameController) {
         this.sidePanelController = new SidePanelController(boardGameController);
-        this.dieView = new DieView(boardGameController.getDie());
+        this.dieView = new DieView();
+        this.dieController = new DieController(boardGameController.getDie(), dieView);
         this.css = new CSS();
         this.playerBoxes = new HashMap<>();
         this.positionLabels = new HashMap<>();
-        boardGameController.getDie().addObserver(this.dieView);
     }
 
     public VBox createControlPanel() {
@@ -68,7 +70,7 @@ public class SidePanelView {
 
     private void handleDieRoll() {
         setDieButtonEnabled(false);
-        sidePanelController.playTurn(dieView, () -> {
+        sidePanelController.playTurn(dieController, () -> {
             setDieButtonEnabled(true);
             updatePositionLabels();
             highlightCurrentPlayer();
