@@ -2,6 +2,9 @@ package edu.ntnu.iir.bidata.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+import java.util.Map;
+import javafx.scene.Node;
 
 /**
  * The board class represents the game board a 10*9 grid with 90 tiles. The board is responsible for
@@ -13,6 +16,7 @@ public class Board {
   private String description;
   private int x_dimension;
   private int y_dimension;
+  private Map<Integer, Node> tileNodeMap;
 
   //empty constructor creates default board
   public Board() {
@@ -84,5 +88,25 @@ public class Board {
 
   public int getY_dimension() {
     return y_dimension;
+  }
+
+  /**
+   * Sets the map of tile nodes from BoardView
+   * @param tileNodeMap A map from tile index to JavaFX Node
+   */
+  public void setTileNodeMap(Map<Integer, Node> tileNodeMap) {
+    this.tileNodeMap = tileNodeMap;
+  }
+
+  /**
+   * Gets the JavaFX Node corresponding to a tile
+   * @param tile The tile to get the node for
+   * @return The JavaFX Node for the tile, or null if not found
+   */
+  public Node getTileNode(Tile tile) {
+    if (tileNodeMap == null || tile == null) {
+      return null;
+    }
+    return tileNodeMap.get(tile.getIndex());
   }
 }

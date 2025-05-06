@@ -1,171 +1,126 @@
 package edu.ntnu.iir.bidata.view.board;
 
 import edu.ntnu.iir.bidata.model.Board;
-import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.model.Tile;
-
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-/**
- * Handles the visual representation of ladders (wormholes) on the game board.
- * Creates visual elements that connect tiles with ladder actions.
- */
 public class LadderView {
-
     private static final int WORMHOLE_WIDTH = 36;
     private static final int WORMHOLE_HEIGHT = 40;
-    private static final int TILE_SIZE = 70;
-    private static final int TILE_CENTER_OFFSET = 35;
-    private static final int TILE_VERTICAL_OFFSET = 35;
-
     private final Board board;
 
-    /**
-     * Creates a new LadderView for visualizing ladder connections.
-     *
-     * @param board the game board containing tile information
-     */
     public LadderView(Board board) {
         this.board = board;
     }
 
     /**
-     * Creates a visual representation of a ladder/wormhole between connected tiles.
-     *
-     * @param tile the starting tile with a ladder action
-     * @return a Node containing both ends of the wormhole
+     * Creates a ladder between two tiles.
+     * @param fromTile
+     * @param toTile
+     * @param fromTileNode
+     * @param toTileNode
+     * @return
      */
-    public Node createLadder(Tile tile) {
-        if (!(tile.getTileAction() instanceof LadderAction action)) {
-            return new StackPane();
-        }
+    public Node createLadder(Tile fromTile, Tile toTile, Node fromTileNode, Node toTileNode) {
+        Pane container = new Pane();
+        container.setPickOnBounds(false);
 
-        Tile startTile = board.getTile(tile.getIndex());
-        Tile endTile = board.getTile(action.getDestinationTileIndex());
-
-        // Determine color based on whether it's a ladder up or down
-        String color = (startTile.getIndex() < endTile.getIndex()) ? "Blue" : "Red";
-
-        // Calculate positions and angle
-        double startX = getTileCenterX(startTile);
-        double startY = getTileCenterY(startTile);
-        double endX = getTileCenterX(endTile);
-        double endY = getTileCenterY(endTile);
-
-        // Calculate the angle between start and end tiles
-        double angle = Math.toDegrees(Math.atan2(endY - startY, endX - startX)) + 90;
-
-        // Create and position wormhole images
-        ImageView startWormhole = createWormholeImage(color, angle + 180, startX, startY);
-        ImageView endWormhole = createWormholeImage(color, angle, endX, endY);
-
-        // Create and position the connecting line
-        Line line = line(startX, startY, endX, endY);
-
-        // Combine both wormholes into one container
-        StackPane stackPane = new StackPane();
-        stackPane.getChildren().addAll(line, startWormhole, endWormhole);
-
-        return stackPane;
-    }
-
-    /**
-     * Creates and positions a wormhole image with the specified rotation and position.
-     *
-     * @param color the color of the wormhole ("Blue" or "Red")
-     * @param angle the rotation angle of the wormhole
-     * @param x the x-coordinate of the wormhole
-     * @param y the y-coordinate of the wormhole
-     * @return the configured wormhole ImageView
-     */
-    private ImageView createWormholeImage(String color, double angle, double x, double y) {
-        ImageView wormhole = createImageView("/image/wormhole/" + color + "Wormhole.png");
-        wormhole.setRotate(angle);
-        wormhole.setTranslateX(x - getBoardOffsetX());
-        wormhole.setTranslateY(y - getBoardOffsetY());
-        return wormhole;
-    }
-
-    /**
-     * Creates a line connecting two points, representing the ladder.
-     *
-     * @param startX the x-coordinate of the start point
-     * @param startY the y-coordinate of the start point
-     * @param endX   the x-coordinate of the end point
-     * @param endY   the y-coordinate of the end point
-     * @return a Line object representing the ladder
-     */
-    private Line line(double startX, double startY, double endX, double endY) {
         Line line = new Line();
+        bindCenter(line.startXProperty(), fromTileNode.layoutXProperty(), fromTileNode.boundsInParentProperty(), true);
+        bindCenter(line.startYProperty(), fromTileNode.layoutYProperty(), fromTileNode.boundsInParentProperty(), false);
+        bindCenter(line.endXProperty(), toTileNode.layoutXProperty(), toTileNode.boundsInParentProperty(), true);
+        bindCenter(line.endYProperty(), toTileNode.layoutYProperty(), toTileNode.boundsInParentProperty(), false);
 
-        // Calculate midpoint between the two positions
-        double midX = (startX + endX) / 2;
-        double midY = (startY + endY) / 2;
-
-        // Position the line at the midpoint
-        line.setTranslateX(midX - getBoardOffsetX());
-        line.setTranslateY(midY - getBoardOffsetY());
-
-        // Define endpoints relative to the midpoint
-        line.setStartX((startX - midX));
-        line.setStartY((startY - midY));
-        line.setEndX((endX - midX));
-        line.setEndY((endY - midY));
-
-        // Set line properties
+        boolean isLadderUp = fromTile.getIndex() < toTile.getIndex();
+        String color = isLadderUp ? "Blue" : "Red";
+        line.setStroke(isLadderUp ? Color.web("00A1C5") : Color.web("C50055"));
         line.setStrokeWidth(2);
 
-        // Set color based on the direction of the line
-        boolean isBlue = line.getStartY() > line.getEndY();
-        line.setStroke(isBlue ? Color.web("00A1C5") : Color.web("C50055"));
-        return line;
+        ImageView startWormhole = createWormholeImage(color);
+        ImageView endWormhole = createWormholeImage(color);
+
+        bindImageToTile(startWormhole, fromTileNode);
+        bindImageToTile(endWormhole, toTileNode);
+
+        startWormhole.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
+                    double x1 = fromTileNode.getLayoutX() + fromTileNode.getBoundsInParent().getWidth() / 2;
+                    double y1 = fromTileNode.getLayoutY() + fromTileNode.getBoundsInParent().getHeight() / 2;
+                    double x2 = toTileNode.getLayoutX() + toTileNode.getBoundsInParent().getWidth() / 2;
+                    double y2 = toTileNode.getLayoutY() + toTileNode.getBoundsInParent().getHeight() / 2;
+                    return Math.toDegrees(Math.atan2(y2 - y1, x2 - x1)) + 90 + 180;
+                }, fromTileNode.layoutXProperty(), fromTileNode.layoutYProperty(),
+                fromTileNode.boundsInParentProperty(), toTileNode.layoutXProperty(),
+                toTileNode.layoutYProperty(), toTileNode.boundsInParentProperty()));
+
+        endWormhole.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
+                    double x1 = fromTileNode.getLayoutX() + fromTileNode.getBoundsInParent().getWidth() / 2;
+                    double y1 = fromTileNode.getLayoutY() + fromTileNode.getBoundsInParent().getHeight() / 2;
+                    double x2 = toTileNode.getLayoutX() + toTileNode.getBoundsInParent().getWidth() / 2;
+                    double y2 = toTileNode.getLayoutY() + toTileNode.getBoundsInParent().getHeight() / 2;
+                    return Math.toDegrees(Math.atan2(y2 - y1, x2 - x1)) + 90;
+                }, fromTileNode.layoutXProperty(), fromTileNode.layoutYProperty(),
+                fromTileNode.boundsInParentProperty(), toTileNode.layoutXProperty(),
+                toTileNode.layoutYProperty(), toTileNode.boundsInParentProperty()));
+
+        container.getChildren().addAll(line, startWormhole, endWormhole);
+        return container;
     }
 
-
     /**
-     * Calculates the center x-coordinate of a tile.
-     *
-     * @param tile the tile
-     * @return the center x-coordinate
+     * Binds the center of a line to the center of a tile.
+     * @param lineCoord
+     * @param layoutPos
+     * @param bounds
+     * @param isX
      */
-    private double getTileCenterX(Tile tile) {
-        return tile.getX() * TILE_SIZE + TILE_CENTER_OFFSET;
+    private void bindCenter(DoubleProperty lineCoord, ReadOnlyDoubleProperty layoutPos, ReadOnlyObjectProperty<Bounds> bounds, boolean isX) {
+        lineCoord.bind(Bindings.createDoubleBinding(
+                () -> layoutPos.get() + (isX ? bounds.get().getWidth() / 2 : bounds.get().getHeight() / 2),
+                layoutPos, bounds
+        ));
     }
 
     /**
-     * Calculates the center y-coordinate of a tile.
-     *
-     * @param tile the tile
-     * @return the center y-coordinate
+     * Binds the image to the center of a tile.
+     * @param imageView
+     * @param tileNode
      */
-    private double getTileCenterY(Tile tile) {
-        return tile.getY() * TILE_SIZE + TILE_VERTICAL_OFFSET;
+    private void bindImageToTile(ImageView imageView, Node tileNode) {
+        imageView.layoutXProperty().bind(Bindings.createDoubleBinding(
+                () -> tileNode.getLayoutX() + tileNode.getBoundsInParent().getWidth() / 2 - imageView.getFitWidth() / 2,
+                tileNode.layoutXProperty(), tileNode.boundsInParentProperty(), imageView.fitWidthProperty()));
+
+        imageView.layoutYProperty().bind(Bindings.createDoubleBinding(
+                () -> tileNode.getLayoutY() + tileNode.getBoundsInParent().getHeight() / 2 - imageView.getFitHeight() / 2,
+                tileNode.layoutYProperty(), tileNode.boundsInParentProperty(), imageView.fitHeightProperty()));
     }
 
     /**
-     * Calculates the offset for the board's center.
-     *
-     * @return the offset for the board's center
+     * Creates a wormhole image.
+     * @param color
+     * @return
      */
-
-    private double getBoardOffsetX(){
-        return (double) (TILE_SIZE * board.getX_dimension()) /2;
-    }
-
-    private double getBoardOffsetY(){
-        return (double) (TILE_SIZE * board.getY_dimension()) /2;
+    private ImageView createWormholeImage(String color) {
+        ImageView imageView = createImageView("/image/wormhole/" + color + "Wormhole.png");
+        imageView.setFitWidth(WORMHOLE_WIDTH);
+        imageView.setFitHeight(WORMHOLE_HEIGHT);
+        return imageView;
     }
 
     /**
-     * Creates an ImageView from the specified resource path.
-     *
-     * @param path the resource path to the image
-     * @return the configured ImageView
+     * Creates an image view for the wormhole.
+     * @param path
+     * @return
      */
     private ImageView createImageView(String path) {
         Image image = new Image(getClass().getResourceAsStream(path));

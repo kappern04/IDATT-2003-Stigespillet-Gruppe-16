@@ -37,6 +37,36 @@ public class Tile {
     this.tileAction = tileAction;
   }
 
+  public boolean hasLadderAction() {
+    return this.tileAction instanceof LadderAction;
+  }
+
+  /**
+   * Checks if this tile is the destination of any LadderAction on the board.
+   */
+  public boolean isDestinationOfLadder(Board board) {
+    for (Tile tile : board.getTiles()) {
+      if (tile.getTileAction() instanceof LadderAction action) {
+        if (action.getDestinationTileIndex() == this.index) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public Tile getLadderDestination(Board board) {
+    if (this.tileAction instanceof LadderAction action) {
+      int destIndex = action.getDestinationTileIndex();
+      for (Tile t : board.getTiles()) {
+        if (t.getIndex() == destIndex) {
+          return t;
+        }
+      }
+    }
+    return null;
+  }
+
   public void landOn(Player player) {
     tileAction.performAction(player);
   }

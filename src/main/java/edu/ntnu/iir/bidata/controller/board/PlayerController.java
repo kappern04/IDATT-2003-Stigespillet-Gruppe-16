@@ -4,6 +4,7 @@ import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.model.LadderAction;
+import edu.ntnu.iir.bidata.util.BoardUtils;
 import edu.ntnu.iir.bidata.util.Observable;
 import edu.ntnu.iir.bidata.util.Observer;
 import edu.ntnu.iir.bidata.view.board.PlayerView;
@@ -104,27 +105,17 @@ public class PlayerController implements Observer {
 
     private double getBoardOffsetX(int tileIndex) {
         Tile tile = board.getTiles().get(tileIndex);
-        int xDimension = board.getX_dimension();
-        return tile.getX() * PlayerView.TILE_SIZE + PlayerView.TILE_SIZE - (xDimension + 1) * PlayerView.TILE_CENTER_OFFSET;
+        return BoardUtils.getBoardOffsetX(board, tile);
     }
 
     private double getBoardOffsetY(int tileIndex) {
         Tile tile = board.getTiles().get(tileIndex);
-        int yDimension = board.getY_dimension();
-        return tile.getY() * PlayerView.TILE_SIZE + PlayerView.TILE_SIZE - (yDimension + 1) * PlayerView.TILE_CENTER_OFFSET;
+        return BoardUtils.getBoardOffsetY(board, tile);
     }
 
     private double getRotationForTile(int tileIndex) {
         Tile tile = board.getTiles().get(tileIndex);
-        int currentIndex = tile.getIndex();
-        if (currentIndex >= board.getTiles().size() - 1) return 0;
-        Tile nextTile = board.getTiles().get(currentIndex + 1);
-        int dx = nextTile.getX() - tile.getX();
-        int dy = nextTile.getY() - tile.getY();
-        if (dx > 0) return 90;
-        if (dx < 0) return -90;
-        if (dy > 0) return 180;
-        return 0;
+        return BoardUtils.getRotationForTile(board, tile);
     }
 
     private boolean isSpecialMovement(int currentPosition, int targetPosition) {
@@ -142,7 +133,7 @@ public class PlayerController implements Observer {
     }
 
     private boolean hasLadder(Tile tile) {
-        return tile.getTileAction() instanceof LadderAction;
+        return tile.hasLadderAction();
     }
 
     private void handleAnimationFinished(Player player, int targetPosition) {

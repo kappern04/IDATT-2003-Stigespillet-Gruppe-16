@@ -1,7 +1,6 @@
 package edu.ntnu.iir.bidata.controller.board;
 
 import edu.ntnu.iir.bidata.model.Board;
-import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.util.Observer;
@@ -33,7 +32,11 @@ public class BoardController {
     }
 
     public boolean hasLadderAction(Tile tile) {
-        return tile.getTileAction() instanceof LadderAction;
+        return tile.hasLadderAction();
+    }
+
+    public Tile getDestinationTile(Tile tile) {
+        return tile.getLadderDestination(board);
     }
 
     public void registerPlayerObserver(Observer observer) {

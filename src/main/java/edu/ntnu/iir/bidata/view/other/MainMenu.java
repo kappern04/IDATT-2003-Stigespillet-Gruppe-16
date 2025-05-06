@@ -4,9 +4,12 @@ import edu.ntnu.iir.bidata.controller.other.MainMenuController;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
 import edu.ntnu.iir.bidata.file.PlayerData;
+import edu.ntnu.iir.bidata.util.PixelArtUpscaler;
+import edu.ntnu.iir.bidata.util.ShipUtils;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import javafx.animation.*;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -25,6 +28,7 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.image.PixelWriter;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +202,7 @@ public class MainMenu {
     button.setPrefSize(48, 48);
     button.getStyleClass().add("ship-selector-button");
 
-    // Set initial ship preview image
+    // Set initial ship preview image using ShipUtils
     updateShipButtonImage(button, selectedShips[playerIndex], colorPickers[playerIndex].getValue());
 
     // Add click handler to cycle through ships
@@ -211,56 +215,27 @@ public class MainMenu {
   }
 
   private void updateShipButtonImage(Button button, int shipType, Color color) {
-    String shipPath = "/image/player/Ship_" + shipType + ".png";
-
     try {
-      // Create a temporary ship view to generate the colored preview
-      Image baseShip = new Image(getClass().getResourceAsStream(shipPath));
-      WritableImage coloredShip = applyColorToShip(baseShip, color);
+      // Use ShipUtils to create the colored ship image
+      Image baseImage = ShipUtils.loadShipSprite(shipType);
+      ImageView shipView = ShipUtils.createColoredShipImage(color, baseImage);
 
-      ImageView shipView = new ImageView(coloredShip);
-      shipView.setFitWidth(36);
-      shipView.setFitHeight(36);
+      // Use our enhanced PixelArtUpscaler to resize the image
+      int targetSize = 48;
+      ImageView upscaledView = PixelArtUpscaler.resizeImage(
+              shipView.getImage(),
+              targetSize,
+              targetSize
+      );
 
-      button.setGraphic(shipView);
+      // Apply the same effect as the original ship view
+      upscaledView.setEffect(shipView.getEffect());
+
+      button.setGraphic(upscaledView);
       button.setText("");
     } catch (Exception ex) {
       button.setText("Ship " + shipType);
     }
-  }
-
-  private WritableImage applyColorToShip(Image baseImage, Color targetColor) {
-    int width = (int)baseImage.getWidth();
-    int height = (int)baseImage.getHeight();
-    WritableImage coloredImage = new WritableImage(width, height);
-    PixelReader reader = baseImage.getPixelReader();
-    PixelWriter writer = coloredImage.getPixelWriter();
-
-    double targetHue = targetColor.getHue();
-
-    for (int y = 0; y < height; y++) {
-      for (int x = 0; x < width; x++) {
-        Color pixel = reader.getColor(x, y);
-
-        if (pixel.getOpacity() < 0.1) {
-          writer.setColor(x, y, pixel);
-          continue;
-        }
-
-        if (pixel.getSaturation() > 0.15) {
-          Color newColor = Color.hsb(
-                  targetHue,
-                  pixel.getSaturation(),
-                  pixel.getBrightness(),
-                  pixel.getOpacity()
-          );
-          writer.setColor(x, y, newColor);
-        } else {
-          writer.setColor(x, y, pixel);
-        }
-      }
-    }
-    return coloredImage;
   }
 
   private void showLoadGameDialog() {

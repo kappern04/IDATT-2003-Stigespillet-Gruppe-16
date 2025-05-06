@@ -167,17 +167,12 @@ public class SidePanelView {
         playerBox.setPadding(new Insets(5));
         playerBox.getStyleClass().add("player-box");
 
+        // Get original player image
         Image originalImage = sidePanelController.getPlayerImage(player);
-        int scaleFactor = Math.max(1, (int)(80 / Math.max(originalImage.getWidth(), originalImage.getHeight())));
-        Image upscaledImage = originalImage;
 
-        if (scaleFactor > 1) {
-            BufferedImage buffered = SwingFXUtils.fromFXImage(originalImage, null);
-            BufferedImage upscaled = PixelArtUpscaler.upscale(buffered, scaleFactor);
-            upscaledImage = SwingFXUtils.toFXImage(upscaled, null);
-        }
-
-        ImageView playerImage = new ImageView(upscaledImage);
+        // Use PixelArtUpscaler to create a properly scaled version
+        int targetSize = 80;
+        ImageView playerImage = PixelArtUpscaler.resizeImage(originalImage, targetSize, targetSize);
         playerImage.getStyleClass().add("player-image");
 
         Label nameLabel = css.createStyledLabel(player.getName(), FontWeight.BOLD, 16, getPlayerColor(player));
