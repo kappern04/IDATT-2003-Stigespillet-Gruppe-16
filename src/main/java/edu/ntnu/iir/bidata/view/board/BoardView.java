@@ -56,6 +56,8 @@ public class BoardView {
         List<Tile> tiles = boardController.getTiles();
         Map<Integer, Node> tileNodeMap = new HashMap<>();
 
+        int minY = tiles.stream().mapToInt(Tile::getY).min().orElse(0);
+
         // First pass: create tiles and build the map
         for (Tile tile : tiles) {
             if (tile.getIndex() == 0) continue;
@@ -67,7 +69,8 @@ public class BoardView {
             tileView.colorDestinationTile(tileIndex, rect);
             tileView.colorActionTile(tileIndex, rect);
 
-            gridPane.add(tilePane, tile.getX(), tile.getY());
+            int displayY = tile.getY() - minY; // Normalize Y
+            gridPane.add(tilePane, tile.getX(), displayY);
             tileNodeMap.put(tileIndex, tilePane);
         }
 
