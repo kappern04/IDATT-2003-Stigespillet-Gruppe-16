@@ -2,9 +2,9 @@ package edu.ntnu.iir.bidata.view.util;
 
 import java.io.InputStream;
 import javafx.animation.TranslateTransition;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -14,7 +14,6 @@ import javafx.scene.layout.BackgroundSize;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.scene.Scene;
 import javafx.util.Duration;
 
 public class CSS {

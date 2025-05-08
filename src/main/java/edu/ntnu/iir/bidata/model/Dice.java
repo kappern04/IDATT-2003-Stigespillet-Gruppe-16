@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.model;
 
 import java.util.Random;
+
 /**
  * Dice class The dice is thrown by the player to determine how many steps the player can move 1-6
  */

@@ -1,9 +1,9 @@
 package edu.ntnu.iir.bidata.model;
 
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import java.util.HashMap;
 import java.util.Map;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 public class MusicPlayer {
   private MediaPlayer mediaPlayer;

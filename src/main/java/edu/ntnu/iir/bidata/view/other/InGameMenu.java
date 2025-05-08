@@ -3,7 +3,8 @@ package edu.ntnu.iir.bidata.view.other;
 import edu.ntnu.iir.bidata.controller.other.InGameMenuController;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.view.util.CSS;
-
+import java.io.IOException;
+import java.util.Optional;
 import javafx.animation.*;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -16,9 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
-
-import java.io.IOException;
-import java.util.Optional;
 
 public class InGameMenu extends VBox {
   private InGameMenuController controller;

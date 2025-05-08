@@ -2,8 +2,6 @@ package edu.ntnu.iir.bidata.file;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Player;
-import javafx.scene.paint.Color;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,6 +16,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.paint.Color;
 
 /**
  * Handles saving the current game state to a CSV file in a true tabular format.

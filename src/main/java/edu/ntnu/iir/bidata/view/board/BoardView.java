@@ -2,15 +2,11 @@ package edu.ntnu.iir.bidata.view.board;
 
 import edu.ntnu.iir.bidata.controller.board.BoardController;
 import edu.ntnu.iir.bidata.controller.board.PlayerController;
-import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.model.Tile;
-
+import edu.ntnu.iir.bidata.view.util.CSS;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import edu.ntnu.iir.bidata.view.util.CSS;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;

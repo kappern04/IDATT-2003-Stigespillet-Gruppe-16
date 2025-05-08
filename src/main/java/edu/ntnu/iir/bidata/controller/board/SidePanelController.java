@@ -2,9 +2,8 @@ package edu.ntnu.iir.bidata.controller.board;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Player;
-import javafx.scene.image.Image;
-
 import java.util.List;
+import javafx.scene.image.Image;
 
 /**
  * Controller for the side panel that displays player information and dice controls.

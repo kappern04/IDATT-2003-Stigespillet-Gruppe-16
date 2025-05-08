@@ -1,20 +1,19 @@
 package edu.ntnu.iir.bidata.controller.board;
 
 import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
-import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.util.BoardUtils;
 import edu.ntnu.iir.bidata.util.Observable;
 import edu.ntnu.iir.bidata.util.Observer;
 import edu.ntnu.iir.bidata.view.board.PlayerView;
+import java.util.HashMap;
+import java.util.Objects;
 import javafx.animation.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-
-import java.util.HashMap;
-import java.util.Objects;
 
 public class PlayerController implements Observer {
 

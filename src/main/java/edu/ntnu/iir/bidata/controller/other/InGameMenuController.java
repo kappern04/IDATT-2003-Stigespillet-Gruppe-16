@@ -4,14 +4,12 @@ import edu.ntnu.iir.bidata.Stigespillet;
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.file.GameSaveWriterCSV;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
-
-import javafx.application.Platform;
-import javafx.stage.Stage;
-import javafx.stage.Window;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 public class InGameMenuController {
     private MusicController musicController;

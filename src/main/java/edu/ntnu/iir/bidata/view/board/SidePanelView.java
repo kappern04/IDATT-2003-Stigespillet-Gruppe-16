@@ -1,12 +1,14 @@
 package edu.ntnu.iir.bidata.view.board;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
-import edu.ntnu.iir.bidata.controller.board.SidePanelController;
 import edu.ntnu.iir.bidata.controller.board.DieController;
+import edu.ntnu.iir.bidata.controller.board.SidePanelController;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.util.PixelArtUpscaler;
 import edu.ntnu.iir.bidata.view.util.CSS;
-import javafx.embed.swing.SwingFXUtils;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,11 +20,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
-
-import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SidePanelView {
     private SidePanelController sidePanelController;

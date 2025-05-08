@@ -1,5 +1,6 @@
 package edu.ntnu.iir.bidata.util;
 
+import java.util.Objects;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -7,8 +8,6 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-
-import java.util.Objects;
 
 public class ShipUtils {
     public static final int SPRITE_SIZE = 32;

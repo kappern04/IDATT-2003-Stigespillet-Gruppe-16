@@ -5,18 +5,13 @@ import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.util.BoardUtils;
 import edu.ntnu.iir.bidata.util.ShipUtils;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.image.WritableImage;
-import javafx.scene.image.PixelReader;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.effect.DropShadow;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public class PlayerView {
   private final Board board;

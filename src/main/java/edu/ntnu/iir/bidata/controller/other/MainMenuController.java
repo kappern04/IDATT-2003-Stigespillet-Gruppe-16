@@ -1,20 +1,19 @@
 package edu.ntnu.iir.bidata.controller.other;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
-import edu.ntnu.iir.bidata.file.PlayerData;
-import edu.ntnu.iir.bidata.model.Player;
-import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
 import edu.ntnu.iir.bidata.file.GameSaveReaderCSV;
-import edu.ntnu.iir.bidata.view.other.MainMenu;
+import edu.ntnu.iir.bidata.file.PlayerData;
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.view.BoardGameView;
-import javafx.stage.Stage;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-
+import edu.ntnu.iir.bidata.view.other.MainMenu;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.Stage;
 
 public class MainMenuController {
     private Stage primaryStage;

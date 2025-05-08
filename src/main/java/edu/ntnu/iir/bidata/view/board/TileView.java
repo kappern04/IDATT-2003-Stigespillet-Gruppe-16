@@ -1,13 +1,13 @@
 package edu.ntnu.iir.bidata.view.board;
 
+import edu.ntnu.iir.bidata.model.Board;
+import edu.ntnu.iir.bidata.model.LadderAction;
+import edu.ntnu.iir.bidata.model.Tile;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import edu.ntnu.iir.bidata.model.Board;
-import edu.ntnu.iir.bidata.model.LadderAction;
-import edu.ntnu.iir.bidata.model.Tile;
 
 public class TileView {
   private Board board;

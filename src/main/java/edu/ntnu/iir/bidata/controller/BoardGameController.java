@@ -1,11 +1,10 @@
 package edu.ntnu.iir.bidata.controller;
 
+import edu.ntnu.iir.bidata.controller.board.DieController;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Die;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
-import edu.ntnu.iir.bidata.controller.board.DieController;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

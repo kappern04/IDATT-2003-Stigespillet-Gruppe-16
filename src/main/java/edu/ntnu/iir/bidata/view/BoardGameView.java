@@ -6,10 +6,9 @@ import edu.ntnu.iir.bidata.controller.other.MusicController;
 import edu.ntnu.iir.bidata.model.MusicPlayer;
 import edu.ntnu.iir.bidata.view.board.BoardView;
 import edu.ntnu.iir.bidata.view.board.SidePanelView;
+import edu.ntnu.iir.bidata.view.other.ControlPanel;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import java.util.Arrays;
-
-import edu.ntnu.iir.bidata.view.other.ControlPanel;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
