@@ -2,10 +2,10 @@ package edu.ntnu.iir.bidata.view.other;
 
 import edu.ntnu.iir.bidata.controller.other.MainMenuController;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
-import edu.ntnu.iir.bidata.file.PlayerData;
+import edu.ntnu.iir.bidata.view.util.PlayerData;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
-import edu.ntnu.iir.bidata.util.PixelArtUpscaler;
-import edu.ntnu.iir.bidata.util.ShipUtils;
+import edu.ntnu.iir.bidata.view.util.PixelArtUpscaler;
+import edu.ntnu.iir.bidata.view.util.ShipUtils;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import java.io.File;
 import java.util.ArrayList;
@@ -82,6 +82,7 @@ public class MainMenu {
 
     Button startBtn = createLaunchMissionButton(boardSelector, playerSpinner);
     Button backBtn = createReturnToBaseButton();
+
 
     VBox settingsBox = new VBox(20,
             boardLabel, boardSelector,
@@ -169,9 +170,12 @@ public class MainMenu {
 
     dialog.getDialogPane().setContent(grid);
 
-    ButtonType confirmButtonType = new ButtonType("LAUNCH MISSION", ButtonBar.ButtonData.OK_DONE);
     ButtonType cancelButtonType = new ButtonType("ABORT", ButtonBar.ButtonData.CANCEL_CLOSE);
-    dialog.getDialogPane().getButtonTypes().addAll(confirmButtonType, cancelButtonType);
+    ButtonType confirmButtonType = new ButtonType("LAUNCH MISSION", ButtonBar.ButtonData.OK_DONE);
+
+    dialog.getDialogPane().getButtonTypes().addAll(cancelButtonType, confirmButtonType);
+
+
 
     dialog.setResultConverter(dialogButton -> {
       if (dialogButton == confirmButtonType) {

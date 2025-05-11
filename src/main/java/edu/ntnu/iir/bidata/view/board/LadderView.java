@@ -45,15 +45,10 @@ public class LadderView {
         Pane startWormholeContainer = (Pane) createWormholeImage(color, true);  // pulling in
         Pane endWormholeContainer = (Pane) createWormholeImage(color, false);   // pulling out
 
-        // Get the actual ImageViews from the containers
-        ImageView startWormhole = (ImageView) startWormholeContainer.getChildren().get(0);
-        ImageView endWormhole = (ImageView) endWormholeContainer.getChildren().get(0);
-
         // Bind the containers to the tiles
-        bindNodeToTile(startWormholeContainer, fromTileNode);
-        bindNodeToTile(endWormholeContainer, toTileNode);
+        bindNodeToTile(startWormholeContainer, fromTileNode, 0, 0);
+        bindNodeToTile(endWormholeContainer, toTileNode, 0, 0);
 
-        // Set rotation for the containers
         startWormholeContainer.rotateProperty().bind(Bindings.createDoubleBinding(() -> {
                     double x1 = fromTileNode.getLayoutX() + fromTileNode.getBoundsInParent().getWidth() / 2;
                     double y1 = fromTileNode.getLayoutY() + fromTileNode.getBoundsInParent().getHeight() / 2;
@@ -74,17 +69,34 @@ public class LadderView {
                 fromTileNode.boundsInParentProperty(), toTileNode.layoutXProperty(),
                 toTileNode.layoutYProperty(), toTileNode.boundsInParentProperty()));
 
+
+// Other wormholes 60x60 px
+//        if (isLadderUp) {
+//            bindNodeToTile(startWormholeContainer, fromTileNode, 0, -16);
+//            bindNodeToTile(endWormholeContainer, toTileNode, 0, 16);
+//            startWormholeContainer.setRotate(-90);
+//            endWormholeContainer.setRotate(90);
+//        } else {
+//            // Entry at top of start tile, exit at bottom of end tile
+//            bindNodeToTile(startWormholeContainer, fromTileNode, 0, 16);
+//            bindNodeToTile(endWormholeContainer, toTileNode, 0, -16);
+//            startWormholeContainer.setRotate(90);
+//            endWormholeContainer.setRotate(-90);
+//        }
+
         container.getChildren().addAll(line, startWormholeContainer, endWormholeContainer);
+        addPulseAnimation(container, line, isLadderUp ? Color.web("00A1C5") : Color.web("C50055"));
+
         return container;
     }
 
-    private void bindNodeToTile(Node node, Node tileNode) {
+    private void bindNodeToTile(Node node, Node tileNode, double offsetX, double offsetY) {
         node.layoutXProperty().bind(Bindings.createDoubleBinding(
-                () -> tileNode.getLayoutX() + tileNode.getBoundsInParent().getWidth() / 2 - WORMHOLE_WIDTH / 2,
+                () -> tileNode.getLayoutX() + tileNode.getBoundsInParent().getWidth() / 2 - WORMHOLE_WIDTH / 2 + offsetX,
                 tileNode.layoutXProperty(), tileNode.boundsInParentProperty()));
 
         node.layoutYProperty().bind(Bindings.createDoubleBinding(
-                () -> tileNode.getLayoutY() + tileNode.getBoundsInParent().getHeight() / 2 - WORMHOLE_HEIGHT / 2,
+                () -> tileNode.getLayoutY() + tileNode.getBoundsInParent().getHeight() / 2 - WORMHOLE_HEIGHT / 2 + offsetY,
                 tileNode.layoutYProperty(), tileNode.boundsInParentProperty()));
     }
 
@@ -95,16 +107,13 @@ public class LadderView {
         ));
     }
 
-    private void bindImageToTile(ImageView imageView, Node tileNode) {
-        imageView.layoutXProperty().bind(Bindings.createDoubleBinding(
-                () -> tileNode.getLayoutX() + tileNode.getBoundsInParent().getWidth() / 2 - imageView.getFitWidth() / 2,
-                tileNode.layoutXProperty(), tileNode.boundsInParentProperty(), imageView.fitWidthProperty()));
-
-        imageView.layoutYProperty().bind(Bindings.createDoubleBinding(
-                () -> tileNode.getLayoutY() + tileNode.getBoundsInParent().getHeight() / 2 - imageView.getFitHeight() / 2,
-                tileNode.layoutYProperty(), tileNode.boundsInParentProperty(), imageView.fitHeightProperty()));
-    }
-
+    /**
+     * Creates a wormhole image with the specified color and animation direction.
+     *
+     * @param color       The color of the wormhole (e.g., "Blue", "Red").
+     * @param pullingIn   If true, the wormhole is animated to pull in; otherwise, it spits out.
+     * @return A Pane containing the wormhole image and animation.
+     */
     private Node createWormholeImage(String color, boolean pullingIn) {
         // Create a container that will hold both the image and particles
         Pane wormholeContainer = new Pane();
@@ -116,19 +125,18 @@ public class LadderView {
         imageView.setFitHeight(WORMHOLE_HEIGHT);
         wormholeContainer.getChildren().add(imageView);
 
-        // Create particle container - position it to center of the wormhole
-        Pane particleContainer = new Pane();
-        particleContainer.setMouseTransparent(true);
-        particleContainer.setLayoutX(WORMHOLE_WIDTH / 2);
-        particleContainer.setLayoutY(WORMHOLE_HEIGHT / 2);
-        wormholeContainer.getChildren().add(particleContainer);
-
         // Animate the wormhole
-        animateWormholeImage(imageView, pullingIn);
+//        animateWormholeImage(imageView, pullingIn);
 
         return wormholeContainer;
     }
 
+    /**
+     * Creates an ImageView for the wormhole image.
+     *
+     * @param path The path to the image resource.
+     * @return An ImageView with the specified image.
+     */
     private ImageView createImageView(String path) {
         Image image = new Image(getClass().getResourceAsStream(path));
         ImageView imageView = new ImageView(image);
@@ -201,4 +209,40 @@ public class LadderView {
 
         animation.play();
     }
+
+    private void addPulseAnimation(Pane container, Line line, Color color) {
+        javafx.scene.shape.Circle pulse = new javafx.scene.shape.Circle(10, color);
+        pulse.setEffect(new javafx.scene.effect.Glow(1.0));
+        pulse.setOpacity(0.0); // Start invisible, change to 1.0 temporarily to debug visibility
+
+        container.getChildren().add(pulse); // Add last so it's on top
+
+        PathTransition pathTransition = new PathTransition();
+        pathTransition.setDuration(Duration.seconds(1.5));
+        pathTransition.setPath(line); // Use the line directly
+        pathTransition.setNode(pulse);
+        pathTransition.setCycleCount(Animation.INDEFINITE);
+        pathTransition.setInterpolator(Interpolator.LINEAR);
+        pathTransition.setOrientation(PathTransition.OrientationType.NONE);
+
+        // Fade in and out during transition
+        pathTransition.currentTimeProperty().addListener((obs, oldTime, newTime) -> {
+            double frac = newTime.toMillis() / pathTransition.getDuration().toMillis();
+            if (frac < 0.15) {
+                pulse.setOpacity(frac / 0.15);
+            } else if (frac > 0.85) {
+                pulse.setOpacity((1 - frac) / 0.15);
+            } else {
+                pulse.setOpacity(1.0);
+            }
+        });
+
+        // Delay start until scene is ready
+        container.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                javafx.application.Platform.runLater(pathTransition::play);
+            }
+        });
     }
+
+}

@@ -1,7 +1,6 @@
 module edu.ntnu.iir.bidata {
   requires javafx.controls;
   requires javafx.swing;
-  requires jdk.compiler;
   requires java.desktop;
   requires javafx.media;
   requires com.google.gson;
@@ -20,4 +19,5 @@ module edu.ntnu.iir.bidata {
   exports edu.ntnu.iir.bidata.view.util;
   exports edu.ntnu.iir.bidata.controller.other;
   exports edu.ntnu.iir.bidata.controller.board;
+  opens edu.ntnu.iir.bidata.view.util to com.google.gson;
 }

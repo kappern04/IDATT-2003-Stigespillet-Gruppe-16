@@ -4,7 +4,7 @@ import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.util.BoardUtils;
-import edu.ntnu.iir.bidata.util.ShipUtils;
+import edu.ntnu.iir.bidata.view.util.ShipUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

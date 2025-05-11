@@ -69,22 +69,40 @@ public class PlayerController implements Observer {
         SequentialTransition sequence = new SequentialTransition();
 
         if (isSpecialMovement) {
-            TranslateTransition jump = createTranslateTransition(sprite, getBoardOffsetX(targetPosition), getBoardOffsetY(targetPosition), SPECIAL_JUMP_DURATION_MS);
-            RotateTransition spin = createRotateTransition(sprite, getRotationForTile(targetPosition), SPECIAL_JUMP_DURATION_MS);
-            sequence.getChildren().add(new ParallelTransition(jump, spin));
+            sequence.getChildren().add(createSpecialMovementAnimation(sprite, targetPosition));
         } else {
-            int steps = targetPosition - currentPosition;
-            for (int i = 1; i <= steps; i++) {
-                int stepPosition = currentPosition + i;
-                Tile tile = board.getTiles().get(stepPosition);
-                TranslateTransition translate = createTranslateTransition(sprite, getBoardOffsetX(stepPosition), getBoardOffsetY(stepPosition), STEP_DURATION_MS);
-                RotateTransition rotate = createRotateTransition(sprite, getRotationForTile(stepPosition), STEP_DURATION_MS);
-                sequence.getChildren().add(new ParallelTransition(translate, rotate));
-            }
+            sequence.getChildren().addAll(createStepByStepAnimation(sprite, currentPosition, targetPosition));
         }
 
         sequence.setOnFinished(e -> handleAnimationFinished(player, targetPosition));
         sequence.play();
+    }
+
+    private ParallelTransition createSpecialMovementAnimation(ImageView sprite, int targetPosition) {
+        TranslateTransition jump = createTranslateTransition(sprite, getBoardOffsetX(targetPosition),
+                getBoardOffsetY(targetPosition), SPECIAL_JUMP_DURATION_MS);
+        RotateTransition spin = createRotateTransition(sprite, getRotationForTile(targetPosition),
+                SPECIAL_JUMP_DURATION_MS);
+        return new ParallelTransition(jump, spin);
+    }
+
+    private Animation[] createStepByStepAnimation(ImageView sprite, int currentPosition, int targetPosition) {
+        int steps = targetPosition - currentPosition;
+        Animation[] animations = new Animation[steps];
+
+        for (int i = 1; i <= steps; i++) {
+            int stepPosition = currentPosition + i;
+            TranslateTransition translate = createTranslateTransition(sprite,
+                    getBoardOffsetX(stepPosition),
+                    getBoardOffsetY(stepPosition),
+                    STEP_DURATION_MS);
+            RotateTransition rotate = createRotateTransition(sprite,
+                    getRotationForTile(stepPosition),
+                    STEP_DURATION_MS);
+            animations[i-1] = new ParallelTransition(translate, rotate);
+        }
+
+        return animations;
     }
 
     private TranslateTransition createTranslateTransition(ImageView sprite, double targetX, double targetY, int durationMs) {
@@ -119,20 +137,14 @@ public class PlayerController implements Observer {
 
     private boolean isSpecialMovement(int currentPosition, int targetPosition) {
         Tile currentTile = board.getTiles().get(currentPosition);
-        return hasLadderToPosition(currentTile, targetPosition) ||
+        return hasSpecialMovementToPosition(currentTile, targetPosition) ||
                 Math.abs(targetPosition - currentPosition) > 6 ||
                 targetPosition < currentPosition;
     }
 
-    private boolean hasLadderToPosition(Tile tile, int targetPosition) {
-        if (tile.getTileAction() instanceof LadderAction ladderAction) {
-            return ladderAction.getDestinationTileIndex() == targetPosition;
-        }
-        return false;
-    }
-
-    private boolean hasLadder(Tile tile) {
-        return tile.hasLadderAction();
+    private boolean hasSpecialMovementToPosition(Tile tile, int targetPosition) {
+        return tile.getTileAction() != null &&
+                tile.getTileAction().leadsToPosition(board, targetPosition);
     }
 
     private void handleAnimationFinished(Player player, int targetPosition) {
@@ -140,24 +152,26 @@ public class PlayerController implements Observer {
         previousPositions.put(player, targetPosition);
 
         Tile currentTile = board.getTiles().get(targetPosition);
-        if (hasLadder(currentTile)) {
-            playLadderAnimation(player, currentTile, previousPosition, () -> {
-                if (player.getPositionIndex() != targetPosition) {
-                    animatePlayerMovement(player, targetPosition, player.getPositionIndex());
-                }
-            });
-        } else if (player.getPositionIndex() != targetPosition) {
-            animatePlayerMovement(player, targetPosition, player.getPositionIndex());
-        }
+        processSpecialTileEffects(player, currentTile, previousPosition, () -> {
+            // After all special effects, check if position changed and animate again if needed
+            if (player.getPositionIndex() != targetPosition) {
+                animatePlayerMovement(player, targetPosition, player.getPositionIndex());
+            }
+        });
     }
 
-    private void playLadderAnimation(Player player, Tile tile, int previousPosition, Runnable onFinished) {
+    private void processSpecialTileEffects(Player player, Tile tile, int previousPosition, Runnable onComplete) {
+        if (tile.getTileAction() == null) {
+            if (onComplete != null) onComplete.run();
+            return;
+        }
+
         PauseTransition pause = new PauseTransition(Duration.millis(LADDER_DELAY_MS));
         pause.setOnFinished(event -> {
             if (tile.getTileAction() instanceof LadderAction ladderAction) {
                 ladderAction.playLadderSound(previousPosition);
             }
-            if (onFinished != null) onFinished.run();
+            if (onComplete != null) onComplete.run();
         });
         pause.play();
     }

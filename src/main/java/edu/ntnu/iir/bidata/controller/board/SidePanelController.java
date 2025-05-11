@@ -12,20 +12,11 @@ public class SidePanelController {
     private BoardGameController boardGameController;
     private PlayerController playerController;
 
-    public SidePanelController(BoardGameController boardGameController) {
-        this.boardGameController = boardGameController;
-
-        // Create a player controller to access player visuals
-        this.playerController = new PlayerController(
-                boardGameController.getBoard(),
-                boardGameController.getPlayers()
-        );
-
-        // Register the player controller as observer
-        for (Player player : boardGameController.getPlayers()) {
-            player.addObserver(playerController);
-        }
-    }
+  public SidePanelController(
+      BoardGameController boardGameController, PlayerController playerController) {
+    this.boardGameController = boardGameController;
+    this.playerController = playerController;
+  }
 
     public Player[] getPlayers() {
         return boardGameController.getPlayers();

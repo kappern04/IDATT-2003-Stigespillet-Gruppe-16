@@ -8,10 +8,12 @@ public class Stigespillet extends Application {
 
   @Override
   public void start(Stage primaryStage) {
+    System.out.println("Starting Stigespillet...");
     new MainMenuController(primaryStage);
   }
 
   public static void main(String[] args) {
+    System.out.println("Main started");
     launch();
   }
 }

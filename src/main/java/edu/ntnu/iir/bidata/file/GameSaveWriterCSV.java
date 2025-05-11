@@ -28,6 +28,10 @@ public class GameSaveWriterCSV {
   private final String savesDirectory;
   private final DecimalFormat colorFormat;
 
+    /**
+     * Constructor for GameSaveWriterCSV.
+     * Initializes the saves directory and ensures it exists.
+     */
   public GameSaveWriterCSV() {
     this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
     ensureSavesDirectoryExists();
@@ -37,12 +41,29 @@ public class GameSaveWriterCSV {
     this.colorFormat = new DecimalFormat("0.000", symbols);
   }
 
+    /**
+     * Saves the game state to a CSV file with a timestamped filename.
+     *
+     * @param boardGameController The game controller containing the current game state.
+     * @param boardName The name of the board. If null, the default board name is used.
+     * @return The path to the saved file.
+     * @throws IOException If an error occurs while writing to the file.
+     */
   public String saveGame(BoardGameController boardGameController, String boardName) throws IOException {
     String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     String fileName = "game_save_" + timestamp + ".csv";
     return saveGame(boardGameController, boardName, fileName);
   }
 
+    /**
+     * Saves the game state to a CSV file with a specified filename.
+     *
+     * @param boardGameController The game controller containing the current game state.
+     * @param boardName The name of the board. If null, the default board name is used.
+     * @param fileName The name of the file to save the game state to.
+     * @return The path to the saved file.
+     * @throws IOException If an error occurs while writing to the file.
+     */
   public String saveGame(BoardGameController boardGameController, String boardName, String fileName) throws IOException {
     if (boardName == null || boardName.equals("Unknown Board")) {
       boardName = boardGameController.getBoard().getBoardName();
@@ -114,6 +135,11 @@ public class GameSaveWriterCSV {
             colorFormat.format(color.getOpacity());
   }
 
+    /**
+     * Ensures the saves directory exists. If it doesn't, it attempts to create it.
+     *
+     * @return true if the directory exists or was created successfully, false otherwise.
+     */
   private boolean ensureSavesDirectoryExists() {
     Path path = Paths.get(savesDirectory);
     if (!Files.exists(path)) {

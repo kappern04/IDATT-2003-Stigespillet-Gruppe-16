@@ -62,4 +62,9 @@ public class LadderAction extends TileAction {
       mediaPlayer.play();
     }
   }
+
+  @Override
+  public boolean leadsToPosition(Board board, int targetPosition) {
+    return getDestinationTileIndex() == targetPosition;
+  }
 }

@@ -33,12 +33,19 @@ public class GameSaveReaderCSV {
   private final String savesDirectory;
   private final DecimalFormatSymbols symbols;
 
+    /**
+     * Constructor for GameSaveReaderCSV.
+     * Initializes the saves directory and sets the locale for decimal parsing.
+     */
   public GameSaveReaderCSV() {
     this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
     // Use US locale for consistent decimal parsing (period as decimal separator)
     this.symbols = new DecimalFormatSymbols(Locale.US);
   }
 
+    /**
+     * Ensures the saves directory exists, creating it if necessary.
+     */
   public BoardGameController loadGame(String filePath) throws IOException {
     if (!Paths.get(filePath).isAbsolute()) {
       filePath = savesDirectory + File.separator + filePath;
@@ -122,6 +129,10 @@ public class GameSaveReaderCSV {
     }
   }
 
+    /**
+     * Parses player data from a CSV line and creates a Player object.
+     * The expected format is: "Player Name",position,color,shipTypeId
+     */
   private Player parsePlayerFromData(String[] parts) {
     String playerName = parts[0].replaceAll("^\"|\"$", "");
     int position = Integer.parseInt(parts[1].trim());
@@ -201,7 +212,10 @@ public class GameSaveReaderCSV {
     return rankings;
   }
 
-
+  /**
+   * Loads a board by its name from the BoardRegistry.
+   * If the board is not found, a default board is returned.
+   */
   private Board loadBoardByName(String boardName) throws IOException {
     BoardRegistry registry = BoardRegistry.getInstance();
     Board board = registry.getBoardByName(boardName);

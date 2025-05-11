@@ -108,4 +108,8 @@ public class Board {
     }
     return tileNodeMap.get(tile.getIndex());
   }
+
+  public Integer getLastTile() {
+    return tiles.getLast().getIndex();
+  }
 }

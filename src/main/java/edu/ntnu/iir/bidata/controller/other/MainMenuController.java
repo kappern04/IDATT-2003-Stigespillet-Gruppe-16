@@ -3,7 +3,7 @@ package edu.ntnu.iir.bidata.controller.other;
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.file.BoardRegistry;
 import edu.ntnu.iir.bidata.file.GameSaveReaderCSV;
-import edu.ntnu.iir.bidata.file.PlayerData;
+import edu.ntnu.iir.bidata.view.util.PlayerData;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.view.BoardGameView;

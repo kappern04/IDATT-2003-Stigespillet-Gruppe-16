@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.util;
+package edu.ntnu.iir.bidata.view.util;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;

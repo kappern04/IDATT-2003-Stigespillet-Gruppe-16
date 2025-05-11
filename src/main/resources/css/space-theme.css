@@ -296,3 +296,51 @@
   -fx-smooth: false;
   -fx-preserve-ratio: true;
 }
+
+/* Tile styling */
+.tile-stack {
+  -fx-pref-width: 64px;
+  -fx-pref-height: 64px;
+  -fx-padding: 2px;
+}
+
+.tile-rect {
+  -fx-stroke: #fef100;
+  -fx-stroke-width: 2;
+  -fx-fill: transparent;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.2, 0, 1);
+}
+
+.tile-label {
+  -fx-font-weight: bold;
+  -fx-font-size: 14px;
+  -fx-text-fill: white;
+  -fx-font-family: 'Orbitron'; /* Match your space theme font */
+}
+
+/* Tile types */
+.tile-goal .tile-rect {
+  -fx-stroke: #6dd0f7;
+  -fx-stroke-width: 3;
+  -fx-effect: dropshadow(gaussian, rgba(109,208,247,0.7), 8, 0.4, 0, 0);
+}
+
+.tile-ladder-up .tile-rect {
+  -fx-stroke: #0fb14d;
+  -fx-stroke-width: 3;
+}
+
+.tile-ladder-down .tile-rect {
+  -fx-stroke: #ef1c26;
+  -fx-stroke-width: 3;
+}
+
+.tile-ladder-end-up .tile-rect {
+  -fx-stroke: #a6ce3a;
+  -fx-stroke-width: 3;
+}
+
+.tile-ladder-end-down .tile-rect {
+  -fx-stroke: #faa519;
+  -fx-stroke-width: 3;
+}

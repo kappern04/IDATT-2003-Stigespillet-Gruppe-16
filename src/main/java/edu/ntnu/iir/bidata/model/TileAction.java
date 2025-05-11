@@ -8,4 +8,8 @@ public class TileAction {
   public void performAction(Player player) {
     // Default action (can be overridden by subclasses)
   }
+
+  public boolean leadsToPosition(Board board, int targetPosition) {
+    return false; // Base implementation returns false
+  }
 }

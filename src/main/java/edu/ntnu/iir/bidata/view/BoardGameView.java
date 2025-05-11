@@ -2,6 +2,7 @@ package edu.ntnu.iir.bidata.view;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.controller.board.BoardController;
+import edu.ntnu.iir.bidata.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.controller.other.MusicController;
 import edu.ntnu.iir.bidata.model.MusicPlayer;
 import edu.ntnu.iir.bidata.view.board.BoardView;
@@ -32,16 +33,25 @@ public class BoardGameView {
             Arrays.asList(boardGameController.getPlayers())
     );
 
+    // Create a single PlayerController instance to be shared
+    PlayerController playerController = new PlayerController(
+            boardGameController.getBoard(),
+            boardGameController.getPlayers()
+    );
+
+    // Register the player controller as observer for all players
+    for (var player : boardGameController.getPlayers()) {
+      player.addObserver(playerController);
+    }
+
     // Initialize music components
     MusicPlayer musicPlayer = new MusicPlayer("/audio/bgmusic.wav");
     this.musicController = new MusicController(musicPlayer);
 
     // Initialize view components
     this.boardView = new BoardView(boardController);
-    this.sidePanelView = new SidePanelView(boardGameController);
+    this.sidePanelView = new SidePanelView(boardGameController, playerController);
     this.controlPanel = new ControlPanel(boardGameController, musicController);
-
-
   }
 
   public void setUpStage(Stage stage) {
@@ -55,7 +65,6 @@ public class BoardGameView {
     HBox gameArea = new HBox(20);
     gameArea.setAlignment(Pos.CENTER);
     gameArea.getChildren().addAll(mainLayout, sidePanelView.createControlPanel());
-
 
     // Set background
     String boardName = boardGameController.getBoard().getBoardName();
@@ -72,6 +81,5 @@ public class BoardGameView {
 
     // Start music
     musicController.play();
-
   }
 }

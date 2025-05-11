@@ -3,8 +3,9 @@ package edu.ntnu.iir.bidata.view.board;
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.controller.board.DieController;
 import edu.ntnu.iir.bidata.controller.board.SidePanelController;
+import edu.ntnu.iir.bidata.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.model.Player;
-import edu.ntnu.iir.bidata.util.PixelArtUpscaler;
+import edu.ntnu.iir.bidata.view.util.PixelArtUpscaler;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import javafx.scene.text.FontWeight;
 
 public class SidePanelView {
     private SidePanelController sidePanelController;
+    private PlayerController playerController;
     private DieView dieView;
     private DieController dieController;
     private Button dieButton;
@@ -31,8 +33,8 @@ public class SidePanelView {
     private Map<Player, Label> positionLabels;
     private Map<Player, Label> rankLabels;
 
-    public SidePanelView(BoardGameController boardGameController) {
-        this.sidePanelController = new SidePanelController(boardGameController);
+    public SidePanelView(BoardGameController boardGameController, PlayerController playerController) {
+        this.sidePanelController = new SidePanelController(boardGameController, playerController);
         this.dieView = new DieView();
         this.dieController = new DieController(boardGameController.getDie(), dieView);
         this.css = new CSS();

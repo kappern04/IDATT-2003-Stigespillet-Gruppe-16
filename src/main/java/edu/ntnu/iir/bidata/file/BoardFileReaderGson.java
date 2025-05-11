@@ -12,8 +12,19 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Implementation of BoardFileReader using Gson for JSON parsing.
+ * Reads board definitions from JSON files and converts them into Board objects.
+ */
 public class BoardFileReaderGson implements BoardFileReader {
 
+    /**
+     * Reads a board definition from the given InputStream.
+     *
+     * @param inputStream The InputStream containing the JSON board definition.
+     * @return A Board object representing the board definition.
+     * @throws IOException If an error occurs while reading the InputStream.
+     */
   @Override
   public Board readBoard(InputStream inputStream) throws IOException {
     try (JsonReader reader = new JsonReader(new InputStreamReader(inputStream))) {
@@ -35,6 +46,12 @@ public class BoardFileReaderGson implements BoardFileReader {
     }
   }
 
+    /**
+     * Converts a JSON object representing a tile into a Tile object.
+     *
+     * @param tileJson The JSON object representing the tile.
+     * @return A Tile object created from the JSON data.
+     */
   private static Tile getTileFromJson(JsonObject tileJson) {
     int id = tileJson.get("id").getAsInt();
     int x = tileJson.get("x").getAsInt();

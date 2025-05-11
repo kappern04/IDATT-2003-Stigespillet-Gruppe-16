@@ -22,10 +22,6 @@ public class CSS {
   private final Color SPACE_BLUE = Color.rgb(64, 224, 208);
   private final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
 
-  public final Color PLAYER_1_COLOR = Color.rgb(7, 239, 0);
-  public final Color PLAYER_2_COLOR = Color.rgb(112, 0, 239);
-  public final Color PLAYER_3_COLOR = Color.rgb(0, 174, 239);
-  public final Color PLAYER_4_COLOR = Color.rgb(239, 128, 0);
 
   public CSS() {
     loadCustomFont();

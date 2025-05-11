@@ -143,7 +143,11 @@ public class BoardRegistry {
    * @return List of board names
    */
   public List<String> getBoardNames() {
-    return new ArrayList<>(boardPathMap.keySet());
+    List<String> names = new ArrayList<>(boardPathMap.keySet());
+    if (!names.contains("Normal")) {
+      names.add(0, "Normal");
+    }
+    return names;
   }
 
   /**
@@ -153,22 +157,22 @@ public class BoardRegistry {
    * @return The loaded Board, or null if not found
    */
   public Board getBoardByName(String boardName) {
+    if ("Normal".equalsIgnoreCase(boardName)) {
+      return new Board(); // Use hard-coded default board
+    }
     String path = boardPathMap.get(boardName);
     if (path == null) {
       LOGGER.warning("Board not found: " + boardName);
       return null;
     }
-
     try {
       if (path.startsWith("/")) {
-        // Resource path
         InputStream stream = getClass().getResourceAsStream(path);
         if (stream == null) {
           throw new IOException("Resource not found: " + path);
         }
         return reader.readBoard(stream);
       } else {
-        // File path
         return reader.readBoard(Files.newInputStream(Paths.get(path)));
       }
     } catch (IOException e) {
