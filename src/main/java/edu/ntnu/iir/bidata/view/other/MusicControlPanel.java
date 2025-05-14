@@ -1,4 +1,3 @@
-// MusicControlPanel.java (View)
 package edu.ntnu.iir.bidata.view.other;
 
 import edu.ntnu.iir.bidata.controller.other.MusicController;

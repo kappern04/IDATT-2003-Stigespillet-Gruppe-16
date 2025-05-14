@@ -53,14 +53,6 @@ public class PlayerController implements Observer {
         });
     }
 
-    public void movePlayer(Player player, int steps) {
-        Objects.requireNonNull(player, "Player cannot be null");
-        int currentPosition = previousPositions.getOrDefault(player, 0);
-        int newPosition = Math.max(0, Math.min(board.getTiles().size() - 1, currentPosition + steps));
-        player.setPositionIndex(newPosition);
-        animatePlayerMovement(player, currentPosition, newPosition);
-    }
-
     private void animatePlayerMovement(Player player, int currentPosition, int targetPosition) {
         boolean isSpecialMovement = isSpecialMovement(currentPosition, targetPosition);
         ImageView sprite = playerView.getPlayerSprite(player);
