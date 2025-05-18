@@ -48,10 +48,11 @@ public class SidePanelView {
         controlPanel.setAlignment(Pos.CENTER);
         controlPanel.setMinWidth(200);
 
-        Player[] players = sidePanelController.getPlayers();
-        for (int i = 0; i < players.length / 2; i++) {
-            VBox playerBox = createPlayerBox(players[i]);
-            playerBoxes.put(players[i], playerBox);
+        List<Player> players = sidePanelController.getPlayers();
+        int half = players.size() / 2;
+        for (int i = 0; i < half; i++) {
+            VBox playerBox = createPlayerBox(players.get(i));
+            playerBoxes.put(players.get(i), playerBox);
             controlPanel.getChildren().add(playerBox);
         }
 
@@ -61,9 +62,9 @@ public class SidePanelView {
         dieBox.setAlignment(Pos.CENTER);
         controlPanel.getChildren().add(dieBox);
 
-        for (int i = players.length / 2; i < players.length; i++) {
-            VBox playerBox = createPlayerBox(players[i]);
-            playerBoxes.put(players[i], playerBox);
+        for (int i = half; i < players.size(); i++) {
+            VBox playerBox = createPlayerBox(players.get(i));
+            playerBoxes.put(players.get(i), playerBox);
             controlPanel.getChildren().add(playerBox);
         }
 
@@ -174,9 +175,9 @@ public class SidePanelView {
         ImageView playerImage = PixelArtUpscaler.resizeImage(originalImage, targetSize, targetSize);
         playerImage.getStyleClass().add("player-image");
 
-        Label nameLabel = css.createStyledLabel(player.getName(), FontWeight.BOLD, 16, getPlayerColor(player));
-        Label positionLabel = css.createStyledLabel("Position: " + player.getPositionIndex(),
-                FontWeight.NORMAL, 14, Color.WHITE);
+        Label nameLabel = css.sidePanelLabel(player.getName(), 16, getPlayerColor(player));
+        Label positionLabel = css.sidePanelLabel("Position: " + player.getPositionIndex(),
+                14, getPlayerColor(player));
         Label rankLabel = new Label();
 
         positionLabels.put(player, positionLabel);

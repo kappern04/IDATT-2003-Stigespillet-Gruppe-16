@@ -20,4 +20,6 @@ module edu.ntnu.iir.bidata {
   exports edu.ntnu.iir.bidata.controller.other;
   exports edu.ntnu.iir.bidata.controller.board;
   opens edu.ntnu.iir.bidata.view.util to com.google.gson;
+    exports edu.ntnu.iir.bidata.view.menu;
+    exports edu.ntnu.iir.bidata.controller.menu;
 }

@@ -1,6 +1,6 @@
-package edu.ntnu.iir.bidata.view.other;
+package edu.ntnu.iir.bidata.view.menu;
 
-import edu.ntnu.iir.bidata.controller.other.InGameMenuController;
+import edu.ntnu.iir.bidata.controller.menu.InGameMenuController;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import java.io.IOException;

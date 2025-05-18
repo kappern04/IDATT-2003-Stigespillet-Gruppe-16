@@ -36,7 +36,7 @@ public class SidePanelController implements Observer {
      *
      * @return Array of players
      */
-    public Player[] getPlayers() {
+    public List<Player> getPlayers() {
         return boardGameController.getPlayers();
     }
 

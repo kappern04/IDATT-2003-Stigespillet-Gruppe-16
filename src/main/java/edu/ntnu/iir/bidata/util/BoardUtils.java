@@ -5,7 +5,7 @@ import edu.ntnu.iir.bidata.model.Tile;
 
 public class BoardUtils {
     public static final int TILE_SIZE = 70;
-    public static final int TILE_CENTER_OFFSET = 35;
+    public static final int TILE_CENTER_OFFSET = TILE_SIZE/2;
 
     public static double getBoardOffsetX(Board board, Tile tile) {
         // Get actual min/max x values to center the board properly

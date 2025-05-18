@@ -1,11 +1,10 @@
 /* ===== FONT DECLARATION ===== */
 @font-face {
   font-family: 'Orbitron';
-  src: url('../font/Orbitron-VariableFont_wght.ttf');
+  src: url('../font/orbitron-bold.otf');
 }
 
 /* ===== BUTTONS ===== */
-/* Used in CSS.createSpaceButton() for all main menu buttons */
 .space-button {
   -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-background-radius: 10;
@@ -13,12 +12,13 @@
   -fx-border-width: 2;
   -fx-border-radius: 10;
   -fx-font-family: 'Orbitron';
-  -fx-text-fill: white;
+  -fx-text-fill: #fff;
   -fx-font-size: 16px;
   -fx-font-weight: bold;
   -fx-pref-width: 250px;
   -fx-pref-height: 50px;
   -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
+  -fx-transition: -fx-effect 0.3s;
 }
 
 .space-button:hover {
@@ -28,11 +28,33 @@
   -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
 }
 
+.space-button-small {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-background-radius: 8;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 1.5;
+  -fx-border-radius: 8;
+  -fx-font-family: 'Orbitron';
+  -fx-text-fill: #fff;
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-pref-width: 120px;
+  -fx-pref-height: 50px;
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
+  -fx-transition: -fx-effect 0.3s;
+}
+
+.space-button-small:hover {
+  -fx-background-color: rgba(30, 30, 60, 0.9);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
+}
+
 /* ===== FORM CONTROLS ===== */
-/* Used in MainMenu.showGameSetup() for player count spinner */
 .space-spinner {
   -fx-background-color: rgba(20, 20, 40, 0.7);
-  -fx-text-fill: white;
+  -fx-text-fill: #fff;
   -fx-font-family: 'Orbitron';
   -fx-font-size: 16px;
   -fx-border-color: rgba(64, 224, 208, 0.8);
@@ -41,24 +63,19 @@
   -fx-background-radius: 10;
 }
 
-/* Additional spinner-specific styling for inner components */
 .space-spinner .text-field {
   -fx-background-color: transparent;
-  -fx-text-fill: white;
+  -fx-text-fill: #fff;
   -fx-font-size: 16px;
   -fx-font-family: 'Orbitron';
 }
 
 .space-spinner .increment-arrow-button,
 .space-spinner .decrement-arrow-button {
-  -fx-background-color: rgba(20, 20, 40, 0.9);
-  -fx-border-color: rgba(64, 224, 208, 0.6);
-  -fx-border-width: 1;
-}
-
-.space-spinner .increment-arrow,
-.space-spinner .decrement-arrow {
-  -fx-background-color: rgba(64, 224, 208, 0.8);
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-background-radius: 8;
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
 }
 
 .space-spinner .increment-arrow-button:hover,
@@ -66,12 +83,18 @@
   -fx-background-color: rgba(30, 30, 60, 0.9);
   -fx-border-color: rgba(138, 43, 226, 0.9);
   -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
 }
 
-/* Used in MainMenu.showGameSetup() for the board selector */
+.space-spinner .increment-arrow,
+.space-spinner .decrement-arrow {
+  -fx-background-color: #fff;
+}
+
+/* ===== COMBO BOX ===== */
 .space-combo-box {
   -fx-background-color: rgba(20, 20, 40, 0.7);
-  -fx-text-fill: white;
+  -fx-text-fill: #fff;
   -fx-font-family: 'Orbitron';
   -fx-font-size: 16px;
   -fx-border-color: rgba(64, 224, 208, 0.8);
@@ -81,55 +104,53 @@
 }
 
 .space-combo-box .list-cell {
-  -fx-text-fill: white;
-  -fx-background-color: rgba(20, 20, 40, 0.9);
+  -fx-text-fill: #fff;
+  -fx-background-color: rgba(20, 20, 40, 0.7);
 }
 
 .space-combo-box .list-cell:hover {
-  -fx-background-color: rgba(64, 224, 208, 0.3);
+  -fx-background-color: rgba(30, 30, 60, 0.9);
 }
 
-/* Used in MainMenu.showGameSetup() for form labels */
+/* ===== LABELS ===== */
 .space-label {
   -fx-font-family: 'Orbitron';
   -fx-font-size: 16px;
   -fx-font-weight: bold;
-  -fx-text-fill: #40E0D0;
+  -fx-text-fill: rgb(64, 224, 208);
   -fx-padding: 0 0 5 0;
 }
 
-/* Used in MainMenu.collectPlayerNames() and InGameMenu.createSaveDialog() for text inputs */
+/* ===== TEXT FIELD ===== */
 .space-text-field {
   -fx-background-color: rgba(20, 20, 40, 0.7);
-  -fx-text-fill: white;
-  -fx-border-color: #40E0D0;
+  -fx-text-fill: #fff;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
   -fx-border-radius: 8;
   -fx-background-radius: 8;
   -fx-font-family: 'Orbitron';
   -fx-font-size: 14px;
-  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 5, 0.5, 0, 0);
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
+  -fx-transition: -fx-effect 0.3s;
 }
 
 .space-text-field:hover {
-  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 5, 0.7, 0, 0);
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
 }
 
 /* ===== CONTAINERS ===== */
-/* Used in MainMenu.collectPlayerNames() for the dialog grid layout */
 .space-dialog-grid {
-  -fx-background-color: rgba(10, 10, 30, 0.95);
+  -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-background-radius: 12;
   -fx-padding: 20;
 }
 
-/* Used in MainMenu.showGameSetup() for the settings container */
 .space-settings-box {
-  -fx-background-color: rgba(10, 10, 30, 0.7);
+  -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-background-radius: 16;
   -fx-padding: 30;
 }
 
-/* Used for button containers in dialog button bars */
 .space-button-bar .button {
   -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-font-family: 'Orbitron';
@@ -145,9 +166,8 @@
 }
 
 /* ===== DIALOG STYLING ===== */
-/* Used in multiple dialogs: MainMenu.collectPlayerNames(), InGameMenu.createSaveDialog(), etc. */
 .space-dialog-pane {
-  -fx-background-color: rgba(10, 10, 30, 0.95);
+  -fx-background-color: rgba(20, 20, 40, 1);
   -fx-background-radius: 15;
   -fx-border-color: rgba(64, 224, 208, 0.8);
   -fx-border-width: 2;
@@ -161,12 +181,12 @@
 }
 
 .space-dialog-pane .button {
-  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-background-color: rgba(20, 20, 40, 1);
   -fx-background-radius: 10;
   -fx-border-color: rgba(64, 224, 208, 0.8);
   -fx-border-width: 2;
   -fx-border-radius: 10;
-  -fx-text-fill: white;
+  -fx-text-fill: #fff;
   -fx-font-family: 'Orbitron';
   -fx-font-weight: bold;
   -fx-font-size: 12px;
@@ -179,10 +199,9 @@
   -fx-background-color: rgba(30, 30, 60, 0.9);
   -fx-border-color: rgba(138, 43, 226, 0.9);
   -fx-cursor: hand;
-  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 15, 0.7, 0, 0);
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
 }
 
-/* Critical for fixing white backgrounds in dialogs */
 .space-dialog-pane .header-panel {
   -fx-background-color: transparent;
 }
@@ -194,15 +213,14 @@
 
 .space-dialog-pane .label {
   -fx-background-color: transparent;
-  -fx-text-fill: #40E0D0;
+  -fx-text-fill: rgb(64, 224, 208);
   -fx-font-family: 'Orbitron';
   -fx-font-weight: bold;
 }
 
-/* Used for text fields in dialogs like InGameMenu.createSaveDialog() */
 .space-dialog-pane .text-field {
   -fx-background-color: rgba(20, 20, 40, 0.7);
-  -fx-text-fill: white;
+  -fx-text-fill: #fff;
   -fx-border-color: rgba(64, 224, 208, 0.8);
   -fx-border-width: 1.5;
   -fx-border-radius: 8;
@@ -218,54 +236,57 @@
 }
 
 /* ===== COLOR PICKER ===== */
-/* Used in MainMenu.showGameSetup() for the color picker */
 .space-color-picker {
-  -fx-background-color: #0a1429;
+  -fx-background-color: rgba(20, 20, 40, 0.7);
   -fx-background-radius: 5px;
-  -fx-border-color: #4a90e2;
-  -fx-border-radius: 5px;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-radius: 100px;
   -fx-border-width: 1px;
-  -fx-effect: dropshadow(three-pass-box, #4a90e2, 5, 0.3, 0, 0);
+  -fx-color-label-visible: false;
+  -fx-color-rect-width: 32px;
+  -fx-color-rect-height: 32px;
+  -fx-min-width: 32px;
+  -fx-pref-width: 32px;
+  -fx-max-width: 32px;
+  -fx-min-height: 32px;
+  -fx-pref-height: 32px;
+  -fx-max-height: 32px;
+  -fx-effect: dropshadow(three-pass-box, rgb(64, 224, 208), 5, 0.3, 0, 0);
+  -fx-padding: 0;
 }
 
 .space-color-picker .color-picker-label {
-  -fx-text-fill: white;
+  -fx-alignment: center;
+  -fx-padding: 0;
+  -fx-min-width: 100%;
+  -fx-min-height: 100%;
+  -fx-max-width: 100%;
+  -fx-max-height: 100%;
+  -fx-content-display: center;
+  -fx-graphic-text-gap: 0;
+  -fx-text-fill: transparent;
+  -fx-border-radius: 5px;
 }
 
 .space-color-picker .arrow-button {
-  -fx-background-color: #4a90e2;
-  -fx-background-radius: 0 5px 5px 0;
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+  -fx-shape: "";
+  -fx-min-width: 0;
+  -fx-pref-width: 0;
+  -fx-max-width: 0;
 }
 
 .space-color-picker .arrow {
-  -fx-background-color: white;
-}
-
-.space-color-picker-grid {
-  -fx-background-color: #0a1429;
-  -fx-border-color: #4a90e2;
-  -fx-border-width: 1px;
-}
-
-/* Style the color dialog */
-.custom-color-dialog {
-  -fx-background-color: #0a1429;
-}
-
-.custom-color-dialog .label {
-  -fx-text-fill: white;
-}
-
-.custom-color-dialog .slider .track {
-  -fx-background-color: #2a3b57;
-}
-
-.custom-color-dialog .slider .thumb {
-  -fx-background-color: #4a90e2;
+  -fx-shape: "";
+  -fx-padding: 0;
+  -fx-background-color: transparent;
+  -fx-min-width: 0;
+  -fx-pref-width: 0;
+  -fx-max-width: 0;
 }
 
 /* ===== SIDE PANEL STYLES ===== */
-/* Player box styling */
 .player-box {
   -fx-border-width: 0;
   -fx-background-color: transparent;
@@ -273,23 +294,18 @@
 }
 
 .player-box-highlighted {
-  -fx-border-color: yellow;
+  -fx-border-color: rgba(255, 255, 0, 0.8);
   -fx-border-width: 2;
   -fx-border-radius: 5;
   -fx-background-color: rgba(255, 255, 0, 0.2);
   -fx-padding: 3;
 }
 
-/* Die button styling */
-.die-button-enabled {
-  -fx-opacity: 1.0;
-}
-
+.die-button-enabled,
 .die-button-disabled {
   -fx-opacity: 1.0;
 }
 
-/* Player image styling */
 .player-image {
   -fx-fit-width: 80;
   -fx-fit-height: 80;
@@ -297,50 +313,92 @@
   -fx-preserve-ratio: true;
 }
 
-/* Tile styling */
-.tile-stack {
-  -fx-pref-width: 64px;
-  -fx-pref-height: 64px;
-  -fx-padding: 2px;
+.side-panel-label {
+  -fx-padding: 5;
+  -fx-background-radius: 10px;
+  -fx-font-family: 'Orbitron';
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
 }
 
+/* ===== TILE STYLES ===== */
+/* Tile StackPane */
+.tile-stack {
+  -fx-alignment: top-left;
+}
+
+/* Tile Rectangle */
 .tile-rect {
-  -fx-stroke: #fef100;
+  -fx-width: 64px;
+  -fx-height: 64px;
+  -fx-stroke: rgb(254, 241, 0);         /* Default stroke */
   -fx-stroke-width: 2;
   -fx-fill: transparent;
-  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 4, 0.2, 0, 1);
+  -fx-arc-width: 0;
+  -fx-arc-height: 0;
+  -fx-effect: dropshadow(gaussian, #fff700, 0, 0, 0, 0), glow(1.0);
 }
 
+/* Label styling */
 .tile-label {
   -fx-font-weight: bold;
-  -fx-font-size: 14px;
+  -fx-font-size: 13px;
   -fx-text-fill: white;
-  -fx-font-family: 'Orbitron'; /* Match your space theme font */
+  -fx-padding: 3px 5px 3px 5px;
 }
 
-/* Tile types */
+/* Special tile stroke colors (add these classes dynamically in Java) */
 .tile-goal .tile-rect {
-  -fx-stroke: #6dd0f7;
-  -fx-stroke-width: 3;
-  -fx-effect: dropshadow(gaussian, rgba(109,208,247,0.7), 8, 0.4, 0, 0);
+  -fx-stroke: rgb(109, 208, 247);
+}
+.tile-ladder-destination-up .tile-rect {
+  -fx-stroke: rgb(166, 206, 58);
+}
+.tile-ladder-destination-down .tile-rect {
+  -fx-stroke: rgb(250, 165, 25);
+}
+.tile-ladder-action-up .tile-rect {
+  -fx-stroke: rgb(15, 177, 77);
+}
+.tile-ladder-action-down .tile-rect {
+  -fx-stroke: rgb(239, 28, 38);
 }
 
-.tile-ladder-up .tile-rect {
-  -fx-stroke: #0fb14d;
-  -fx-stroke-width: 3;
+/* ===== PlayerMenu ===== */
+.color-button {
+  -fx-padding: 0;
+  -fx-background-insets: 0;
+  -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0.3, 0, 0);
+  -fx-cursor: hand;
 }
 
-.tile-ladder-down .tile-rect {
-  -fx-stroke: #ef1c26;
-  -fx-stroke-width: 3;
+.color-button:hover {
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
 }
 
-.tile-ladder-end-up .tile-rect {
-  -fx-stroke: #a6ce3a;
-  -fx-stroke-width: 3;
+.ship-selector-button {
+  -fx-background-color: rgba(20, 20, 40, 0.7);
+  -fx-background-radius: 4;
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 2;
+  -fx-border-radius: 4;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(gaussian, rgb(64, 224, 208), 10, 0.5, 0, 0);
 }
 
-.tile-ladder-end-down .tile-rect {
-  -fx-stroke: #faa519;
-  -fx-stroke-width: 3;
+.ship-selector-button:hover {
+  -fx-background-color: rgba(30, 30, 60, 0.9);
+  -fx-border-color: rgba(138, 43, 226, 0.9);
+  -fx-effect: dropshadow(gaussian, rgb(138, 43, 226), 20, 0.7, 0, 0);
+}
+
+.space-separator {
+  -fx-background: transparent;
+  -fx-opacity: 0.4;
+}
+
+.space-separator .line {
+  -fx-border-color: rgba(64, 224, 208, 0.8);
+  -fx-border-width: 1px;
 }

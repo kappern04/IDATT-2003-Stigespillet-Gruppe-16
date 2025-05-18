@@ -39,15 +39,6 @@ public class BoardController {
     }
 
     /**
-     * Gets the players as an array.
-     *
-     * @return Array of players
-     */
-    public Player[] getPlayersArray() {
-        return players.toArray(new Player[0]);
-    }
-
-    /**
      * Gets the list of players.
      *
      * @return List of players

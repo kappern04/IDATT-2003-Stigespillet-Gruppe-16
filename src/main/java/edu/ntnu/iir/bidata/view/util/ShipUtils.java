@@ -9,46 +9,71 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 
-public class ShipUtils {
+/**
+ * Utility class for loading and coloring ship sprites.
+ */
+public final class ShipUtils {
     public static final int SPRITE_SIZE = 32;
     private static final String SHIP_SPRITE_PATH = "/image/player/Ship_%d.png";
+    private static final double TRANSPARENCY_THRESHOLD = 0.1;
+    private static final double SATURATION_THRESHOLD = 0.15;
+    private static final double GLOW_RADIUS = 15.0;
+    private static final double GLOW_SPREAD = 0.3;
 
+    private ShipUtils() {
+        // Prevent instantiation
+    }
+
+    /**
+     * Loads a ship sprite image for the given ship type.
+     *
+     * @param shipType the ship type index
+     * @return the loaded Image
+     * @throws IllegalArgumentException if the image cannot be loaded
+     */
     public static Image loadShipSprite(int shipType) {
+        String path = String.format(SHIP_SPRITE_PATH, shipType);
         try {
-            String path = String.format(SHIP_SPRITE_PATH, shipType);
-            return new Image(Objects.requireNonNull(
-                    ShipUtils.class.getResourceAsStream(path),
-                    "Could not load ship sprite"));
+            var stream = ShipUtils.class.getResourceAsStream(path);
+            if (stream == null) {
+                throw new IllegalArgumentException("Could not load ship sprite: " + path);
+            }
+            return new Image(stream);
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load ship sprite image", e);
+            throw new RuntimeException("Failed to load ship sprite image: " + path, e);
         }
     }
 
+    /**
+     * Creates a colored ImageView of the ship sprite using the target color.
+     *
+     * @param targetColor the color to apply
+     * @param baseSprite the base ship sprite image
+     * @return an ImageView with the colored ship and glow effect
+     */
     public static ImageView createColoredShipImage(Color targetColor, Image baseSprite) {
-        // Create a writable copy of the base sprite
-        int width = (int)baseSprite.getWidth();
-        int height = (int)baseSprite.getHeight();
+        Objects.requireNonNull(targetColor, "Target color cannot be null");
+        Objects.requireNonNull(baseSprite, "Base sprite cannot be null");
+
+        int width = (int) baseSprite.getWidth();
+        int height = (int) baseSprite.getHeight();
         WritableImage coloredImage = new WritableImage(width, height);
         PixelReader reader = baseSprite.getPixelReader();
         PixelWriter writer = coloredImage.getPixelWriter();
 
-        // Get target hue from player color
+        if (reader == null) {
+            throw new IllegalArgumentException("Base sprite has no pixel reader");
+        }
+
         double targetHue = targetColor.getHue();
 
-        // Process each pixel
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 Color pixel = reader.getColor(x, y);
 
-                // Keep transparent pixels unchanged
-                if (pixel.getOpacity() < 0.1) {
+                if (pixel.getOpacity() < TRANSPARENCY_THRESHOLD) {
                     writer.setColor(x, y, pixel);
-                    continue;
-                }
-
-                // Only recolor non-black, non-white pixels
-                if (pixel.getSaturation() > 0.15) {
-                    // Replace hue while keeping saturation and brightness
+                } else if (pixel.getSaturation() > SATURATION_THRESHOLD) {
                     Color newColor = Color.hsb(
                             targetHue,
                             pixel.getSaturation(),
@@ -57,27 +82,31 @@ public class ShipUtils {
                     );
                     writer.setColor(x, y, newColor);
                 } else {
-                    // Keep grayscale pixels unchanged
                     writer.setColor(x, y, pixel);
                 }
             }
         }
 
-        // Create ImageView with the colored image
         ImageView imageView = new ImageView(coloredImage);
         imageView.setFitWidth(SPRITE_SIZE);
         imageView.setFitHeight(SPRITE_SIZE);
 
-        // Add a glow effect with the player's color
         DropShadow glow = new DropShadow();
         glow.setColor(targetColor);
-        glow.setRadius(15);
-        glow.setSpread(0.3);
+        glow.setRadius(GLOW_RADIUS);
+        glow.setSpread(GLOW_SPREAD);
         imageView.setEffect(glow);
 
         return imageView;
     }
 
+    /**
+     * Loads and colors a ship sprite for the given type and color.
+     *
+     * @param targetColor the color to apply
+     * @param shipType the ship type index
+     * @return an ImageView with the colored ship
+     */
     public static ImageView createColoredShipImage(Color targetColor, int shipType) {
         Image baseSprite = loadShipSprite(shipType);
         return createColoredShipImage(targetColor, baseSprite);

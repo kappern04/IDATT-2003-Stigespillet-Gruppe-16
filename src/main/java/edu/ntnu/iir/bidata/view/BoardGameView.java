@@ -9,7 +9,6 @@ import edu.ntnu.iir.bidata.view.board.BoardView;
 import edu.ntnu.iir.bidata.view.board.SidePanelView;
 import edu.ntnu.iir.bidata.view.other.ControlPanel;
 import edu.ntnu.iir.bidata.view.util.CSS;
-import java.util.Arrays;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
@@ -30,7 +29,7 @@ public class BoardGameView {
     // Create the board controller
     BoardController boardController = new BoardController(
             boardGameController.getBoard(),
-            Arrays.asList(boardGameController.getPlayers())
+            boardGameController.getPlayers()
     );
 
     // Create a single PlayerController instance to be shared
@@ -39,10 +38,6 @@ public class BoardGameView {
             boardGameController.getPlayers()
     );
 
-    // Register the player controller as observer for all players
-    for (var player : boardGameController.getPlayers()) {
-      player.addObserver(playerController);
-    }
 
     // Initialize music components
     MusicPlayer musicPlayer = new MusicPlayer("/audio/bgmusic.wav");

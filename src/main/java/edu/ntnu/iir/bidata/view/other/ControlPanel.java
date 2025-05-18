@@ -1,19 +1,29 @@
 package edu.ntnu.iir.bidata.view.other;
 
 import edu.ntnu.iir.bidata.controller.BoardGameController;
-import edu.ntnu.iir.bidata.controller.other.InGameMenuController;
+import edu.ntnu.iir.bidata.controller.menu.InGameMenuController;
 import edu.ntnu.iir.bidata.controller.other.MusicController;
+import edu.ntnu.iir.bidata.view.menu.InGameMenu;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
 
+/**
+ * Provides a control panel with music controls and a menu button.
+ */
 public class ControlPanel {
-    private BoardGameController boardGameController;
-    private MusicController musicController;
-    private MusicControlPanel musicControlPanel;
-    private CSS css;
+    private final BoardGameController boardGameController;
+    private final MusicController musicController;
+    private final MusicControlPanel musicControlPanel;
+    private final CSS css;
 
+    /**
+     * Constructs a ControlPanel.
+     *
+     * @param boardGameController the board game controller
+     * @param musicController the music controller
+     */
     public ControlPanel(BoardGameController boardGameController, MusicController musicController) {
         this.boardGameController = boardGameController;
         this.musicController = musicController;
@@ -21,19 +31,22 @@ public class ControlPanel {
         this.css = new CSS();
     }
 
+    /**
+     * Creates the control panel UI.
+     *
+     * @return the HBox containing the control panel
+     */
     public HBox createControlPanel() {
-        HBox controlPanel = new HBox(10);
+        HBox controlPanel = new HBox(30);
         controlPanel.setAlignment(Pos.CENTER_LEFT);
 
-        // Create menu button
         Button menuButton = css.createSpaceButton("Menu");
+        menuButton.getStyleClass().add("space-button-small");
         menuButton.setOnAction(e -> showInGameMenu());
 
-        // Add music controls and menu button
         HBox musicPanel = musicControlPanel.createControlPanel();
 
         controlPanel.getChildren().addAll(musicPanel, menuButton);
-
         return controlPanel;
     }
 
@@ -42,5 +55,4 @@ public class ControlPanel {
         InGameMenu menu = new InGameMenu(controller);
         menu.show();
     }
-
 }

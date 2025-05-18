@@ -1,7 +1,8 @@
-package edu.ntnu.iir.bidata.controller.other;
+package edu.ntnu.iir.bidata.controller.menu;
 
 import edu.ntnu.iir.bidata.Stigespillet;
 import edu.ntnu.iir.bidata.controller.BoardGameController;
+import edu.ntnu.iir.bidata.controller.other.MusicController;
 import edu.ntnu.iir.bidata.file.GameSaveWriterCSV;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import java.io.IOException;

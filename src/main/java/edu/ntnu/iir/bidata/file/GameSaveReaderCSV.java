@@ -3,72 +3,50 @@ package edu.ntnu.iir.bidata.file;
 import edu.ntnu.iir.bidata.controller.BoardGameController;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.Player;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.paint.Color;
 
 /**
  * Reads a saved game state from a CSV file and reconstructs the {@link BoardGameController}.
- * The expected CSV format is:
- * boardName,"Board Name"
- * currentPlayerIndex,0
- * playerName,position,color,shipTypeId
- * "Player 1",0,0.500;0.500;0.500;1.000,1
- * ...
  */
 public class GameSaveReaderCSV {
-  private static final String DELIMITER = ",";
   private static final Logger LOGGER = Logger.getLogger(GameSaveReaderCSV.class.getName());
   private final String savesDirectory;
   private final DecimalFormatSymbols symbols;
 
-    /**
-     * Constructor for GameSaveReaderCSV.
-     * Initializes the saves directory and sets the locale for decimal parsing.
-     */
   public GameSaveReaderCSV() {
     this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
-    // Use US locale for consistent decimal parsing (period as decimal separator)
     this.symbols = new DecimalFormatSymbols(Locale.US);
   }
 
-    /**
-     * Ensures the saves directory exists, creating it if necessary.
-     */
+  /**
+   * Loads a game from a CSV file and reconstructs the BoardGameController.
+   */
   public BoardGameController loadGame(String filePath) throws IOException {
     if (!Paths.get(filePath).isAbsolute()) {
       filePath = savesDirectory + File.separator + filePath;
     }
-
     LOGGER.info("Loading game from: " + filePath);
     SaveFileTracker.getInstance().setCurrentSaveFilePath(filePath);
 
     try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
       String[] boardNameParts = parseCsvLine(reader.readLine());
-      String boardName = boardNameParts[1].replaceAll("^\"|\"$", "");
+      String boardName = getCsvValue(boardNameParts, 1);
 
       String[] indexParts = parseCsvLine(reader.readLine());
-      int currentPlayerIndex = Integer.parseInt(indexParts[1].trim());
+      int currentPlayerIndex = Integer.parseInt(getCsvValue(indexParts, 1));
 
-      // skips first line
       reader.readLine();
 
       String[] rankingParts = parseCsvLine(reader.readLine());
       List<Player> players = new ArrayList<>();
-      List<Player> rankings = new ArrayList<>();
+      List<String> rankingNames = getRankingNames(rankingParts);
 
-      // reads player data
       String line;
       while ((line = reader.readLine()) != null) {
         if (line.trim().isEmpty()) continue;
@@ -76,10 +54,6 @@ public class GameSaveReaderCSV {
         if (parts.length >= 2) {
           Player player = parsePlayerFromData(parts);
           players.add(player);
-          String playerName = player.getName();
-          if (Arrays.asList(rankingParts).contains("\"" + playerName + "\"")) {
-            rankings.add(player);
-          }
         }
       }
 
@@ -87,9 +61,11 @@ public class GameSaveReaderCSV {
         throw new IOException("Invalid save file: Missing required data.");
       }
 
+      List<Player> rankings = getPlayerRankings(rankingNames, players);
+
       BoardGameController boardGameController = new BoardGameController();
       boardGameController.setBoard(loadBoardByName(boardName));
-      boardGameController.setPlayers(players.toArray(new Player[0]));
+      boardGameController.setPlayers(players);
       boardGameController.setCurrentPlayerIndex(currentPlayerIndex);
       boardGameController.setPlayerRanks(rankings);
 
@@ -98,10 +74,50 @@ public class GameSaveReaderCSV {
     }
   }
 
-  /**
-   * Parses a color string in the format "r;g;b;a" and creates a JavaFX Color object.
-   * Uses US locale to ensure consistent decimal parsing.
-   */
+  private String getCsvValue(String[] arr, int idx) {
+    if (arr == null || arr.length <= idx) return null;
+    return arr[idx].replaceAll("^\"|\"$", "");
+  }
+
+  private List<String> getRankingNames(String[] rankingParts) {
+    List<String> names = new ArrayList<>();
+    for (int i = 1; i < rankingParts.length; i++) {
+      names.add(rankingParts[i].replaceAll("^\"|\"$", ""));
+    }
+    return names;
+  }
+
+  private List<Player> getPlayerRankings(List<String> rankingNames, List<Player> players) {
+    List<Player> rankings = new ArrayList<>();
+    for (String name : rankingNames) {
+      players.stream()
+              .filter(p -> p.getName().equals(name))
+              .findFirst()
+              .ifPresent(rankings::add);
+    }
+    return rankings;
+  }
+
+  private Player parsePlayerFromData(String[] parts) {
+    String playerName = parts[0].replaceAll("^\"|\"$", "");
+    int position = Integer.parseInt(parts[1].trim());
+    Player player = new Player(playerName);
+    player.setPositionIndex(position);
+
+    if (parts.length >= 3 && !parts[2].trim().isEmpty()) {
+      Color color = parsePlayerColor(parts[2].trim(), playerName);
+      if (color != null) player.setColor(color);
+    }
+    if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
+      try {
+        player.setShipType(Integer.parseInt(parts[3].trim()));
+      } catch (NumberFormatException e) {
+        LOGGER.warning("Could not parse ship type for player " + playerName);
+      }
+    }
+    return player;
+  }
+
   private Color parsePlayerColor(String colorString, String playerName) {
     try {
       String[] colorParts = colorString.split(";");
@@ -109,61 +125,24 @@ public class GameSaveReaderCSV {
         LOGGER.warning("Invalid color format for player " + playerName + ": " + colorString);
         return null;
       }
-
-      // Parse using US locale to handle decimal points consistently
-      double red = parseDouble(colorParts[0].trim());
-      double green = parseDouble(colorParts[1].trim());
-      double blue = parseDouble(colorParts[2].trim());
-      double opacity = colorParts.length > 3 ? parseDouble(colorParts[3].trim()) : 1.0;
-
-      // Verify values are within valid range (0.0-1.0)
-      red = Math.max(0, Math.min(1, red));
-      green = Math.max(0, Math.min(1, green));
-      blue = Math.max(0, Math.min(1, blue));
-      opacity = Math.max(0, Math.min(1, opacity));
-
-      return new Color(red, green, blue, opacity);
+      double red = parseDouble(colorParts[0]);
+      double green = parseDouble(colorParts[1]);
+      double blue = parseDouble(colorParts[2]);
+      double opacity = colorParts.length > 3 ? parseDouble(colorParts[3]) : 1.0;
+      return new Color(
+              clamp(red), clamp(green), clamp(blue), clamp(opacity)
+      );
     } catch (Exception e) {
       LOGGER.log(Level.WARNING, "Failed to parse color for player " + playerName + ": " + colorString, e);
       return null;
     }
   }
 
-    /**
-     * Parses player data from a CSV line and creates a Player object.
-     * The expected format is: "Player Name",position,color,shipTypeId
-     */
-  private Player parsePlayerFromData(String[] parts) {
-    String playerName = parts[0].replaceAll("^\"|\"$", "");
-    int position = Integer.parseInt(parts[1].trim());
-
-    Player player = new Player(playerName);
-    player.setPositionIndex(position);
-
-    if (parts.length >= 3 && !parts[2].trim().isEmpty()) {
-      Color color = parsePlayerColor(parts[2].trim(), playerName);
-      if (color != null) {
-        player.setColor(color);
-      }
-    }
-
-    if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
-      try {
-        int shipType = Integer.parseInt(parts[3].trim());
-        player.setShipType(shipType);
-      } catch (NumberFormatException e) {
-        LOGGER.warning("Could not parse ship type for player " + playerName);
-      }
-    }
-
-    return player;
+  private double clamp(double value) {
+    return Math.max(0, Math.min(1, value));
   }
 
-  /**
-   * Parse double values using US locale to ensure consistent handling of decimal points
-   */
-  private double parseDouble(String value) throws ParseException {
-    // Replace any commas with periods to handle potential locale issues
+  private double parseDouble(String value) {
     value = value.replace(',', '.');
     return Double.parseDouble(value);
   }
@@ -175,11 +154,7 @@ public class GameSaveReaderCSV {
     List<String> result = new ArrayList<>();
     StringBuilder current = new StringBuilder();
     boolean inQuotes = false;
-
-    char[] chars = line.toCharArray();
-    for (int i = 0; i < chars.length; i++) {
-      char c = chars[i];
-
+    for (char c : line.toCharArray()) {
       if (c == '"') {
         inQuotes = !inQuotes;
         current.append(c);
@@ -194,37 +169,13 @@ public class GameSaveReaderCSV {
     return result.toArray(new String[0]);
   }
 
-  private List<Player> parsePlayerRanks(String[] parts, List<Player> players) {
-    List<Player> rankings = new ArrayList<>();
-    if (parts.length <= 1) {
-      return rankings;
-    }
-
-    for (int i = 1; i < parts.length; i++) {
-      String playerName = parts[i].replaceAll("\"", "");
-      for (Player player : players) {
-        if (player.getName().equals(playerName)) {
-          rankings.add(player);
-          break;
-        }
-      }
-    }
-    return rankings;
-  }
-
-  /**
-   * Loads a board by its name from the BoardRegistry.
-   * If the board is not found, a default board is returned.
-   */
   private Board loadBoardByName(String boardName) throws IOException {
     BoardRegistry registry = BoardRegistry.getInstance();
     Board board = registry.getBoardByName(boardName);
-
     if (board == null) {
       LOGGER.warning("Unknown board name: '" + boardName + "', using default board");
       return new Board();
     }
-
     return board;
   }
 }

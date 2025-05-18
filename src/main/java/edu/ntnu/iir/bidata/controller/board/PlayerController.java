@@ -8,8 +8,7 @@ import edu.ntnu.iir.bidata.util.BoardUtils;
 import edu.ntnu.iir.bidata.util.Observable;
 import edu.ntnu.iir.bidata.util.Observer;
 import edu.ntnu.iir.bidata.view.board.PlayerView;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 import javafx.animation.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -25,7 +24,7 @@ public class PlayerController implements Observer {
     private final PlayerView playerView;
     private final HashMap<Player, Integer> previousPositions;
 
-    public PlayerController(Board board, Player[] players) {
+    public PlayerController(Board board, List<Player> players) {
         this.board = Objects.requireNonNull(board, "Board cannot be null");
         this.previousPositions = new HashMap<>();
         for (Player player : players) {

@@ -26,7 +26,6 @@ public class DieController implements Observer {
     private final AnimationTimer timer;
 
     private long animationStartTime;
-    private MediaPlayer mediaPlayer;
     private Runnable onAnimationComplete;
 
     /**
@@ -39,14 +38,7 @@ public class DieController implements Observer {
     public DieController(Die die, DieView dieView) {
         this.die = Objects.requireNonNull(die, "Die cannot be null");
         this.dieView = Objects.requireNonNull(dieView, "DieView cannot be null");
-
-        // Initialize timer
         this.timer = createAnimationTimer();
-
-        // Set up sound
-        this.mediaPlayer = createMediaPlayer(SOUND_FILE_PATH);
-
-        // Register as observer to the die model
         this.die.addObserver(this);
     }
 
@@ -105,11 +97,11 @@ public class DieController implements Observer {
                     stop();
                     dieView.updateDieImage(die.getLastRoll());
 
-                    // Add a pause before executing the callback
                     PauseTransition pause = new PauseTransition(Duration.millis(PAUSE_DURATION_MS));
                     pause.setOnFinished(event -> {
                         if (onAnimationComplete != null) {
                             onAnimationComplete.run();
+                            onAnimationComplete = null; // Clear callback after use
                         }
                     });
                     pause.play();
@@ -122,17 +114,18 @@ public class DieController implements Observer {
      * Plays the die roll sound effect.
      */
     private void playSound() {
-        if (mediaPlayer != null) {
-            // Stop and create a new instance for consistent playback
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-            mediaPlayer = createMediaPlayer(SOUND_FILE_PATH);
-
-            if (mediaPlayer != null) {
-                mediaPlayer.setCycleCount(1);
-                mediaPlayer.setOnEndOfMedia(mediaPlayer::stop);
-                mediaPlayer.play();
-            }
+        MediaPlayer player = createMediaPlayer(SOUND_FILE_PATH);
+        if (player != null) {
+            player.setCycleCount(1);
+            player.setOnEndOfMedia(() -> {
+                player.stop();
+                player.dispose();
+            });
+            player.setOnError(() -> {
+                System.err.println("Media error: " + player.getError());
+                player.dispose();
+            });
+            player.play();
         }
     }
 
@@ -146,9 +139,7 @@ public class DieController implements Observer {
         try {
             String resourcePath = "/audio/" + soundFile;
             Media sound = new Media(getClass().getResource(resourcePath).toExternalForm());
-            MediaPlayer player = new MediaPlayer(sound);
-            player.setOnError(() -> System.err.println("Media error: " + player.getError()));
-            return player;
+            return new MediaPlayer(sound);
         } catch (Exception e) {
             System.err.println("Could not load sound file: " + soundFile);
             e.printStackTrace();
@@ -175,11 +166,6 @@ public class DieController implements Observer {
      */
     public void dispose() {
         timer.stop();
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-            mediaPlayer.dispose();
-            mediaPlayer = null;
-        }
         die.removeObserver(this);
     }
 }

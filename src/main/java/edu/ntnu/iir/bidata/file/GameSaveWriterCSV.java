@@ -6,9 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
@@ -28,44 +26,45 @@ public class GameSaveWriterCSV {
   private final String savesDirectory;
   private final DecimalFormat colorFormat;
 
-    /**
-     * Constructor for GameSaveWriterCSV.
-     * Initializes the saves directory and ensures it exists.
-     */
+  /**
+   * Constructor for GameSaveWriterCSV.
+   * Initializes the saves directory and ensures it exists.
+   */
   public GameSaveWriterCSV() {
     this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
     ensureSavesDirectoryExists();
-
-    // Create a decimal format with period as decimal separator regardless of locale
     DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
     this.colorFormat = new DecimalFormat("0.000", symbols);
   }
 
-    /**
-     * Saves the game state to a CSV file with a timestamped filename.
-     *
-     * @param boardGameController The game controller containing the current game state.
-     * @param boardName The name of the board. If null, the default board name is used.
-     * @return The path to the saved file.
-     * @throws IOException If an error occurs while writing to the file.
-     */
+  /**
+   * Saves the game state to a CSV file with a timestamped filename.
+   *
+   * @param boardGameController The game controller containing the current game state.
+   * @param boardName The name of the board. If null, the default board name is used.
+   * @return The path to the saved file.
+   * @throws IOException If an error occurs while writing to the file.
+   */
   public String saveGame(BoardGameController boardGameController, String boardName) throws IOException {
     String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
     String fileName = "game_save_" + timestamp + ".csv";
     return saveGame(boardGameController, boardName, fileName);
   }
 
-    /**
-     * Saves the game state to a CSV file with a specified filename.
-     *
-     * @param boardGameController The game controller containing the current game state.
-     * @param boardName The name of the board. If null, the default board name is used.
-     * @param fileName The name of the file to save the game state to.
-     * @return The path to the saved file.
-     * @throws IOException If an error occurs while writing to the file.
-     */
+  /**
+   * Saves the game state to a CSV file with a specified filename.
+   *
+   * @param boardGameController The game controller containing the current game state.
+   * @param boardName The name of the board. If null, the default board name is used.
+   * @param fileName The name of the file to save the game state to.
+   * @return The path to the saved file.
+   * @throws IOException If an error occurs while writing to the file.
+   */
   public String saveGame(BoardGameController boardGameController, String boardName, String fileName) throws IOException {
-    if (boardName == null || boardName.equals("Unknown Board")) {
+    if (boardGameController == null) {
+      throw new IllegalArgumentException("BoardGameController cannot be null.");
+    }
+    if (boardName == null || boardName.isBlank() || boardName.equals("Unknown Board")) {
       boardName = boardGameController.getBoard().getBoardName();
     }
     if (!fileName.toLowerCase().endsWith(".csv")) {
@@ -77,12 +76,15 @@ public class GameSaveWriterCSV {
       // Row 1: boardName,"Board Name"
       writer.write("boardName" + DELIMITER + "\"" + boardName + "\"");
       writer.newLine();
+
       // Row 2: currentPlayerIndex,0
       writer.write("currentPlayerIndex" + DELIMITER + boardGameController.getCurrentPlayerIndex());
       writer.newLine();
+
       // Row 3: playerName,position,color,shipTypeId
       writer.write("playerName" + DELIMITER + "position" + DELIMITER + "color" + DELIMITER + "shipTypeId");
       writer.newLine();
+
       // Row 4: player ranking
       StringBuilder rankings = new StringBuilder("rankings");
       for (Player rankedPlayer : boardGameController.getPlayerRanks()) {
@@ -95,11 +97,7 @@ public class GameSaveWriterCSV {
       for (Player player : boardGameController.getPlayers()) {
         String formattedName = "\"" + player.getName() + "\"";
         int position = player.getPositionIndex();
-
-        // Color as r;g;b;a with consistent decimal format
         String colorStr = formatPlayerColor(player.getColor());
-
-        // Get shipTypeId
         int shipTypeId = player.getShipType();
 
         writer.write(formattedName + DELIMITER +
@@ -121,25 +119,23 @@ public class GameSaveWriterCSV {
   }
 
   /**
-   * Format player color with consistent decimal notation using US locale
-   * to avoid issues with different decimal separators.
+   * Formats player color with consistent decimal notation using US locale.
    */
   private String formatPlayerColor(Color color) {
     if (color == null) {
       return "";
     }
-
     return colorFormat.format(color.getRed()) + ";" +
             colorFormat.format(color.getGreen()) + ";" +
             colorFormat.format(color.getBlue()) + ";" +
             colorFormat.format(color.getOpacity());
   }
 
-    /**
-     * Ensures the saves directory exists. If it doesn't, it attempts to create it.
-     *
-     * @return true if the directory exists or was created successfully, false otherwise.
-     */
+  /**
+   * Ensures the saves directory exists. If it doesn't, it attempts to create it.
+   *
+   * @return true if the directory exists or was created successfully, false otherwise.
+   */
   private boolean ensureSavesDirectoryExists() {
     Path path = Paths.get(savesDirectory);
     if (!Files.exists(path)) {

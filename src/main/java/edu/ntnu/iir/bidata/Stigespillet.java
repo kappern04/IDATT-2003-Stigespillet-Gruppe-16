@@ -1,6 +1,6 @@
 package edu.ntnu.iir.bidata;
 
-import edu.ntnu.iir.bidata.controller.other.MainMenuController;
+import edu.ntnu.iir.bidata.controller.menu.MainMenuController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
