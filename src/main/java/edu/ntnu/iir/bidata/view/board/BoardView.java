@@ -27,6 +27,7 @@ public class BoardView {
     private static final Map<String, String> BOARD_BACKGROUNDS = new HashMap<>();
     private static final String DEFAULT_BACKGROUND = "/image/background/background_1.png";
     private final CSS css;
+    private final Map<Integer, Node> tileNodeMap = new HashMap<>();
 
     static {
         BOARD_BACKGROUNDS.put("Spiral Way", "/image/background/background_1.png");
@@ -58,7 +59,6 @@ public class BoardView {
         StackPane boardPane = new StackPane();
 
         List<Tile> tiles = boardController.getTiles();
-        Map<Integer, Node> tileNodeMap = new HashMap<>();
 
         int minX = tiles.stream().mapToInt(Tile::getX).min().orElse(0);
         int minY = tiles.stream().mapToInt(Tile::getY).min().orElse(0);

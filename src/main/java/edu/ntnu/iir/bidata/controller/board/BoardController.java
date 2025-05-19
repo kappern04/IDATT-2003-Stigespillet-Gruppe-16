@@ -5,6 +5,7 @@ import edu.ntnu.iir.bidata.model.Player;
 import edu.ntnu.iir.bidata.model.Tile;
 import edu.ntnu.iir.bidata.util.Observable;
 import edu.ntnu.iir.bidata.util.Observer;
+import javafx.scene.Node;
 
 import java.util.List;
 import java.util.Objects;
@@ -78,6 +79,10 @@ public class BoardController {
     public Tile getDestinationTile(Tile tile) {
         Objects.requireNonNull(tile, "Tile cannot be null");
         return tile.getLadderDestination(board);
+    }
+
+    public Node getTileNode(Tile tile) {
+        return board.getTileNode(tile);
     }
 
     /**

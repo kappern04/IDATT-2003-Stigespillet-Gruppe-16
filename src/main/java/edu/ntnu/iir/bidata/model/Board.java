@@ -10,18 +10,18 @@ import javafx.scene.Node;
  * creating the tiles and setting up the game.
  */
 public class Board {
-  private List<Tile> tiles;
-  private String name;
-  private String description;
-  private int x_dimension;
-  private int y_dimension;
+  private final List<Tile> tiles;
+  private final String name;
+  private final String description;
+  private final int x_dimension;
+  private final int y_dimension;
   private Map<Integer, Node> tileNodeMap;
 
   //empty constructor creates default board
   public Board() {
     this.name = "Stigespillet 90";
     this.description = "Standard snakes and ladders with 90 (10x9) tiles";
-    tiles = new ArrayList<Tile>(91);
+    tiles = new ArrayList<>(91);
     this.x_dimension = 10;
     this.y_dimension = 9;
     createDefaultTiles();
