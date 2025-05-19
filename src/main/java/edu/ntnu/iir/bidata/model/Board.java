@@ -44,7 +44,7 @@ public class Board {
   }
 
   private void createDefaultTiles() {
-    tiles.addFirst(new Tile(0, -1, -1, new TileAction())); // Position outside the visible board
+    tiles.addFirst(new Tile(0, -1, 9, new TileAction())); // Position outside the visible board
 
     // Create tiles 1-90 for the visible board
     for (int i = 1; i <= 90; i++) {
