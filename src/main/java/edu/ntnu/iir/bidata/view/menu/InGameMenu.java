@@ -4,88 +4,167 @@ import edu.ntnu.iir.bidata.controller.menu.InGameMenuController;
 import edu.ntnu.iir.bidata.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.view.util.CSS;
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Optional;
-import javafx.animation.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Glow;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 public class InGameMenu extends VBox {
-  private InGameMenuController controller;
-  private Stage menuStage;
-  private CSS css;
+  private static final Logger LOGGER = Logger.getLogger(InGameMenu.class.getName());
+
+  private static final int MENU_WIDTH = 400;
+  private static final int MENU_HEIGHT = 500;
+  private static final int SPACING = 30;
+  private static final int PADDING = 40;
+  private static final String BACKGROUND_PATH = "/image/background/mainmenu.png";
+  private static final String STYLESHEET_PATH = "/css/space-theme.css";
+  private static final String TITLE_TEXT = "MISSION CONTROL";
+
+  private static final String RESUME_TEXT = "Resume Mission";
+  private static final String SAVE_TEXT = "Save Mission";
+  private static final String MAIN_MENU_TEXT = "Return to Base";
+  private static final String EXIT_TEXT = "Abort Mission";
+  private static final String SAVE_DIALOG_TITLE = "Save Mission";
+  private static final String SAVE_DIALOG_HEADER = "ENTER MISSION NAME:";
+  private static final String SAVE_DIALOG_CONTENT = "Designation:";
+  private static final String SAVE_BUTTON_TEXT = "SAVE MISSION";
+  private static final String CANCEL_BUTTON_TEXT = "ABORT";
+
+  private final InGameMenuController controller;
+  private final Stage menuStage;
+  private final CSS css;
 
   public InGameMenu(InGameMenuController controller) {
-    this.controller = controller;
+    this.controller = Objects.requireNonNull(controller, "Controller cannot be null");
     this.css = new CSS();
-    setupMenu();
+    this.menuStage = new Stage();
+    initializeMenu();
   }
 
-  private void setupMenu() {
-    initializeStage();
+  public void show() {
+    centerOnScreen();
+    menuStage.show();
+    Platform.runLater(() -> {
+      if (getChildren().size() > 1 && getChildren().get(1) instanceof Button button) {
+        button.requestFocus();
+      }
+    });
+  }
+
+  private void initializeMenu() {
+    configureStage();
     configureLayout();
-
-    Text title = createAnimatedTitle();
-    Button resumeButton = createResumeButton();
-    Button saveButton = createSaveButton();
-    Button mainMenuButton = createMainMenuButton();
-    Button exitButton = createExitButton();
-
-    getChildren().addAll(title, resumeButton, mainMenuButton, saveButton, exitButton);
-
-    setBackground(css.createSpaceBackground("/image/background/mainmenu.png"));
+    populateMenu();
+    setupBackground();
     setupScene();
+    setupKeyboardShortcuts();
   }
 
-  private void initializeStage() {
-    menuStage = new Stage();
+  private void configureStage() {
     menuStage.initModality(Modality.APPLICATION_MODAL);
     menuStage.initStyle(StageStyle.UNDECORATED);
+    menuStage.setOnShown(e -> {
+      Scene scene = menuStage.getScene();
+      scene.setFill(Color.TRANSPARENT);
+      scene.getRoot().setEffect(new DropShadow(20, Color.BLACK));
+    });
   }
 
   private void configureLayout() {
-    setSpacing(30);
+    setSpacing(SPACING);
     setAlignment(Pos.CENTER);
-    setPadding(new javafx.geometry.Insets(40));
+    setPadding(new Insets(PADDING));
+    setId("in-game-menu");
+  }
+
+  private Button createMenuButton(String text, javafx.event.EventHandler<javafx.event.ActionEvent> action) {
+    Button button = css.createSpaceButton(text);
+    button.setOnAction(action);
+    button.setMaxWidth(Double.MAX_VALUE);
+    return button;
+  }
+
+  private void populateMenu() {
+    Text title = createAnimatedTitle();
+    Button resumeButton = createMenuButton(RESUME_TEXT, e -> menuStage.close());
+    Button mainMenuButton = createMenuButton(MAIN_MENU_TEXT, e -> handleMainMenuAction());
+    Button saveButton = createMenuButton(SAVE_TEXT, e -> handleSaveAction());
+    Button exitButton = createMenuButton(EXIT_TEXT, e -> handleExitAction());
+
+    getChildren().addAll(title, resumeButton, mainMenuButton, saveButton, exitButton);
+  }
+
+  private void setupBackground() {
+    setBackground(css.createSpaceBackground(BACKGROUND_PATH));
+  }
+
+  private void setupScene() {
+    Scene scene = new Scene(this, MENU_WIDTH, MENU_HEIGHT);
+    scene.setFill(Color.TRANSPARENT);
+    css.applyDefaultStylesheet(scene);
+    menuStage.setScene(scene);
+  }
+
+  private void setupKeyboardShortcuts() {
+    Scene scene = menuStage.getScene();
+    scene.setOnKeyPressed(e -> {
+      if (e.getCode() == KeyCode.ESCAPE) {
+        menuStage.close();
+      }
+    });
+  }
+
+  private void centerOnScreen() {
+    double screenWidth = Screen.getPrimary().getVisualBounds().getWidth();
+    double screenHeight = Screen.getPrimary().getVisualBounds().getHeight();
+    menuStage.setX((screenWidth - MENU_WIDTH) / 2);
+    menuStage.setY((screenHeight - MENU_HEIGHT) / 2);
   }
 
   private Text createAnimatedTitle() {
-    Text title = new Text("MISSION CONTROL");
+    Text title = new Text(TITLE_TEXT);
     title.setFont(css.getOrbitronFont(24, FontWeight.BOLD));
     title.setFill(css.getSpaceBlue());
-
-    Glow glow = new Glow(0.8);
-    title.setEffect(glow);
-
-    Timeline pulse = new Timeline(
-            new KeyFrame(Duration.ZERO, new KeyValue(glow.levelProperty(), 0.3)),
-            new KeyFrame(Duration.seconds(1.5), new KeyValue(glow.levelProperty(), 0.8))
-    );
-    pulse.setCycleCount(Animation.INDEFINITE);
-    pulse.setAutoReverse(true);
-    pulse.play();
 
     return title;
   }
 
-  private Button createResumeButton() {
-    Button button = css.createSpaceButton("Resume Mission");
-    button.setOnAction(e -> menuStage.close());
-    return button;
-  }
 
-  private Button createSaveButton() {
-    Button button = css.createSpaceButton("Save Mission");
-    button.setOnAction(e -> handleSaveAction());
-    return button;
+  private void handleMainMenuAction() {
+    Alert confirmDialog = createSpaceThemedAlert(
+            Alert.AlertType.CONFIRMATION,
+            "Confirm Return",
+            null,
+            "Return to main menu? Mission progress since last save will be lost."
+    );
+    confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+    Button yesButton = (Button) confirmDialog.getDialogPane().lookupButton(ButtonType.YES);
+    Button noButton = (Button) confirmDialog.getDialogPane().lookupButton(ButtonType.NO);
+    yesButton.setText("CONFIRM");
+    noButton.setText("CANCEL");
+
+    Optional<ButtonType> result = confirmDialog.showAndWait();
+    if (result.isPresent() && result.get() == ButtonType.YES) {
+      menuStage.close();
+      controller.returnToMainMenu();
+    }
   }
 
   private void handleSaveAction() {
@@ -94,11 +173,23 @@ public class InGameMenu extends VBox {
       TextInputDialog dialog = createSaveDialog();
       Optional<String> result = dialog.showAndWait();
 
-      if (!result.isPresent()) {
+      if (result.isEmpty()) {
         return;
       }
 
-      fileName = result.get().trim().isEmpty() ? null : result.get();
+      String inputName = result.get().trim();
+      if (inputName.isEmpty()) {
+        Alert alert = createSpaceThemedAlert(
+                Alert.AlertType.WARNING,
+                "Invalid Name",
+                null,
+                "Mission name cannot be empty. Save canceled."
+        );
+        alert.showAndWait();
+        return;
+      }
+
+      fileName = inputName;
     }
 
     try {
@@ -106,104 +197,86 @@ public class InGameMenu extends VBox {
       showSaveSuccessMessage(savedFilePath);
       menuStage.close();
     } catch (IOException ex) {
+      LOGGER.log(Level.SEVERE, "Failed to save game", ex);
       showSaveErrorMessage(ex.getMessage());
+    }
+  }
+
+  private void handleExitAction() {
+    Alert confirmDialog = createSpaceThemedAlert(
+            Alert.AlertType.CONFIRMATION,
+            "Confirm Exit",
+            null,
+            "Are you sure you want to exit the game? Unsaved progress will be lost."
+    );
+    confirmDialog.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+    Button yesButton = (Button) confirmDialog.getDialogPane().lookupButton(ButtonType.YES);
+    Button noButton = (Button) confirmDialog.getDialogPane().lookupButton(ButtonType.NO);
+    yesButton.setText("CONFIRM");
+    noButton.setText("CANCEL");
+
+    Optional<ButtonType> result = confirmDialog.showAndWait();
+    if (result.isPresent() && result.get() == ButtonType.YES) {
+      controller.exitGame();
     }
   }
 
   private TextInputDialog createSaveDialog() {
     TextInputDialog dialog = new TextInputDialog();
-    dialog.setTitle("Save Mission");
+    dialog.setTitle(SAVE_DIALOG_TITLE);
 
-    // Apply space theme to dialog
     DialogPane dialogPane = dialog.getDialogPane();
-    dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    dialogPane.getStylesheets().add(getClass().getResource(STYLESHEET_PATH).toExternalForm());
     dialogPane.getStyleClass().add("space-dialog-pane");
 
-    // Style the text field
-    dialog.getEditor().getStyleClass().add("space-text-field");
+    TextField editor = dialog.getEditor();
+    editor.getStyleClass().add("space-text-field");
 
-    dialog.setHeaderText("ENTER MISSION NAME:");
-    dialog.setContentText("Designation:");
+    dialog.setHeaderText(SAVE_DIALOG_HEADER);
+    dialog.setContentText(SAVE_DIALOG_CONTENT);
 
-    // Add shake animations to buttons
     Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
     Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
 
-    okButton.setText("SAVE MISSION");
-    cancelButton.setText("ABORT");
+    okButton.setStyle("small-space-button");
+    cancelButton.setStyle("small-space-button");
 
-    // Add shake animation to buttons
-    okButton.setOnMouseEntered(e -> {
-      TranslateTransition shake = new TranslateTransition(Duration.millis(50), okButton);
-      shake.setFromX(-2);
-      shake.setToX(2);
-      shake.setCycleCount(4);
-      shake.setAutoReverse(true);
-      shake.play();
-    });
-
-    cancelButton.setOnMouseEntered(e -> {
-      TranslateTransition shake = new TranslateTransition(Duration.millis(50), cancelButton);
-      shake.setFromX(-2);
-      shake.setToX(2);
-      shake.setCycleCount(4);
-      shake.setAutoReverse(true);
-      shake.play();
-    });
+    okButton.setText(SAVE_BUTTON_TEXT);
+    cancelButton.setText(CANCEL_BUTTON_TEXT);
 
     return dialog;
   }
 
-  private void showSaveSuccessMessage(String savedFilePath) {
-    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-    alert.setTitle("Mission Saved");
+  private Alert createSpaceThemedAlert(Alert.AlertType type, String title, String header, String content) {
+    Alert alert = new Alert(type);
+    alert.setTitle(title);
+    alert.setHeaderText(header);
+    alert.setContentText(content);
 
-    // Apply space theme to alert
     DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
+    dialogPane.getStylesheets().add(getClass().getResource(STYLESHEET_PATH).toExternalForm());
     dialogPane.getStyleClass().add("space-dialog-pane");
 
-    alert.setHeaderText(null);
-    alert.setContentText("Game saved successfully to: " + savedFilePath);
+    return alert;
+  }
+
+  private void showSaveSuccessMessage(String savedFilePath) {
+    Alert alert = createSpaceThemedAlert(
+            Alert.AlertType.INFORMATION,
+            "Mission Saved",
+            null,
+            "Game saved successfully to: " + savedFilePath
+    );
     alert.showAndWait();
   }
 
   private void showSaveErrorMessage(String errorMessage) {
-    Alert alert = new Alert(Alert.AlertType.ERROR);
-    alert.setTitle("Save Failed");
-
-    // Apply space theme to alert
-    DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
-    dialogPane.getStyleClass().add("space-dialog-pane");
-
-    alert.setHeaderText(null);
-    alert.setContentText("Failed to save game: " + errorMessage);
+    Alert alert = createSpaceThemedAlert(
+            Alert.AlertType.ERROR,
+            "Save Failed",
+            null,
+            "Failed to save game: " + errorMessage
+    );
     alert.showAndWait();
-  }
-
-  private Button createMainMenuButton() {
-    Button button = css.createSpaceButton("Return to Base");
-    button.setOnAction(e -> {
-      menuStage.close();
-      controller.returnToMainMenu();
-    });
-    return button;
-  }
-
-  private Button createExitButton() {
-    Button button = css.createSpaceButton("Abort Mission");
-    button.setOnAction(e -> controller.exitGame());
-    return button;
-  }
-
-  private void setupScene() {
-    Scene scene = new Scene(this, 400, 500);
-    css.applyDefaultStylesheet(scene);
-    menuStage.setScene(scene);
-  }
-
-  public void show() {
-    menuStage.show();
   }
 }

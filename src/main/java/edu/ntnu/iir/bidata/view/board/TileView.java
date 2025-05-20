@@ -3,14 +3,13 @@ package edu.ntnu.iir.bidata.view.board;
 import edu.ntnu.iir.bidata.model.Board;
 import edu.ntnu.iir.bidata.model.LadderAction;
 import edu.ntnu.iir.bidata.model.Tile;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
 public class TileView {
-  private Board board;
+  private final Board board;
+  private static final int TILE_SIZE = 64;
 
   public TileView(Board board) {
     this.board = board;
@@ -18,57 +17,64 @@ public class TileView {
 
   public StackPane createTile(int tileIndex) {
     StackPane stackPane = new StackPane();
-    Rectangle rect = new Rectangle(64, 64);
+    stackPane.setPrefSize(TILE_SIZE, TILE_SIZE);
+    stackPane.setMinSize(TILE_SIZE, TILE_SIZE);
+    stackPane.setMaxSize(TILE_SIZE, TILE_SIZE);
+    stackPane.getStyleClass().add("tile-stack");
 
-    // Modified visual enhancements that won't break ladder placement
-    rect.setStroke(Color.rgb(254, 241, 0));
-    rect.setFill(Color.TRANSPARENT); // Reverting to transparent background
-    rect.setStrokeWidth(2); // Keep original stroke width
-
-    // Remove rounded corners completely
-    rect.setArcWidth(0);
-    rect.setArcHeight(0);
-
-    // Use a very subtle effect that won't interfere with ladders
-    rect.setEffect(new javafx.scene.effect.Glow(1));
-
+    // Tile number
     Label tileLabel = new Label(Integer.toString(tileIndex));
-    tileLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 13px; -fx-text-fill: white; -fx-padding: 3px 5px;");
+    tileLabel.getStyleClass().add("tile-label");
 
-    stackPane.getChildren().addAll(rect, tileLabel);
-    stackPane.setAlignment(Pos.TOP_LEFT); // Keep critical alignment
+    // Position label in top-left corner
+    StackPane.setAlignment(tileLabel, javafx.geometry.Pos.TOP_LEFT);
+    tileLabel.setPadding(new javafx.geometry.Insets(3, 0, 0, 5));
+
+    stackPane.getChildren().add(tileLabel);
+
+    // Apply appropriate styling based on tile type
+    updateTileStyle(tileIndex, stackPane);
 
     return stackPane;
   }
 
-  public void colorTile(int tileIndex, Rectangle rect) {
+  /**
+   * Applies the appropriate style classes to a tile based on its function
+   */
+  public void updateTileStyle(int tileIndex, StackPane stackPane) {
+    // Remove all special styling first
+    stackPane.getStyleClass().removeAll(
+            "tile-default", "tile-goal",
+            "tile-ladder-destination-up", "tile-ladder-destination-down",
+            "tile-ladder-action-up", "tile-ladder-action-down"
+    );
+
+    // Apply default style as base
+    stackPane.getStyleClass().add("tile-default");
+
+    // Check if this is the goal tile
     if (tileIndex == board.getLastTile()) {
-      {rect.setStroke(Color.rgb(109, 208, 247));}
+      stackPane.getStyleClass().add("tile-goal");
+      return; // Goal styling takes precedence
     }
-  }
 
-  public void colorDestinationTile(int tileIndex, Rectangle rect) {
-    for (Tile destinationT : board.getTiles()) {
-      if (destinationT.getTileAction() instanceof LadderAction action
-              && action.getDestinationTileIndex() == tileIndex) {
-        if (tileIndex > destinationT.getIndex()) {
-          rect.setStroke(Color.rgb(166, 206, 58));
-        } else {
-          rect.setStroke(Color.rgb(250, 165, 25));
+    // Simplified ladder checks
+    for (Tile tile : board.getTiles()) {
+      if (tile.getTileAction() instanceof LadderAction action) {
+        // Check if this is a ladder destination
+        if (action.getDestinationTileIndex() == tileIndex) {
+          String styleClass = tileIndex > tile.getIndex() ?
+                  "tile-ladder-destination-up" : "tile-ladder-destination-down";
+          stackPane.getStyleClass().add(styleClass);
+          break;
         }
-        return;
-      }
-    }
-  }
 
-  public void colorActionTile(int tileIndex, Rectangle rect) {
-    for (Tile actionT : board.getTiles()) {
-      if (actionT.getTileAction() instanceof LadderAction action
-              && actionT.getIndex() == tileIndex) {
-        if (action.getDestinationTileIndex() > tileIndex) {
-          rect.setStroke(Color.rgb(15, 177, 77));
-        } else {
-          rect.setStroke(Color.rgb(239, 28, 38));
+        // Check if this is a ladder action tile
+        if (tile.getIndex() == tileIndex) {
+          String styleClass = action.getDestinationTileIndex() > tileIndex ?
+                  "tile-ladder-action-up" : "tile-ladder-action-down";
+          stackPane.getStyleClass().add(styleClass);
+          break;
         }
       }
     }

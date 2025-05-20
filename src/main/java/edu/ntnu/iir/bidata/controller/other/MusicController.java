@@ -25,15 +25,4 @@ public class MusicController {
         return musicPlayer.isPlaying();
     }
 
-    public void loadSoundEffect(String name, String path) {
-        musicPlayer.loadSoundEffect(name, path);
-    }
-
-    public void playSoundEffect(String name) {
-        musicPlayer.playSoundEffect(name);
-    }
-
-    public void setSoundEffectVolume(String name, double volume) {
-        musicPlayer.setSoundEffectVolume(name, volume);
-    }
 }

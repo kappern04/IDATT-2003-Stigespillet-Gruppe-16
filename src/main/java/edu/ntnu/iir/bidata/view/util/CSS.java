@@ -3,10 +3,12 @@ package edu.ntnu.iir.bidata.view.util;
 import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.animation.TranslateTransition;
+import javafx.animation.ScaleTransition;
 import javafx.scene.Scene;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundImage;
@@ -81,24 +83,29 @@ public class CSS {
    */
   public Label createStyledLabel(String text, FontWeight weight, double size, Color color) {
     Label label = new Label(text);
+    label.getStyleClass().add("styled-label");
     label.setFont(getOrbitronFont(size, weight));
     label.setTextFill(color);
-    label.setStyle("-fx-padding: 5; -fx-background-radius: 10px;");
+    label.setStyle(
+            "-fx-border-color: " + toRgbaString(color, 0.5) + ";"
+    );
     return label;
   }
 
   /**
    * Creates a label for the side panel with background color based on contrast.
    */
-  public Label sidePanelLabel(String text, double size, Color color) {
+  public Label sidePanelLabel(String text, Color color) {
     Label label = new Label(text);
-    label.setFont(getOrbitronFont(size, FontWeight.NORMAL));
-    label.setTextFill(color);
     label.getStyleClass().add("side-panel-label");
+    label.setTextFill(color);
     String bgColor = isHighContrastBlack(color)
             ? "rgba(0, 0, 0, 0.7);"
             : "rgba(255, 255, 255, 0.7);";
-    label.setStyle("-fx-background-color: " + bgColor);
+    label.setStyle(
+            "-fx-background-color: " + bgColor + ";" +
+                    "-fx-border-color: " + toRgbaString(color, 0.3) + ";"
+    );
     return label;
   }
 
@@ -113,23 +120,36 @@ public class CSS {
   }
 
   /**
-   * Creates a styled button with a shake animation on hover.
+   * Creates a styled button with a scale animation on hover.
    */
   public Button createSpaceButton(String text) {
     Button button = new Button(text);
     button.getStyleClass().add("space-button");
-    button.setFocusTraversable(false);
+    button.setFont(getOrbitronFont(16, FontWeight.BOLD));
 
-    button.setOnMouseEntered(e -> {
-      TranslateTransition shake = new TranslateTransition(Duration.millis(50), button);
-      shake.setFromX(-3);
-      shake.setToX(3);
-      shake.setCycleCount(6);
-      shake.setAutoReverse(true);
-      shake.play();
+    // Add scale grow effect on hover
+    ScaleTransition growEffect = new ScaleTransition(Duration.millis(150), button);
+    growEffect.setToX(1.08);
+    growEffect.setToY(1.08);
+
+    button.setOnMouseEntered(e -> growEffect.playFromStart());
+    button.setOnMouseExited(e -> {
+      growEffect.stop();
+      button.setScaleX(1.0);
+      button.setScaleY(1.0);
     });
 
     return button;
+  }
+
+  /**
+   * Adds a tooltip to any JavaFX node with custom styling.
+   */
+  public Tooltip createTooltip(String text) {
+    Tooltip tooltip = new Tooltip(text);
+    tooltip.setShowDelay(Duration.millis(500));
+    tooltip.getStyleClass().add("space-tooltip");
+    return tooltip;
   }
 
   /**
@@ -157,15 +177,6 @@ public class CSS {
   }
 
   /**
-   * Creates a hover animation for a button.
-   */
-  public static TranslateTransition createHoverAnimation(Button button) {
-    TranslateTransition hover = new TranslateTransition(Duration.millis(200), button);
-    hover.setByY(-5);
-    return hover;
-  }
-
-  /**
    * Applies the default stylesheet to the given scene.
    */
   public void applyDefaultStylesheet(Scene scene) {
@@ -175,13 +186,14 @@ public class CSS {
     }
   }
 
+
   /**
-   * Applies a custom stylesheet to the given scene.
+   * Helper to convert a Color to an rgba() string with alpha.
    */
-  public void applyStylesheet(Scene scene, String cssPath) {
-    String css = getClass().getResource(cssPath).toExternalForm();
-    if (!scene.getStylesheets().contains(css)) {
-      scene.getStylesheets().add(css);
-    }
+  private String toRgbaString(Color color, double alpha) {
+    int r = (int) Math.round(color.getRed() * 255);
+    int g = (int) Math.round(color.getGreen() * 255);
+    int b = (int) Math.round(color.getBlue() * 255);
+    return "rgba(" + r + "," + g + "," + b + "," + alpha + ")";
   }
 }

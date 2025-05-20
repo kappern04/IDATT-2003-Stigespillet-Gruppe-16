@@ -38,7 +38,7 @@ public class ControlPanel {
      */
     public HBox createControlPanel() {
         HBox controlPanel = new HBox(30);
-        controlPanel.setAlignment(Pos.CENTER_LEFT);
+        controlPanel.setAlignment(Pos.CENTER_RIGHT);
 
         Button menuButton = css.createSpaceButton("Menu");
         menuButton.getStyleClass().add("space-button-small");

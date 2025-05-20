@@ -20,6 +20,7 @@ public final class ShipUtils {
     private static final double GLOW_RADIUS = 15.0;
     private static final double GLOW_SPREAD = 0.3;
 
+
     private ShipUtils() {
         // Prevent instantiation
     }
@@ -101,14 +102,16 @@ public final class ShipUtils {
     }
 
     /**
-     * Loads and colors a ship sprite for the given type and color.
-     *
-     * @param targetColor the color to apply
-     * @param shipType the ship type index
-     * @return an ImageView with the colored ship
+     * Returns the default player colors.
+     * @return an array of default Color objects
      */
-    public static ImageView createColoredShipImage(Color targetColor, int shipType) {
-        Image baseSprite = loadShipSprite(shipType);
-        return createColoredShipImage(targetColor, baseSprite);
+    public static Color[] getDefaultColors() {
+        return new Color[] {
+                Color.web("#00BFFF"), // Deep Sky Blue
+                Color.web("#FF4500"), // Orange Red
+                Color.web("#FFD700"), // Gold
+                Color.web("#32CD32"), // Lime Green
+                Color.web("#FF69B4") // Hot Pink
+        };
     }
 }
