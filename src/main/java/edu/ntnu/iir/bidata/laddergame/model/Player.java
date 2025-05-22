@@ -32,6 +32,10 @@ public class Player extends Observable<Player> {
     this.shipType = shipType;
   }
 
+  public Player getPlayer() {
+    return this;
+  }
+
   public String getName() {
     return name;
   }

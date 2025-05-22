@@ -255,3 +255,22 @@
     -fx-alignment: center;
     -fx-text-alignment: center;
 }
+
+.custom-alert {
+    -fx-background-color: linear-gradient(to bottom, #232946, #3e4c7a);
+}
+
+.custom-alert .header-panel {
+    -fx-background-color: transparent;
+}
+
+.custom-alert .label {
+    -fx-text-fill: #eebbc3;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.custom-alert .content {
+    -fx-text-fill: #b8c1ec;
+    -fx-font-size: 16px;
+}

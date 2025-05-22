@@ -19,7 +19,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
 import java.util.HashMap;
@@ -36,19 +35,16 @@ public class Gui extends SidePanelView {
     private static final int PANEL_CORNER_RADIUS = 22;
     private static final int PLAYER_BOX_CORNER_RADIUS = 16;
     private static final double ANIMATION_DURATION_MS = 300;
-    private int clicks = 0;
 
-    private final PlayerController playerController;
     private final CSS css = new CSS();
-    private final DummySidePanelController dummySidePanelController;
+    private final DummySidePanelController controller;
     private final Map<Player, VBox> playerBoxes = new HashMap<>();
     private final Map<Player, Label> playerClicksLabels = new HashMap<>();
-    private Player currentPlayer;
 
     public Gui(BoardGameController boardGameController, PlayerController playerController) {
         super(boardGameController, playerController);
-        this.playerController = Objects.requireNonNull(playerController, "Player controller cannot be null");
-        this.dummySidePanelController = new DummySidePanelController(boardGameController, playerController);
+        Objects.requireNonNull(playerController, "Player controller cannot be null");
+        this.controller = new DummySidePanelController(boardGameController, playerController);
     }
 
     @Override
@@ -66,7 +62,6 @@ public class Gui extends SidePanelView {
         return sidePanelsContainer;
     }
 
-    // Only keep this version!
     private HBox createPlayersPanel() {
         HBox playersPanel = new HBox(PLAYER_BOX_SPACING);
         playersPanel.setPadding(new Insets(PANEL_PADDING));
@@ -82,7 +77,7 @@ public class Gui extends SidePanelView {
 
         playerClicksLabels.clear();
         playerBoxes.clear();
-        for (Player player : playerController.getPlayers()) {
+        for (Player player : controller.getPlayers()) {
             VBox playerBox = createPlayerBox(player);
             playerBoxes.put(player, playerBox);
             playersPanel.getChildren().add(0, playerBox);
@@ -110,11 +105,8 @@ public class Gui extends SidePanelView {
         )));
         playerBox.setEffect(new DropShadow(8, Color.rgb(30, 30, 60, 0.10)));
 
-        Image originalImage = dummySidePanelController.getPlayerImage(player);
+        Image originalImage = controller.getPlayerImage(player);
         ImageView playerImage = PixelArtUpscaler.resizeImage(originalImage, PLAYER_IMAGE_SIZE, PLAYER_IMAGE_SIZE);
-        // Remove the circular clip to show the full sprite
-        // Circle clip = new Circle(PLAYER_IMAGE_SIZE / 2.0, PLAYER_IMAGE_SIZE / 2.0, PLAYER_IMAGE_SIZE / 2.0);
-        // playerImage.setClip(clip);
 
         Label nameLabel = css.sidePanelLabel(player.getName(), Color.web("#eebbc3"));
         nameLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
@@ -129,20 +121,28 @@ public class Gui extends SidePanelView {
 
     public void setCurrentPlayer(Player player) {
         if (player == null) return;
-        if (currentPlayer != null) {
-            VBox previousPlayerBox = playerBoxes.get(currentPlayer);
-            if (previousPlayerBox != null) {
-                previousPlayerBox.setBackground(new Background(new BackgroundFill(
-                        Color.web("#232946", 0.7),
-                        new CornerRadii(PLAYER_BOX_CORNER_RADIUS), Insets.EMPTY
-                )));
-            }
+
+        Player previousPlayer = controller.getCurrentPlayer();
+        if (previousPlayer != null) {
+            resetPlayerBoxStyle(previousPlayer);
         }
-        currentPlayer = player;
+
+        controller.setCurrentPlayer(player);
         highlightCurrentPlayer();
     }
 
+    private void resetPlayerBoxStyle(Player player) {
+        VBox playerBox = playerBoxes.get(player);
+        if (playerBox != null) {
+            playerBox.setBackground(new Background(new BackgroundFill(
+                    Color.web("#232946", 0.7),
+                    new CornerRadii(PLAYER_BOX_CORNER_RADIUS), Insets.EMPTY
+            )));
+        }
+    }
+
     public void highlightCurrentPlayer() {
+        Player currentPlayer = controller.getCurrentPlayer();
         if (currentPlayer != null) {
             VBox playerBox = playerBoxes.get(currentPlayer);
             if (playerBox != null) {
@@ -150,33 +150,51 @@ public class Gui extends SidePanelView {
                         Color.web("#eebbc3", 0.35),
                         new CornerRadii(PLAYER_BOX_CORNER_RADIUS), Insets.EMPTY
                 )));
-                ScaleTransition st = new ScaleTransition(Duration.millis(ANIMATION_DURATION_MS * 2), playerBox);
-                st.setFromX(1.0);
-                st.setFromY(1.0);
-                st.setToX(1.04);
-                st.setToY(1.04);
-                st.setCycleCount(2);
-                st.setAutoReverse(true);
-                st.play();
+                animatePlayerBox(playerBox);
             }
         }
     }
 
+    private void animatePlayerBox(VBox playerBox) {
+        ScaleTransition st = new ScaleTransition(Duration.millis(ANIMATION_DURATION_MS * 2), playerBox);
+        st.setFromX(1.0);
+        st.setFromY(1.0);
+        st.setToX(1.04);
+        st.setToY(1.04);
+        st.setCycleCount(2);
+        st.setAutoReverse(true);
+        st.play();
+    }
+
     public Player getCurrentPlayer() {
-        return currentPlayer;
+        return controller.getCurrentPlayer();
     }
 
     public void updatePlayerClicks(Player player) {
         Label clicksLabel = playerClicksLabels.get(player);
         if (clicksLabel != null) {
-            clicksLabel.setText("Clicks: " + getClicks());
+            controller.incrementPlayerClicks(player);
+            clicksLabel.setText("Clicks: " + controller.getPlayerClicks(player));
         }
     }
+
     public int getClicks() {
-        return this.clicks;
+        return controller.getTotalClicks();
     }
 
     public void incrementClicks() {
-        this.clicks++;
+        controller.incrementTotalClicks();
+    }
+
+    public int getPlayerClicks(Player player) {
+        return controller.getPlayerClicks(player);
+    }
+
+    public double prefWidth(double height) {
+        return 1000;
+    }
+
+    public double prefHeight(double width) {
+        return 900;
     }
 }
