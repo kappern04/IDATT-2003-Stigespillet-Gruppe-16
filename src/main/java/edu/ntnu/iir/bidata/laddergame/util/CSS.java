@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.view.util;
+package edu.ntnu.iir.bidata.laddergame.util;
 
 import java.io.InputStream;
 import java.util.logging.Level;

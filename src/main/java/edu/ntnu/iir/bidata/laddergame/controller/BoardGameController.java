@@ -6,6 +6,7 @@ import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Die;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
+import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import edu.ntnu.iir.bidata.laddergame.view.board.DieView;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
  * Main controller responsible for managing the board game state and game flow.
  * This class coordinates player turns, die rolls, and movement on the board.
  */
-public class BoardGameController {
+public class BoardGameController extends Observable<BoardGameController> {
   private static final Logger LOGGER = Logger.getLogger(BoardGameController.class.getName());
 
   // Game state constants
@@ -32,6 +33,8 @@ public class BoardGameController {
   private GameState gameState;
   private final PlayerController playerController;
   private final DieController dieController;
+  private Runnable onGameOverCallback;
+
 
   /**
    * Creates a new game controller with a default board.
@@ -164,6 +167,15 @@ public class BoardGameController {
   }
 
   /**
+   * Gets the player controller.
+   *
+   * @return the player controller
+   */
+  protected PlayerController getPlayerController() {
+    return playerController;
+  }
+
+  /**
    * Returns an unmodifiable list of player ranks.
    *
    * @return the player ranks
@@ -223,13 +235,13 @@ public class BoardGameController {
     LOGGER.fine("Die rolled: " + die.getLastRoll());
   }
 
-  private boolean isGameOver() {
-    if (gameState == GameState.GAME_OVER || areAllPlayersFinished()) {
-      gameState = GameState.GAME_OVER;
-      currentPlayerIndex = -1;
-      return true;
-    }
-    return false;
+  /**
+   * Checks if the game is over.
+   *
+   * @return true if the game is over
+   */
+  public boolean isGameOver() {
+    return gameState == GameState.GAME_OVER || areAllPlayersFinished();
   }
 
   private void executeCallback(Runnable callback) {
@@ -336,7 +348,7 @@ public class BoardGameController {
     }
   }
 
-  private void applyTileEffects(Player player) {
+  protected void applyTileEffects(Player player) {
     int position = player.getPositionIndex();
     if (position >= 0 && position < board.getTiles().size()) {
       Tile currentTile = board.getTiles().get(position);
@@ -357,6 +369,11 @@ public class BoardGameController {
     if (areAllPlayersFinished()) {
       currentPlayerIndex = -1;
       gameState = GameState.GAME_OVER;
+
+      // Add this line to trigger the callback when the game state changes to GAME_OVER
+      if (onGameOverCallback != null) {
+        onGameOverCallback.run();
+      }
     } else {
       skipFinishedPlayers();
       gameState = GameState.WAITING_FOR_TURN;
@@ -375,6 +392,31 @@ public class BoardGameController {
   }
 
   /**
+   * Sets a callback to be executed when the game is over.
+   *
+   * @param callback the callback to execute when game is over
+   */
+  public void setOnGameOver(Runnable callback) {
+    this.onGameOverCallback = callback;
+
+    if (isGameOver() && callback != null) {
+      callback.run();
+    }
+  }
+
+  /**
+   * Gets the winner of the game (first player to reach the end).
+   *
+   * @return the winning player, or null if game is not over or no winner exists
+   */
+  public Player getWinner() {
+    if (!isGameOver() || playerRanks.isEmpty()) {
+      return null;
+    }
+    return playerRanks.get(0);
+  }
+
+  /**
    * Checks if the game has any active players.
    *
    * @return true if there are players in the game
@@ -382,6 +424,7 @@ public class BoardGameController {
   public boolean hasPlayers() {
     return !players.isEmpty();
   }
+
 
   @Override
   public String toString() {

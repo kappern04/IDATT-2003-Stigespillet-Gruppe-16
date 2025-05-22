@@ -1,7 +1,7 @@
 package edu.ntnu.iir.bidata.laddergame.view.menu;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.Insets;

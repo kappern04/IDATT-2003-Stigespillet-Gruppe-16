@@ -1,10 +1,11 @@
 package edu.ntnu.iir.bidata.laddergame.view.board;
 
 import edu.ntnu.iir.bidata.laddergame.controller.board.BoardController;
+import edu.ntnu.iir.bidata.laddergame.controller.board.ChanceTileController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.LadderController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
 
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +36,8 @@ public class BoardView {
     private final PlayerController playerController;
     private final CSS css;
     private final Map<Integer, Node> tileNodeMap = new HashMap<>();
+    private final ChanceTileController chanceTileController;
+
 
     /**
      * Initializes the map of board backgrounds.
@@ -60,6 +63,7 @@ public class BoardView {
         this.tileView = new TileView(boardController.getBoard());
         this.ladderView = new LadderView();
         this.ladderController = new LadderController(boardController.getBoard());
+        this.chanceTileController = new ChanceTileController(boardController.getBoard());
         this.css = new CSS();
 
         this.playerController = new PlayerController(
@@ -78,17 +82,20 @@ public class BoardView {
         GridPane gridPane = createTileGrid();
         Pane ladderPane = new Pane();
         Pane playerPane = new Pane();
+        Pane chanceTilePane = new Pane();
+
 
         // Setup the board's tile node map in the model
         boardController.getBoard().setTileNodeMap(tileNodeMap);
 
         // Add ladders and players to their respective panes
         ladderController.addLaddersToBoard(ladderPane, tileNodeMap);
+        chanceTileController.addChanceTilesToBoard(chanceTilePane, tileNodeMap);
         playerController.addPlayersToBoard(playerPane);
 
         // Combine all layers into a single stack pane
         StackPane boardPane = new StackPane();
-        boardPane.getChildren().addAll(gridPane, ladderPane, playerPane);
+        boardPane.getChildren().addAll(gridPane, ladderPane,chanceTilePane, playerPane);
 
         return boardPane;
     }

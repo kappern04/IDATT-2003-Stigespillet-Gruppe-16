@@ -1,9 +1,9 @@
 package edu.ntnu.iir.bidata.laddergame.view.menu;
 
-import edu.ntnu.iir.bidata.laddergame.view.util.PlayerData;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.view.util.PixelArtUpscaler;
-import edu.ntnu.iir.bidata.laddergame.view.util.ShipUtils;
+import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.PixelArtUpscaler;
+import edu.ntnu.iir.bidata.laddergame.util.ShipUtils;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

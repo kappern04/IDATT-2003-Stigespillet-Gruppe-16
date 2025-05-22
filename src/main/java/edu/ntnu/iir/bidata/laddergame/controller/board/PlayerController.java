@@ -58,6 +58,24 @@ public class PlayerController implements Observer {
     }
 
     /**
+     * Moves a player to a new position.
+     * @param player the player to move
+     * @param newPosition the new position
+     */
+    public void movePlayerToPosition(Player player, int newPosition) {
+        int lastTile = board.getLastTile();
+        newPosition = Math.max(1, Math.min(newPosition, lastTile));
+
+        if (player.getPositionIndex() == newPosition) {
+            return;
+        }
+
+        int oldPosition = player.getPositionIndex();
+        player.setPositionIndex(newPosition);
+        animatePlayerMovement(player, oldPosition, newPosition);
+    }
+
+    /**
      * Updates the positions of all players on the board.
      */
     public void updatePlayerPositions() {

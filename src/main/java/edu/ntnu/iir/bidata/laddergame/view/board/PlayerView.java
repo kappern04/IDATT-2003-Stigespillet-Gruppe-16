@@ -4,7 +4,7 @@ import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
 import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
-import edu.ntnu.iir.bidata.laddergame.view.util.ShipUtils;
+import edu.ntnu.iir.bidata.laddergame.util.ShipUtils;
 import java.util.*;
 import javafx.application.Platform;
 import javafx.scene.image.Image;

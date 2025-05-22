@@ -10,12 +10,16 @@ public class Player extends Observable<Player> {
   private Color color;
   private int shipType;
   private boolean isMoving;
+  private boolean hasExtraTurn;
+  private boolean skipTurn;
 
   public Player(String name) {
     this.name = name;
     this.positionIndex = 0;
     this.color = null;
     this.shipType = 1;
+    this.hasExtraTurn = false;
+    this.skipTurn = false;
   }
 
   public Player(String name, Color color) {
@@ -23,6 +27,8 @@ public class Player extends Observable<Player> {
     this.positionIndex = 0;
     this.color = color;
     this.shipType = 1;
+    this.hasExtraTurn = false;
+    this.skipTurn = false;
   }
 
   public Player(String name, Color color, int shipType) {
@@ -30,6 +36,8 @@ public class Player extends Observable<Player> {
     this.positionIndex = 0;
     this.color = color;
     this.shipType = shipType;
+    this.hasExtraTurn = false;
+    this.skipTurn = false;
   }
 
   public Player getPlayer() {
@@ -82,6 +90,34 @@ public class Player extends Observable<Player> {
   public void setShipType(int shipType) {
     this.shipType = shipType;
     notifyObservers("APPEARANCE_CHANGED");
+  }
+
+  public boolean hasExtraTurn() {
+    return hasExtraTurn;
+  }
+
+  public void setHasExtraTurn(boolean hasExtraTurn) {
+    this.hasExtraTurn = hasExtraTurn;
+    notifyObservers("TURN_STATUS_CHANGED");
+  }
+
+  public boolean shouldSkipTurn() {
+    return skipTurn;
+  }
+
+  public void setSkipTurn(boolean skipTurn) {
+    this.skipTurn = skipTurn;
+    notifyObservers("TURN_STATUS_CHANGED");
+  }
+
+  public void useExtraTurn() {
+    this.hasExtraTurn = false;
+    notifyObservers("EXTRA_TURN_USED");
+  }
+
+  public void resetTurnStatus() {
+    this.skipTurn = false;
+    notifyObservers("TURN_STATUS_RESET");
   }
 
   public void move(int steps) {

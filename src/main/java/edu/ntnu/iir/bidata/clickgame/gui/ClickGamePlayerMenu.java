@@ -1,8 +1,8 @@
 package edu.ntnu.iir.bidata.clickgame.gui;
 
 import edu.ntnu.iir.bidata.laddergame.view.menu.PlayerMenu;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.view.util.PlayerData;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
 import java.util.List;
 
 public class ClickGamePlayerMenu extends PlayerMenu {

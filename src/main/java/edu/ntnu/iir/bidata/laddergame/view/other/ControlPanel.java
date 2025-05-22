@@ -4,7 +4,7 @@ import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
 import edu.ntnu.iir.bidata.laddergame.controller.menu.InGameMenuController;
 import edu.ntnu.iir.bidata.laddergame.controller.other.MusicController;
 import edu.ntnu.iir.bidata.laddergame.view.menu.InGameMenu;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;

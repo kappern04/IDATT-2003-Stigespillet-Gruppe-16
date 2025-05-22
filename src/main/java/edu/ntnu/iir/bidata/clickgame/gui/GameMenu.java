@@ -1,10 +1,9 @@
 package edu.ntnu.iir.bidata.clickgame.gui;
 
-import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
 import edu.ntnu.iir.bidata.laddergame.view.menu.GameSetupMenu;
 import edu.ntnu.iir.bidata.laddergame.view.menu.PlayerMenu;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.view.util.PlayerData;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
 import edu.ntnu.iir.bidata.clickgame.controller.DummyMainMenuController;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

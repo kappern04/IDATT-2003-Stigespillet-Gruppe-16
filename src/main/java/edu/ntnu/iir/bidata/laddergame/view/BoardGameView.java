@@ -8,7 +8,9 @@ import edu.ntnu.iir.bidata.laddergame.model.MusicPlayer;
 import edu.ntnu.iir.bidata.laddergame.view.board.BoardView;
 import edu.ntnu.iir.bidata.laddergame.view.board.SidePanelView;
 import edu.ntnu.iir.bidata.laddergame.view.other.ControlPanel;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.model.Player;
+import edu.ntnu.iir.bidata.laddergame.view.other.WinPopup;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -17,6 +19,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.transform.Scale;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 /**
  * Main view class for the board game application.
@@ -45,6 +48,15 @@ public class BoardGameView {
             boardGameController.getPlayers()
     );
 
+    boardGameController.setOnGameOver(() -> {
+      Player winner = boardGameController.getWinner();
+      if (winner != null) {
+        WinPopup winPopup = new WinPopup(winner);
+        winPopup.show();
+      }
+    });
+
+
     MusicPlayer musicPlayer = new MusicPlayer("/audio/bgmusic.wav");
     this.musicController = new MusicController(musicPlayer);
 
@@ -52,6 +64,7 @@ public class BoardGameView {
     this.sidePanelView = new SidePanelView(boardGameController, playerController);
     this.controlPanel = new ControlPanel(boardGameController, musicController);
   }
+
 
   public void setUpStage(Stage stage) {
     Node boardPanel = boardView.createBoardPanel();
@@ -96,4 +109,9 @@ public class BoardGameView {
 
     musicController.play();
   }
+
+  public StackPane getBoardPane() {
+    return (StackPane) boardView.createBoardPanel();
+  }
+
 }

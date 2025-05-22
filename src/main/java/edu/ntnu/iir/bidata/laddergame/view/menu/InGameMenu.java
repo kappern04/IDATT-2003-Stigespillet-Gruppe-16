@@ -2,7 +2,7 @@ package edu.ntnu.iir.bidata.laddergame.view.menu;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.InGameMenuController;
 import edu.ntnu.iir.bidata.laddergame.file.SaveFileTracker;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;

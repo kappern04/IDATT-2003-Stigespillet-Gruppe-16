@@ -2,8 +2,8 @@ package edu.ntnu.iir.bidata.laddergame.view.menu;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
 import edu.ntnu.iir.bidata.laddergame.file.BoardRegistry;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.view.util.PlayerData;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -55,13 +55,46 @@ public class GameSetupMenu {
         playerSpinner.getStyleClass().addAll("space-spinner", "split-arrows-horizontal");
         playerSpinner.setMaxWidth(Double.MAX_VALUE);
 
+        // Game options section
+        Label optionsLabel = css.createStyledLabel("MISSION OPTIONS:", FontWeight.BOLD, 16, Color.WHITE);
+
+        CheckBox chanceCheckBox = new CheckBox("Random Chance Tiles");
+        chanceCheckBox.setSelected(true);
+        chanceCheckBox.setTextFill(Color.WHITE);
+
+        // Set percentage of chance tiles (5-25%)
+        Label chancePercentLabel = css.createStyledLabel("Chance Tile Frequency:", FontWeight.NORMAL, 12, Color.LIGHTGRAY);
+        Slider chancePercentSlider = new Slider(5, 25, 10);
+        chancePercentSlider.setShowTickLabels(true);
+        chancePercentSlider.setShowTickMarks(true);
+        chancePercentSlider.setMajorTickUnit(5);
+        chancePercentSlider.setMinorTickCount(0);
+        chancePercentSlider.setSnapToTicks(true);
+
+        VBox chanceOptions = new VBox(5, chancePercentLabel, chancePercentSlider);
+        chanceOptions.setPadding(new Insets(0, 0, 0, 20));
+
+        // Single listener to handle enabling/disabling the options
+        chanceCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            chanceOptions.setDisable(!newVal);
+        });
+
+        // Set initial state based on checkbox
+        chanceOptions.setDisable(!chanceCheckBox.isSelected());
+
         // Action buttons
         Button startBtn = css.createSpaceButton("Launch Mission");
         startBtn.setMaxWidth(Double.MAX_VALUE);
         startBtn.setOnAction(e -> {
             List<PlayerData> playerDetails = new PlayerMenu(css).collectPlayerDetails(playerSpinner.getValue());
             if (playerDetails != null) {
-                controller.startNewGame(boardSelector.getValue(), playerSpinner.getValue(), playerDetails);
+                boolean enableChanceTiles = chanceCheckBox.isSelected();
+                int chancePercentage = (int) chancePercentSlider.getValue();
+                controller.startNewGameWithOptions(boardSelector.getValue(),
+                        playerSpinner.getValue(),
+                        playerDetails,
+                        enableChanceTiles,
+                        chancePercentage);
             }
         });
 
@@ -92,6 +125,8 @@ public class GameSetupMenu {
                 new Separator(),
                 playerLabel, playerSpinner,
                 new Separator(),
+                optionsLabel, chanceCheckBox, chanceOptions,
+                new Separator(),
                 startBtn, backBtn);
 
         settingsBox.setAlignment(Pos.CENTER);
@@ -105,7 +140,7 @@ public class GameSetupMenu {
         mainContent.setAlignment(Pos.CENTER);
         root.setCenter(mainContent);
 
-        Scene scene = new Scene(root, 700, 600);
+        Scene scene = new Scene(root, 800, 600);
         css.applyDefaultStylesheet(scene);
         primaryStage.setScene(scene);
     }

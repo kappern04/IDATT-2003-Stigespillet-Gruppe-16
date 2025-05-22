@@ -3,7 +3,7 @@ package edu.ntnu.iir.bidata.laddergame.model;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-public class LadderAction extends TileAction {
+public class LadderAction extends DefaultTileAction {
   private MediaPlayer mediaPlayerUp;
   private MediaPlayer mediaPlayerDown;
   private int destinationTileIndex;
@@ -15,8 +15,17 @@ public class LadderAction extends TileAction {
   }
 
   @Override
-  public void performAction(Player player) {
+  public void execute(Player player) {
     player.setPositionIndex(destinationTileIndex);
+  }
+
+  @Override
+  public String getDescription() {
+    if (destinationTileIndex > 0) {
+      return "Ladder to position " + destinationTileIndex;
+    } else {
+      return "Snake to position " + destinationTileIndex;
+    }
   }
 
   public int getDestinationTileIndex() {

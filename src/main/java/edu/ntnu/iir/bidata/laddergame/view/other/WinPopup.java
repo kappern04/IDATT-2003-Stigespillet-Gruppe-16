@@ -1,6 +1,7 @@
-package edu.ntnu.iir.bidata.view.elements;
+package edu.ntnu.iir.bidata.laddergame.view.other;
 
-import edu.ntnu.iir.bidata.model.Player;
+import edu.ntnu.iir.bidata.laddergame.model.Player;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -63,8 +64,8 @@ public class WinPopup extends VBox {
     title.setEffect(glow);
 
     Timeline pulse = new Timeline(
-        new KeyFrame(Duration.ZERO, new KeyValue(glow.levelProperty(), 0.3)),
-        new KeyFrame(Duration.seconds(1.5), new KeyValue(glow.levelProperty(), 0.8))
+            new KeyFrame(Duration.ZERO, new KeyValue(glow.levelProperty(), 0.3)),
+            new KeyFrame(Duration.seconds(1.5), new KeyValue(glow.levelProperty(), 0.8))
     );
     pulse.setCycleCount(Animation.INDEFINITE);
     pulse.setAutoReverse(true);
@@ -81,7 +82,7 @@ public class WinPopup extends VBox {
   }
 
   private Button createExitButton() {
-    Button button = css.createSpaceButton("Return to Base");
+    Button button = css.createSpaceButton("Return Home");
     button.setOnAction(e -> System.exit(0));
     return button;
   }

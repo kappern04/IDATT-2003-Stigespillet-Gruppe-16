@@ -7,8 +7,8 @@ import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.view.util.PlayerData;
+import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -23,7 +23,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 

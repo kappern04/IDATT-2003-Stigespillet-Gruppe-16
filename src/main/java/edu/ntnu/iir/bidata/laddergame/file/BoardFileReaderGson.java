@@ -2,10 +2,8 @@ package edu.ntnu.iir.bidata.laddergame.file;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
-import edu.ntnu.iir.bidata.laddergame.model.Board;
-import edu.ntnu.iir.bidata.laddergame.model.LadderAction;
-import edu.ntnu.iir.bidata.laddergame.model.Tile;
-import edu.ntnu.iir.bidata.laddergame.model.TileAction;
+import edu.ntnu.iir.bidata.laddergame.model.*;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -57,7 +55,7 @@ public class BoardFileReaderGson implements BoardFileReader {
     int x = tileJson.get("x").getAsInt();
     int y = tileJson.get("y").getAsInt();
 
-    TileAction action = new TileAction();
+    DefaultTileAction action = new DefaultTileAction();
     if (tileJson.has("action")) {
       JsonObject actionJson = tileJson.getAsJsonObject("action");
       String actionType = actionJson.get("type").getAsString();

@@ -3,7 +3,7 @@ package edu.ntnu.iir.bidata.clickgame.controller;
 import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.view.util.ShipUtils;
+import edu.ntnu.iir.bidata.laddergame.util.ShipUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;

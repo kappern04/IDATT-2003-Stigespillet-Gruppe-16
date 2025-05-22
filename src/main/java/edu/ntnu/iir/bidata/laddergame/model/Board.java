@@ -44,7 +44,7 @@ public class Board {
   }
 
   private void createDefaultTiles() {
-    tiles.addFirst(new Tile(0, -1, 9, new TileAction())); // Position outside the visible board
+    tiles.addFirst(new Tile(0, -1, 9, new DefaultTileAction())); // Position outside the visible board
 
     // Create tiles 1-90 for the visible board
     for (int i = 1; i <= 90; i++) {
@@ -55,7 +55,7 @@ public class Board {
       } else {
         x = x;
       }
-      tiles.add(i, new Tile(i, x, y, new TileAction()));
+      tiles.add(i, new Tile(i, x, y, new DefaultTileAction()));
     }
     tiles.get(1).setTileAction(new LadderAction(40));
     tiles.get(8).setTileAction(new LadderAction(10));

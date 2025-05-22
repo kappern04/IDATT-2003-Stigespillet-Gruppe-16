@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.view.util;
+package edu.ntnu.iir.bidata.laddergame.util;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
