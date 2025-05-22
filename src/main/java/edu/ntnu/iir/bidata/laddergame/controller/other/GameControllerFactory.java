@@ -1,4 +1,3 @@
-// src/main/java/edu/ntnu/iir/bidata/laddergame/controller/GameControllerFactory.java
 package edu.ntnu.iir.bidata.laddergame.controller;
 
 import edu.ntnu.iir.bidata.laddergame.controller.board.DieController;

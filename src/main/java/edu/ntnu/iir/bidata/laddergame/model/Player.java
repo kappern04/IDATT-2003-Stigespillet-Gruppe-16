@@ -4,6 +4,10 @@ import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import edu.ntnu.iir.bidata.laddergame.util.Observer;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class Player extends Observable<Player> {
   private String name;
   private int positionIndex;
@@ -12,6 +16,8 @@ public class Player extends Observable<Player> {
   private boolean isMoving;
   private boolean hasExtraTurn;
   private boolean skipTurn;
+  private static final List<Player> players = new ArrayList<>();
+
 
   public Player(String name) {
     this.name = name;
@@ -42,6 +48,10 @@ public class Player extends Observable<Player> {
 
   public Player getPlayer() {
     return this;
+  }
+
+  public static List<Player> getPlayers() {
+    return Collections.unmodifiableList(players);
   }
 
   public String getName() {

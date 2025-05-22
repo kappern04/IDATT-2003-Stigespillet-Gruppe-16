@@ -235,6 +235,7 @@ public class BoardGameController extends Observable<BoardGameController> {
     LOGGER.fine("Die rolled: " + die.getLastRoll());
   }
 
+
   /**
    * Checks if the game is over.
    *

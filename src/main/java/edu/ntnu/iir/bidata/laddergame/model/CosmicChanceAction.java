@@ -1,6 +1,8 @@
 package edu.ntnu.iir.bidata.laddergame.model;
 
 import edu.ntnu.iir.bidata.laddergame.util.ChanceEffectType;
+
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
@@ -33,8 +35,16 @@ public class CosmicChanceAction implements TileAction {
         return effectType;
     }
 
-    // New method that uses Board for teleport
-    public void execute(Player player, Board board) {
+    @Override
+    public void execute(Player player) {
+        // This method should only be called after showing the animation and popup
+        executeEffect(player);
+    }
+
+    /**
+     * Executes the actual effect on the player
+     */
+    public void executeEffect(Player player) {
         LOGGER.info("Executing cosmic chance action: " + effectType);
         switch (effectType) {
             case FORWARD_SMALL:
@@ -59,9 +69,21 @@ public class CosmicChanceAction implements TileAction {
                 player.setHasExtraTurn(true);
                 break;
             case TELEPORT_RANDOM:
-                int boardSize = board.getTiles().size();
-                int randomPos = random.nextInt(boardSize);
-                player.setPositionIndex(randomPos);
+                // Get all players except the current one
+                List<Player> otherPlayers = Player.getPlayers().stream()
+                        .filter(p -> !p.equals(player))
+                        .toList();
+
+                if (!otherPlayers.isEmpty()) {
+                    // Pick a random player to swap with
+                    Player target = otherPlayers.get(random.nextInt(otherPlayers.size()));
+                    int tempPos = player.getPositionIndex();
+                    player.setPositionIndex(target.getPositionIndex());
+                    target.setPositionIndex(tempPos);
+                    LOGGER.info(player.getName() + " swapped places with " + target.getName());
+                } else {
+                    LOGGER.info("No other players to swap with.");
+                }
                 break;
             case SKIP_TURN:
                 player.setSkipTurn(true);
@@ -72,11 +94,6 @@ public class CosmicChanceAction implements TileAction {
             default:
                 LOGGER.warning("Unknown effect type: " + effectType);
         }
-    }
-
-    @Override
-    public void execute(Player player) {
-        throw new UnsupportedOperationException("Use execute(Player, Board) for CosmicChanceAction.");
     }
 
     @Override

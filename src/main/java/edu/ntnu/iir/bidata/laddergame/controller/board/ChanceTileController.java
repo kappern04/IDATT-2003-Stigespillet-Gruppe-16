@@ -45,46 +45,7 @@ public class ChanceTileController {
         }
     }
 
-    /**
-     * Performs a random chance action when a player lands on a chance tile.
-     * @param player the player who landed on the chance tile
-     */
-    public void performChanceAction(Player player) {
-        int chanceEffect = random.nextInt(5);
 
-        switch (chanceEffect) {
-            case 0:
-                // Move forward 1-3 spaces
-                int forwardSteps = random.nextInt(3) + 1;
-                player.move(forwardSteps);
-                System.out.println(player.getName() + " drew a chance card: Move forward " + forwardSteps + " spaces");
-                break;
-            case 1:
-                // Move backward 1-3 spaces
-                int backwardSteps = random.nextInt(3) + 1;
-                player.move(-backwardSteps);
-                System.out.println(player.getName() + " drew a chance card: Move backward " + backwardSteps + " spaces");
-                break;
-            case 2:
-                // Teleport to random position within 5 spaces
-                int currentPosition = player.getPositionIndex();
-                int randomPosition = random.nextInt(10) + currentPosition - 5;
-                if (randomPosition < 0) randomPosition = 0;
-
-                player.setPositionIndex(randomPosition);
-                System.out.println(player.getName() + " drew a chance card: Teleport to position " + randomPosition);
-                break;
-            case 3:
-                // Go back to start
-                player.setPositionIndex(0);
-                System.out.println(player.getName() + " drew a chance card: Go back to start!");
-                break;
-            case 4:
-                // Nothing happens
-                System.out.println(player.getName() + " drew a chance card: Nothing happens");
-                break;
-        }
-    }
 
     /**
      * Gets the visual representation for a specific chance tile.

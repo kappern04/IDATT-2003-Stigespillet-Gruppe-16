@@ -58,29 +58,60 @@ public class GameSetupMenu {
         // Game options section
         Label optionsLabel = css.createStyledLabel("MISSION OPTIONS:", FontWeight.BOLD, 16, Color.WHITE);
 
+        // Chance tile option
         CheckBox chanceCheckBox = new CheckBox("Random Chance Tiles");
         chanceCheckBox.setSelected(true);
-        chanceCheckBox.setTextFill(Color.WHITE);
+        chanceCheckBox.getStyleClass().add("space-checkbox");
 
-        // Set percentage of chance tiles (5-25%)
-        Label chancePercentLabel = css.createStyledLabel("Chance Tile Frequency:", FontWeight.NORMAL, 12, Color.LIGHTGRAY);
-        Slider chancePercentSlider = new Slider(5, 25, 10);
+        // Set percentage of chance tiles (5-100%)
+        Label chancePercentLabel = css.createStyledLabel("Chance Tile Frequency:", FontWeight.NORMAL, 14, Color.TRANSPARENT);
+        chancePercentLabel.getStyleClass().add("chance-label");
+
+        // Slider for chance percentage
+        Slider chancePercentSlider = new Slider(5, 100, 10);
         chancePercentSlider.setShowTickLabels(true);
         chancePercentSlider.setShowTickMarks(true);
         chancePercentSlider.setMajorTickUnit(5);
         chancePercentSlider.setMinorTickCount(0);
         chancePercentSlider.setSnapToTicks(true);
+        chancePercentSlider.getStyleClass().add("space-slider");
 
-        VBox chanceOptions = new VBox(5, chancePercentLabel, chancePercentSlider);
-        chanceOptions.setPadding(new Insets(0, 0, 0, 20));
-
-        // Single listener to handle enabling/disabling the options
-        chanceCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
-            chanceOptions.setDisable(!newVal);
+        // Percentage value display
+        Label percentValueLabel = css.createStyledLabel("10%", FontWeight.NORMAL, 12, Color.TRANSPARENT);
+        percentValueLabel.getStyleClass().add("chance-value-label");
+        chancePercentSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+            percentValueLabel.setText(String.format("%.0f%%", newVal.doubleValue()));
         });
 
-        // Set initial state based on checkbox
-        chanceOptions.setDisable(!chanceCheckBox.isSelected());
+        // Create an HBox for the slider and percentage display
+        HBox sliderBox = new HBox(10, chancePercentSlider, percentValueLabel);
+        sliderBox.setAlignment(Pos.CENTER_LEFT);
+        sliderBox.getStyleClass().add("slider-container");
+
+        // Container for chance options
+        VBox chanceOptions = new VBox(10, chancePercentLabel, sliderBox);
+        chanceOptions.setPadding(new Insets(5, 0, 5, 20));
+        chanceOptions.getStyleClass().add("chance-options-box");
+
+        // Wrap checkbox and options in a container
+        VBox chanceContainer = new VBox(10, chanceCheckBox, chanceOptions);
+        chanceContainer.getStyleClass().add("chance-container");
+
+        // Add dynamic styling based on checkbox state
+        chanceCheckBox.selectedProperty().addListener((obs, oldVal, newVal) -> {
+            chanceOptions.setDisable(!newVal);
+            if (newVal) {
+                chanceOptions.getStyleClass().add("enabled");
+                chanceContainer.getStyleClass().add("active");
+            } else {
+                chanceOptions.getStyleClass().remove("enabled");
+                chanceContainer.getStyleClass().remove("active");
+            }
+        });
+
+        // Add separator with space styling for mission options
+        Separator missionSeparator = new Separator();
+        missionSeparator.getStyleClass().add("space-separator");
 
         // Action buttons
         Button startBtn = css.createSpaceButton("Launch Mission");
@@ -124,8 +155,8 @@ public class GameSetupMenu {
                 boardLabel, boardSelector,
                 new Separator(),
                 playerLabel, playerSpinner,
-                new Separator(),
-                optionsLabel, chanceCheckBox, chanceOptions,
+                missionSeparator,
+                optionsLabel, chanceContainer,
                 new Separator(),
                 startBtn, backBtn);
 
@@ -140,7 +171,7 @@ public class GameSetupMenu {
         mainContent.setAlignment(Pos.CENTER);
         root.setCenter(mainContent);
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 800, 1000);
         css.applyDefaultStylesheet(scene);
         primaryStage.setScene(scene);
     }

@@ -88,8 +88,13 @@ public class SidePanelView {
         HBox dieBox = new HBox();
         dieBox.getStyleClass().add("die-box");
         dieBox.setAlignment(Pos.CENTER);
+
         dieButton = dieView.createDieButton(this::handleDieRoll);
         dieButton.getStyleClass().add("die-button-enabled");
+
+        // Ensure the button is disabled if animations are in progress
+        dieButton.setDisable(animationInProgress);
+
         dieBox.getChildren().add(dieButton);
         return dieBox;
     }

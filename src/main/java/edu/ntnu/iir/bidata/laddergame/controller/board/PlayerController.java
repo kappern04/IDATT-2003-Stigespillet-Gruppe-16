@@ -1,13 +1,11 @@
 package edu.ntnu.iir.bidata.laddergame.controller.board;
 
 import edu.ntnu.iir.bidata.laddergame.animation.PlayerAnimation;
-import edu.ntnu.iir.bidata.laddergame.model.Board;
-import edu.ntnu.iir.bidata.laddergame.model.LadderAction;
-import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.model.Tile;
+import edu.ntnu.iir.bidata.laddergame.model.*;
 import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import edu.ntnu.iir.bidata.laddergame.util.Observer;
+import edu.ntnu.iir.bidata.laddergame.view.board.ChanceTileView;
 import edu.ntnu.iir.bidata.laddergame.view.board.PlayerView;
 import java.util.*;
 import javafx.animation.PauseTransition;
@@ -23,7 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PlayerController implements Observer {
 
     private static final int LADDER_DELAY_MS = 200;
-    private static final int EFFECT_DELAY_MS = 300;
+    private static final int EFFECT_DELAY_MS = 0;
 
     private final Board board;
     private final PlayerView playerView;
@@ -55,24 +53,6 @@ public class PlayerController implements Observer {
     public void addPlayersToBoard(Pane boardPane) {
         playerView.addPlayersToBoard(boardPane);
         updatePlayerPositions();
-    }
-
-    /**
-     * Moves a player to a new position.
-     * @param player the player to move
-     * @param newPosition the new position
-     */
-    public void movePlayerToPosition(Player player, int newPosition) {
-        int lastTile = board.getLastTile();
-        newPosition = Math.max(1, Math.min(newPosition, lastTile));
-
-        if (player.getPositionIndex() == newPosition) {
-            return;
-        }
-
-        int oldPosition = player.getPositionIndex();
-        player.setPositionIndex(newPosition);
-        animatePlayerMovement(player, oldPosition, newPosition);
     }
 
     /**
@@ -184,7 +164,7 @@ public class PlayerController implements Observer {
      */
     private void processSpecialTileEffects(Player player, Tile tile, int previousPosition, Runnable onComplete) {
         if (tile.getTileAction() == null) {
-            if (onComplete != null) onComplete.run();
+            if (onComplete != null) Platform.runLater(onComplete);
             return;
         }
 
@@ -192,8 +172,15 @@ public class PlayerController implements Observer {
         pause.setOnFinished(event -> {
             if (tile.getTileAction() instanceof LadderAction ladderAction) {
                 ladderAction.playLadderSound(previousPosition);
+                if (onComplete != null) Platform.runLater(onComplete);
+            } else if (tile.getTileAction() instanceof CosmicChanceAction chanceAction) {
+                new ChanceTileView().showChancePopup(player, chanceAction, () -> {
+                    chanceAction.executeEffect(player);
+                    if (onComplete != null) Platform.runLater(onComplete);
+                });
+            } else {
+                if (onComplete != null) Platform.runLater(onComplete);
             }
-            if (onComplete != null) onComplete.run();
         });
         pause.play();
     }

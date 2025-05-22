@@ -8,11 +8,9 @@ import edu.ntnu.iir.bidata.laddergame.model.CosmicChanceAction;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
 import edu.ntnu.iir.bidata.laddergame.util.ChanceEffectType;
+import edu.ntnu.iir.bidata.laddergame.view.board.ChanceTileView;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
-import java.util.function.Consumer;
 
 /**
  * Controller for a board game with chance tiles.
@@ -23,11 +21,7 @@ public class ChanceBoardGame extends BoardGameController {
   private final int chancePercentage;
   private boolean chanceEnabled = true;
   private final Random random = new Random();
-  private final Map<ChanceEffectType, Consumer<Player>> chanceEffectHandlers = new HashMap<>();
-
-  // Constants for chance tile effects
-  private static final int MAX_FORWARD_SPACES = 3;
-  private static final int MAX_BACKWARD_SPACES = 3;
+  private final ChanceTileView chanceTileView = new ChanceTileView();
 
   /**
    * Creates a new chance board game with the specified board and controllers.
@@ -35,52 +29,16 @@ public class ChanceBoardGame extends BoardGameController {
    * @param board the game board
    * @param playerController the player controller
    * @param dieController the die controller
-   * @param chancePercentage the percentage of tiles that should be chance tiles (5-25%)
+   * @param chancePercentage the percentage of tiles that should be chance tiles (5-100%)
    */
   public ChanceBoardGame(Board board, PlayerController playerController, DieController dieController, int chancePercentage) {
     super(board, playerController, dieController);
-    this.chancePercentage = Math.max(5, Math.min(25, chancePercentage)); // Constrain between 5-25%
-    initializeChanceEffectHandlers();
+    this.chancePercentage = Math.max(5, Math.min(100, chancePercentage)); // Constrain between 5-100%
 
     // Initialize chance tiles on the board
     if (board != null && chanceEnabled) {
       initializeChanceTiles(board);
     }
-  }
-
-  /**
-   * Initializes handlers for different chance effect types.
-   */
-  private void initializeChanceEffectHandlers() {
-    chanceEffectHandlers.put(ChanceEffectType.FORWARD_SMALL, player -> {
-      int spaces = 1 + random.nextInt(MAX_FORWARD_SPACES);
-      movePlayerWithAnimation(player, player.getPositionIndex() + spaces);
-      notifyObservers("chanceeffect_forward_" + spaces);
-    });
-
-    chanceEffectHandlers.put(ChanceEffectType.BACKWARD_SMALL, player -> {
-      int spaces = 1 + random.nextInt(MAX_BACKWARD_SPACES);
-      movePlayerWithAnimation(player, player.getPositionIndex() - spaces);
-      notifyObservers("chanceeffect_backward_" + spaces);
-    });
-
-    chanceEffectHandlers.put(ChanceEffectType.EXTRA_TURN, player -> {
-      // Fix: Replace with appropriate method or handle differently
-      player.setHasExtraTurn(true);  // Assuming this method exists
-      notifyObservers("chanceeffect_extraturn");
-    });
-
-    chanceEffectHandlers.put(ChanceEffectType.SKIP_TURN, player -> {
-      // Fix: Replace with appropriate method or handle differently
-      player.setSkipTurn(true);  // Assuming this method exists
-      notifyObservers("chanceeffect_loseturn");
-    });
-
-    chanceEffectHandlers.put(ChanceEffectType.TELEPORT_RANDOM, player -> {
-      int randomTile = 1 + random.nextInt(getBoard().getLastTile() - 1);
-      movePlayerWithAnimation(player, randomTile);
-      notifyObservers("chanceeffect_teleport_" + randomTile);
-    });
   }
 
   /**
@@ -95,42 +53,17 @@ public class ChanceBoardGame extends BoardGameController {
       return true;
     }
 
-    CosmicChanceAction chanceAction = (CosmicChanceAction)tile.getTileAction();
-    // Fix: Get effect type through appropriate method
-    ChanceEffectType effectType = chanceAction.getType();  // Assuming this method exists
+    CosmicChanceAction chanceAction = (CosmicChanceAction) tile.getTileAction();
 
-    // Notify observers before applying the effect
+    // Notify observers that a chance tile was activated
     notifyObservers("chanceactivated_" + tile.getIndex());
 
-    // Apply the effect using the registered handler
-    Consumer<Player> handler = chanceEffectHandlers.get(effectType);
-    if (handler != null) {
-      handler.accept(player);
-      return false; // Wait for animation to complete
-    }
+    // Show popup and then execute the effect when the popup is dismissed
+    chanceTileView.showChancePopup(player, chanceAction, () -> {
+      chanceAction.executeEffect(player);
+    });
 
-    return true;
-  }
-
-  /**
-   * Moves a player to a new position with animation.
-   * Ensures the position is within valid board boundaries.
-   *
-   * @param player the player to move
-   * @param newPosition the new position
-   */
-  private void movePlayerWithAnimation(Player player, int newPosition) {
-    // Ensure position is within board boundaries
-    int lastTile = getBoard().getLastTile();
-    newPosition = Math.max(1, Math.min(newPosition, lastTile));
-
-    // Don't move if already at position
-    if (player.getPositionIndex() == newPosition) {
-      return;
-    }
-
-    // Fix: Use getter method to access playerController
-    getPlayerController().movePlayerToPosition(player, newPosition);
+    return false; // Wait for the popup and animation to complete
   }
 
   /**
@@ -239,12 +172,13 @@ public class ChanceBoardGame extends BoardGameController {
             .toArray();
   }
 
+  @Override
   protected void applyTileEffects(Player player) {
     int position = player.getPositionIndex();
     if (position >= 0 && position < getBoard().getTiles().size()) {
       Tile currentTile = getBoard().getTiles().get(position);
       if (currentTile.hasChanceAction()) {
-        handleChanceEffect(player, currentTile); // Your custom logic
+        handleChanceEffect(player, currentTile);
       } else {
         currentTile.landOn(player);
       }
