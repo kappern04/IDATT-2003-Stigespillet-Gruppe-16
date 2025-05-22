@@ -1,7 +1,8 @@
 package edu.ntnu.iir.bidata;
 
 public class Main {
-    public static void main(String[] args){
-        Stigespillet.main(args);
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+        // Stigespillet.main(args);
     }
-}
+    }

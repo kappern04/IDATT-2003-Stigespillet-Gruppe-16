@@ -1,0 +1,106 @@
+/* File: src/main/resources/css/modern-theme.css */
+
+.root {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-background-color: #232946;
+    -fx-text-fill: #fffffe;
+}
+
+.label {
+    -fx-text-fill: #fffffe;
+    -fx-font-size: 16px;
+}
+
+.button {
+    -fx-background-color: #eebbc3;
+    -fx-text-fill: #232946;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16 8 16;
+    -fx-font-size: 15px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #b8c1ec, 2, 0.2, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: #b8c1ec;
+    -fx-text-fill: #232946;
+}
+
+.text-field, .spinner {
+    -fx-background-color: #121629;
+    -fx-text-fill: #fffffe;
+    -fx-border-color: #eebbc3;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-size: 15px;
+}
+
+.side-panel {
+    -fx-background-color: #121629;
+    -fx-border-color: #eebbc3;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 16;
+}
+
+.player-box {
+    -fx-background-color: #393d5b;
+    -fx-border-color: #eebbc3;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, #b8c1ec, 2, 0.2, 0, 1);
+}
+
+.player-box-highlighted {
+    -fx-background-color: #eebbc3;
+    -fx-border-color: #232946;
+    -fx-text-fill: #232946;
+    -fx-effect: dropshadow(gaussian, #eebbc3, 8, 0.4, 0, 2);
+}
+
+.rank-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 0 2 0;
+}
+
+.rank-label-gold {
+    -fx-text-fill: #ffd700;
+}
+
+.rank-label-silver {
+    -fx-text-fill: #c0c0c0;
+}
+
+.rank-label-bronze {
+    -fx-text-fill: #cd7f32;
+}
+
+.rank-label-default {
+    -fx-text-fill: #b8c1ec;
+}
+
+.die-button-enabled {
+    -fx-background-color: #eebbc3;
+    -fx-text-fill: #232946;
+    -fx-background-radius: 50;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #b8c1ec, 4, 0.3, 0, 2);
+}
+
+.die-button-disabled {
+    -fx-background-color: #393d5b;
+    -fx-text-fill: #b8c1ec;
+    -fx-opacity: 0.5;
+    -fx-background-radius: 50;
+}
+
+.error-label {
+    -fx-text-fill: #ff3860;
+    -fx-font-weight: bold;
+}

@@ -1,8 +1,7 @@
 package edu.ntnu.iir.bidata.view;
 
-import edu.ntnu.iir.bidata.model.Board;
-import edu.ntnu.iir.bidata.model.Tile;
-import javafx.application.Platform;
+import edu.ntnu.iir.bidata.laddergame.model.Board;
+import edu.ntnu.iir.bidata.laddergame.model.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
