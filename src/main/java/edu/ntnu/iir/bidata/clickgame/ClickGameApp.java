@@ -12,10 +12,14 @@ import edu.ntnu.iir.bidata.laddergame.view.util.PlayerData;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -30,6 +34,7 @@ public class ClickGameApp extends Application {
     private Stage primaryStage;
     private GameMenu gameMenu;
     private PlayerController playerController;
+    private Timeline gameTimer;
 
     @Override
     public void start(Stage primaryStage) {
@@ -81,78 +86,106 @@ public class ClickGameApp extends Application {
     private void showGameWindow(BoardGameController boardGameController, PlayerController playerController) {
         Gui gui = new Gui(boardGameController, playerController);
 
-        // Get game settings
         Integer targetClicks = gameMenu.getTargetClicks();
         Integer timerSeconds = gameMenu.getTimerSeconds();
 
-        // Set up timer if needed
-        if (timerSeconds != null) {
-            setupGameTimer(gui, timerSeconds);
+        // Use StackPane for overlays
+        StackPane root = new StackPane();
+        BorderPane gameRoot = new BorderPane();
+        gameRoot.setCenter(gui.createSidePanels());
+        root.getChildren().add(gameRoot);
+
+        // Timer label
+        Label timerLabel = new Label();
+        timerLabel.setStyle("-fx-font-size: 28px; -fx-text-fill: #eebbc3; -fx-font-weight: bold;");
+        timerLabel.setVisible(false);
+        root.getChildren().add(timerLabel);
+
+        // Countdown overlay
+        Label countdownLabel = new Label();
+        countdownLabel.setStyle("-fx-font-size: 64px; -fx-text-fill: #eebbc3; -fx-font-weight: bold;");
+        root.getChildren().add(countdownLabel);
+
+        Scene gameScene = new Scene(root, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
+        css.applyStyleSheet(gameScene, "/css/modern-theme.css");
+
+        List<Player> playersList = new ArrayList<>(playerController.getPlayers());
+        if (!playersList.isEmpty()) {
+            gui.setCurrentPlayer(playersList.get(0));
         }
 
-        Scene gameScene = createGameScene(gui, playerController, targetClicks);
+        // Key event handler (disabled until countdown is done)
+        gameScene.setOnKeyPressed(event -> {
+            if (!countdownLabel.isVisible()) {
+                int playerIndex = -1;
+                if (event.getCode() == KeyCode.DIGIT1) playerIndex = 0;
+                else if (event.getCode() == KeyCode.DIGIT4) playerIndex = 1;
+                else if (event.getCode() == KeyCode.DIGIT7) playerIndex = 2;
+                else if (event.getCode() == KeyCode.DIGIT0) playerIndex = 3;
+
+                if (playerIndex >= 0 && playerIndex < playersList.size()) {
+                    Player player = playersList.get(playerIndex);
+                    gui.setCurrentPlayer(player);
+                    gui.incrementClicks();
+                    gui.updatePlayerClicks(player);
+
+                    if (targetClicks != null && gui.getClicks() >= targetClicks) {
+                        endGame(gui);
+                    }
+                }
+            }
+        });
+        gameScene.getRoot().requestFocus();
+
+        // Countdown sequence
+        Timeline countdown = new Timeline(
+                new KeyFrame(Duration.seconds(0), e -> countdownLabel.setText("3")),
+                new KeyFrame(Duration.seconds(1), e -> countdownLabel.setText("2")),
+                new KeyFrame(Duration.seconds(2), e -> countdownLabel.setText("1")),
+                new KeyFrame(Duration.seconds(3), e -> countdownLabel.setText("Go!")),
+                new KeyFrame(Duration.seconds(4), e -> {
+                    countdownLabel.setVisible(false);
+                    timerLabel.setVisible(timerSeconds != null);
+                    if (timerSeconds != null) {
+                        startGameTimer(timerLabel, timerSeconds, gui);
+                    }
+                })
+        );
+        countdown.setCycleCount(1);
+        countdown.play();
+
         primaryStage.setScene(gameScene);
         primaryStage.setTitle("Click Game");
         primaryStage.show();
     }
 
-    private void setupGameTimer(Gui gui, int seconds) {
-        Timeline timeline = new Timeline(
-                new KeyFrame(Duration.seconds(seconds), event -> endGame(gui))
-        );
-        timeline.setCycleCount(1);
-        timeline.play();
-    }
-
-    private Scene createGameScene(Gui gui, PlayerController playerController, Integer targetClicks) {
-        BorderPane gameRoot = new BorderPane();
-        gameRoot.setCenter(gui.createSidePanels());
-        Scene scene = new Scene(gameRoot, GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT);
-        css.applyStyleSheet(scene, "/css/modern-theme.css");
-
-        // Convert Set to List for index-based access
-        List<Player> playersList = new ArrayList<>(playerController.getPlayers());
-
-        // Set initial current player
-        if (!playersList.isEmpty()) {
-            gui.setCurrentPlayer(playersList.get(0));
-        }
-
-        scene.setOnKeyPressed(event -> {
-            int playerIndex = -1;
-            if (event.getCode() == KeyCode.DIGIT1) playerIndex = 0;
-            else if (event.getCode() == KeyCode.DIGIT4) playerIndex = 1;
-            else if (event.getCode() == KeyCode.DIGIT7) playerIndex = 2;
-            else if (event.getCode() == KeyCode.DIGIT0) playerIndex = 3;
-
-            if (playerIndex >= 0 && playerIndex < playersList.size()) {
-                Player player = playersList.get(playerIndex);
-                gui.setCurrentPlayer(player);
-                gui.incrementClicks();
-                gui.updatePlayerClicks(player);
-
-                // Check for winner if targetClicks is set
-                if (targetClicks != null && gui.getClicks() >= targetClicks) {
+    // Timer logic with visible countdown
+    private void startGameTimer(Label timerLabel, int seconds, Gui gui) {
+        timerLabel.setText("Time: " + seconds);
+        gameTimer = new Timeline(new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+            int timeLeft = seconds;
+            @Override
+            public void handle(ActionEvent event) {
+                timeLeft--;
+                timerLabel.setText("Time: " + timeLeft);
+                if (timeLeft <= 0) {
                     endGame(gui);
+                    if (gameTimer != null) gameTimer.stop();
                 }
             }
-        });
-
-        // Ensure the scene is focused to receive key events
-        scene.getRoot().requestFocus();
-
-        return scene;
+        }));
+        gameTimer.setCycleCount(seconds);
+        gameTimer.play();
     }
 
     private void endGame(Gui gui) {
+        if (gameTimer != null) gameTimer.stop();
         Player winner = gui.getCurrentPlayer();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Game Over");
         alert.setHeaderText("Game Finished!");
         alert.setContentText(winner.getName() + " wins with " + gui.getClicks() + " clicks!");
         alert.showAndWait();
-
-        // Return to menu
         showGameMenu();
     }
 

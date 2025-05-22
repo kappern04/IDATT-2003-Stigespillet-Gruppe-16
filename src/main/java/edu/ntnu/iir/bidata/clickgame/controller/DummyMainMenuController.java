@@ -7,8 +7,11 @@ import java.io.File;
 import java.util.List;
 
 public class DummyMainMenuController extends MainMenuController {
+    private final Stage primaryStage;
+
     public DummyMainMenuController(Stage stage) {
         super(stage);
+        this.primaryStage = stage;
     }
 
     @Override
@@ -19,5 +22,9 @@ public class DummyMainMenuController extends MainMenuController {
     @Override
     public void loadGame(File file) {
         // Do nothing
+    }
+
+    public Stage getPrimaryStage() {
+        return primaryStage;
     }
 }
