@@ -172,16 +172,23 @@ public class ChanceBoardGame extends BoardGameController {
             .toArray();
   }
 
-  @Override
   protected void applyTileEffects(Player player) {
     int position = player.getPositionIndex();
-    if (position >= 0 && position < getBoard().getTiles().size()) {
-      Tile currentTile = getBoard().getTiles().get(position);
-      if (currentTile.hasChanceAction()) {
-        handleChanceEffect(player, currentTile);
-      } else {
-        currentTile.landOn(player);
-      }
+    int lastIndex = getBoard().getTiles().size() - 1;
+
+    if (position < 0) {
+      player.setPositionIndex(0);
+      position = 0;
+    } else if (position > lastIndex) {
+      player.setPositionIndex(lastIndex);
+      position = lastIndex;
+    }
+
+    Tile currentTile = getBoard().getTiles().get(position);
+    if (currentTile.hasChanceAction()) {
+      handleChanceEffect(player, currentTile);
+    } else {
+      currentTile.landOn(player);
     }
   }
 }

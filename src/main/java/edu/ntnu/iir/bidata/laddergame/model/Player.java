@@ -112,6 +112,19 @@ public class Player extends Observable<Player> {
     notifyObservers("POSITION_CHANGED");
   }
 
+    public boolean hasExtraTurn() {
+        return hasExtraTurn;
+    }
+
+    public void setExtraTurn(boolean hasExtraTurn) {
+        this.hasExtraTurn = hasExtraTurn;
+        notifyObservers("EXTRA_TURN_CHANGED");
+    }
+
+    public boolean isSkipTurn() {
+        return skipTurn;
+    }
+
   public void finishMove() {
     setMoving(false);
     notifyObservers("MOVEMENT_COMPLETE");

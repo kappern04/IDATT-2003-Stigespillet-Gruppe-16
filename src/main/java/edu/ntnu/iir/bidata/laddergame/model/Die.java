@@ -8,13 +8,29 @@ public class Die extends Observable<Die> {
   private static final int MIN_FACE = 1;
   private static final int MAX_FACE = 6;
   private int lastRoll;
+  private int secondDieRoll;
+  private final Random random;
 
+    /**
+     * Constructor for the Die class. Initializes the die with a random roll.
+     */
   public Die() {
     this.lastRoll = 0;
+    this.secondDieRoll = 0;
+    this.random = new Random();
   }
+
 
   public int getLastRoll() {
     return lastRoll;
+  }
+
+  public int getSecondDieRoll() {
+    return secondDieRoll;
+  }
+
+  public int getTotalRoll() {
+    return lastRoll + secondDieRoll;
   }
 
   public void setLastRoll(int lastRoll) {
@@ -25,9 +41,23 @@ public class Die extends Observable<Die> {
     notifyObservers("VALUE_CHANGED");
   }
 
+  public void setSecondDieRoll(int secondDieRoll) {
+    if (secondDieRoll < MIN_FACE || secondDieRoll > MAX_FACE) {
+      throw new IllegalArgumentException("Die face must be between " + MIN_FACE + " and " + MAX_FACE);
+    }
+    this.secondDieRoll = secondDieRoll;
+    notifyObservers("VALUE_CHANGED");
+  }
+
   public void roll() {
-    this.lastRoll = new Random().nextInt(MAX_FACE) + MIN_FACE;
+    this.lastRoll = random.nextInt(MAX_FACE) + MIN_FACE;
     notifyObservers("ROLL");
+  }
+
+  public void rollDouble() {
+    this.lastRoll = random.nextInt(MAX_FACE) + MIN_FACE;
+    this.secondDieRoll = random.nextInt(MAX_FACE) + MIN_FACE;
+    notifyObservers("DOUBLE_ROLL");
   }
 
   @Override
@@ -51,6 +81,6 @@ public class Die extends Observable<Die> {
 
   @Override
   public String toString() {
-    return "Die{lastRoll=" + lastRoll + '}';
+    return "Die{lastRoll=" + lastRoll + ", secondDieRoll=" + secondDieRoll + '}';
   }
 }

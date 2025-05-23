@@ -17,7 +17,7 @@ import java.util.List;
 
 public class GameMenu extends GameSetupMenu {
     private static GameMenu instance;
-    private int playerCount = 2;
+    private int playerCount = 1;
     private Integer targetClicks = null;
     private Integer timerSeconds = null;
     private List<PlayerData> playerData = null;
@@ -104,7 +104,7 @@ public class GameMenu extends GameSetupMenu {
     }
 
     private Spinner<Integer> createPlayerCountSpinner() {
-        Spinner<Integer> spinner = new Spinner<>(2, 4, playerCount);
+        Spinner<Integer> spinner = new Spinner<>(1, 5, playerCount);
         spinner.getStyleClass().addAll("player-spinner", "split-arrows-horizontal");
         spinner.setMaxWidth(Double.MAX_VALUE);
         spinner.valueProperty().addListener((obs, oldVal, newVal) -> playerCount = newVal);

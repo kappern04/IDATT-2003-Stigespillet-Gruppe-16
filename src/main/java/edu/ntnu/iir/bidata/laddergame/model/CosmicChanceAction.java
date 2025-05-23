@@ -45,34 +45,34 @@ public class CosmicChanceAction implements TileAction {
      * Executes the actual effect on the player
      */
     public void executeEffect(Player player) {
-        LOGGER.info("Executing cosmic chance action: " + effectType);
-        switch (effectType) {
+        ChanceEffectType[] effects = ChanceEffectType.values();
+        ChanceEffectType randomEffect = effects[random.nextInt(effects.length)];
+        LOGGER.info("Executing cosmic chance action: " + randomEffect);
+
+        switch (randomEffect) {
             case FORWARD_SMALL:
-                player.move(random.nextInt(3) + 1); // 1-3
+                player.move(random.nextInt(3) + 1);
                 break;
             case FORWARD_MEDIUM:
-                player.move(random.nextInt(3) + 4); // 4-6
+                player.move(random.nextInt(3) + 4);
                 break;
             case FORWARD_LARGE:
-                player.move(random.nextInt(4) + 7); // 7-10
+                player.move(random.nextInt(4) + 7);
                 break;
             case BACKWARD_SMALL:
-                player.move(-(random.nextInt(3) + 1)); // -1 to -3
+                player.move(-(random.nextInt(3) + 1));
                 break;
             case BACKWARD_MEDIUM:
-                player.move(-(random.nextInt(3) + 4)); // -4 to -6
+                player.move(-(random.nextInt(3) + 4));
                 break;
             case BACKWARD_LARGE:
-                player.move(-(random.nextInt(4) + 7)); // -7 to -10
+                player.move(-(random.nextInt(4) + 7));
                 break;
             case TELEPORT_RANDOM:
-                // Get all players except the current one
                 List<Player> otherPlayers = Player.getPlayers().stream()
                         .filter(p -> !p.equals(player))
                         .toList();
-
                 if (!otherPlayers.isEmpty()) {
-                    // Pick a random player to swap with
                     Player target = otherPlayers.get(random.nextInt(otherPlayers.size()));
                     int tempPos = player.getPositionIndex();
                     player.setPositionIndex(target.getPositionIndex());
@@ -85,8 +85,12 @@ public class CosmicChanceAction implements TileAction {
             case RETURN_START:
                 player.setPositionIndex(0);
                 break;
+            case EXTRA_TURN:
+                player.setExtraTurn(true);
+                LOGGER.info(player.getName() + " received an extra turn!");
+                break;
             default:
-                LOGGER.warning("Unknown effect type: " + effectType);
+                LOGGER.warning("Unknown effect type: " + randomEffect);
         }
     }
 

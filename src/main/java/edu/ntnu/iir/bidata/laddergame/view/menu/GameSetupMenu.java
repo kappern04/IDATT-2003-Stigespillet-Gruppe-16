@@ -16,6 +16,11 @@ import javafx.stage.Stage;
 
 import java.util.List;
 
+/**
+ * The GameSetupMenu class provides the UI for configuring and starting a new game.
+ * It allows the user to select the board, number of players, chance tile options,
+ * and double dice mode before launching the game.
+ */
 public class GameSetupMenu {
     private final MainMenuController controller;
     private final Stage primaryStage;
@@ -26,12 +31,21 @@ public class GameSetupMenu {
     private static final int SPACING = 25;
     private static final int PADDING = 30;
 
+    /**
+     * Constructs a new GameSetupMenu.
+     *
+     * @param controller   the main menu controller
+     * @param primaryStage the primary stage for the application
+     */
     public GameSetupMenu(MainMenuController controller, Stage primaryStage) {
         this.controller = controller;
         this.primaryStage = primaryStage;
         this.css = new CSS();
     }
 
+    /**
+     * Displays the game setup menu, allowing the user to configure game options and start a new game.
+     */
     public void showGameSetup() {
         BorderPane root = new BorderPane();
         root.setBackground(css.createSpaceBackground(BACKGROUND_PATH));
@@ -51,7 +65,7 @@ public class GameSetupMenu {
         // Player count
         Label playerLabel = css.createStyledLabel("SPACE TRAVELERS:", FontWeight.BOLD, 16, Color.WHITE);
 
-        Spinner<Integer> playerSpinner = new Spinner<>(2, 4, 2);
+        Spinner<Integer> playerSpinner = new Spinner<>(1, 5, 1);
         playerSpinner.getStyleClass().addAll("space-spinner", "split-arrows-horizontal");
         playerSpinner.setMaxWidth(Double.MAX_VALUE);
 
@@ -93,8 +107,13 @@ public class GameSetupMenu {
         chanceOptions.setPadding(new Insets(5, 0, 5, 20));
         chanceOptions.getStyleClass().add("chance-options-box");
 
-        // Wrap checkbox and options in a container
-        VBox chanceContainer = new VBox(10, chanceCheckBox, chanceOptions);
+        // Double Dice Mode checkbox
+        CheckBox doubleDiceCheckBox = new CheckBox("Double Dice Mode");
+        doubleDiceCheckBox.setSelected(false);
+        doubleDiceCheckBox.getStyleClass().add("space-checkbox");
+
+        // Wrap checkbox and options in a container (now includes double dice)
+        VBox chanceContainer = new VBox(10, chanceCheckBox, chanceOptions, doubleDiceCheckBox);
         chanceContainer.getStyleClass().add("chance-container");
 
         // Add dynamic styling based on checkbox state
@@ -121,11 +140,15 @@ public class GameSetupMenu {
             if (playerDetails != null) {
                 boolean enableChanceTiles = chanceCheckBox.isSelected();
                 int chancePercentage = (int) chancePercentSlider.getValue();
-                controller.startNewGameWithOptions(boardSelector.getValue(),
+                boolean doubleDiceMode = doubleDiceCheckBox.isSelected();
+                controller.startNewGameWithOptions(
+                        boardSelector.getValue(),
                         playerSpinner.getValue(),
                         playerDetails,
                         enableChanceTiles,
-                        chancePercentage);
+                        chancePercentage,
+                        doubleDiceMode
+                );
             }
         });
 
@@ -158,7 +181,8 @@ public class GameSetupMenu {
                 missionSeparator,
                 optionsLabel, chanceContainer,
                 new Separator(),
-                startBtn, backBtn);
+                startBtn, backBtn
+        );
 
         settingsBox.setAlignment(Pos.CENTER);
         settingsBox.setSpacing(SPACING);
@@ -176,6 +200,9 @@ public class GameSetupMenu {
         primaryStage.setScene(scene);
     }
 
+    /**
+     * Displays the load game dialog.
+     */
     public void showLoadGameDialog() {
         new LoadGameDialog(controller, primaryStage).show();
     }

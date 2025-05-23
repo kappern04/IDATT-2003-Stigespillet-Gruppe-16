@@ -34,6 +34,8 @@ public class BoardGameController extends Observable<BoardGameController> {
   private final PlayerController playerController;
   private final DieController dieController;
   private Runnable onGameOverCallback;
+  private boolean doubleDiceMode = false;
+
 
 
   /**
@@ -267,7 +269,7 @@ public class BoardGameController extends Observable<BoardGameController> {
   /**
    * Advances the current player index to skip players who have already finished.
    */
-  private void skipFinishedPlayers() {
+  public void skipFinishedPlayers() {
     if (players.isEmpty()) return;
 
     int finalPosition = board.getTiles().size() - 1;
@@ -307,15 +309,20 @@ public class BoardGameController extends Observable<BoardGameController> {
       currentPlayer.move(roll);
     }
 
-    // Instead of recursive checking, set up a proper callback
     waitForAnimationsToComplete(() -> {
       applyTileEffects(currentPlayer);
-      advanceToNextPlayer();
+
+      // Check for extra turn
+      if (currentPlayer.hasExtraTurn()) {
+        currentPlayer.setExtraTurn(false); // Reset flag
+        // Do not advance to next player, let the same player play again
+      } else {
+        advanceToNextPlayer(false);
+      }
 
       LOGGER.info(currentPlayer.getName() + " rolled " + roll + " and is now at position " +
               currentPlayer.getPositionIndex());
 
-      // Only reset state after animations are truly complete
       gameState = GameState.WAITING_FOR_TURN;
       executeCallback(onTurnComplete);
     });
@@ -367,18 +374,18 @@ public class BoardGameController extends Observable<BoardGameController> {
   /**
    * Advances the game to the next player's turn.
    */
-  private void advanceToNextPlayer() {
+  public void advanceToNextPlayer(boolean skipAdvance) {
     if (players.isEmpty()) {
       return;
     }
 
-    currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    if (!skipAdvance) {
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
 
     if (areAllPlayersFinished()) {
       currentPlayerIndex = -1;
       gameState = GameState.GAME_OVER;
-
-      // Add this line to trigger the callback when the game state changes to GAME_OVER
       if (onGameOverCallback != null) {
         onGameOverCallback.run();
       }

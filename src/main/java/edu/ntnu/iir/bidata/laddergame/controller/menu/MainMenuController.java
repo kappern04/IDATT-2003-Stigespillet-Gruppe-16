@@ -43,21 +43,28 @@ public class MainMenuController {
      */
     public void startNewGame(String boardName, int numPlayers, List<PlayerData> playerDetails) {
         // For backward compatibility, call the enhanced method with default chance settings
-        startNewGameWithOptions(boardName, numPlayers, playerDetails, false, 0);
+        startNewGameWithOptions(boardName, numPlayers, playerDetails, false, 0, false);
     }
 
     /**
-     * Starts a new game with the selected board, player details, and chance tile options.
+     * Starts a new game with the given options.
      *
-     * @param boardName         the name of the board to load
-     * @param numPlayers        the number of players
-     * @param playerDetails     the list of player data
-     * @param enableChanceTiles whether chance tiles should be enabled
-     * @param chancePercentage  percentage of tiles that should be chance tiles
+     * @param boardName         the name of the board
+     * @param playerCount       the number of players
+     * @param playerDetails     the player details
+     * @param enableChanceTiles whether chance tiles are enabled
+     * @param chancePercentage  the percentage of chance tiles
+     * @param doubleDiceMode    whether double dice mode is enabled
      */
-    public void startNewGameWithOptions(String boardName, int numPlayers, List<PlayerData> playerDetails,
-                                        boolean enableChanceTiles, int chancePercentage) {
-        if (boardName == null || boardName.isBlank() || playerDetails == null || playerDetails.size() < numPlayers) {
+    public void startNewGameWithOptions(
+            String boardName,
+            int playerCount,
+            List<PlayerData> playerDetails,
+            boolean enableChanceTiles,
+            int chancePercentage,
+            boolean doubleDiceMode
+    ) {
+        if (boardName == null || boardName.isBlank() || playerDetails == null || playerDetails.size() < playerCount) {
             showError("Invalid game setup", "Please select a board and enter valid player details.");
             return;
         }
@@ -65,7 +72,7 @@ public class MainMenuController {
         SaveFileTracker.getInstance().reset();
 
         List<Player> players = new ArrayList<>();
-        for (int i = 0; i < numPlayers; i++) {
+        for (int i = 0; i < playerCount; i++) {
             PlayerData data = playerDetails.get(i);
             players.add(new Player(data.getName(), data.getColor(), data.getShipType()));
         }

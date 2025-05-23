@@ -13,6 +13,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -21,6 +22,9 @@ import javafx.util.Duration;
 
 import java.util.*;
 
+/**
+ * UI view component for the side panel, including player stats and the die control.
+ */
 public class SidePanelView {
 
     private final PlayerController playerController;
@@ -203,8 +207,7 @@ public class SidePanelView {
 
         Optional.ofNullable(playerBoxes.get(current))
                 .ifPresent(box -> box.getStyleClass().setAll("player-box-highlighted"));
-
-        // Die button enabling is now handled only by the MOVEMENT_COMPLETE observer
+        
     }
 
     private void setDieButtonEnabled(boolean enabled) {

@@ -84,8 +84,7 @@ public class PlayerController implements Observer<Player> {
             PauseTransition cleanupWait = new PauseTransition(Duration.millis(100));
             cleanupWait.setOnFinished(e -> playerAnimating.set(false));
             cleanupWait.play();
-            player.finishMove();
-            LOGGER.info("DONE MOVING");
+
         });
     }
 
@@ -103,6 +102,8 @@ public class PlayerController implements Observer<Player> {
                 processSpecialTileEffects(player, targetTile, from, () -> handlePostEffectPositioning(player, to));
             } else {
                 positionPlayer(player, targetTile);
+                player.finishMove();
+                LOGGER.info("Normal DONE");
             }
         });
         pause.play();
@@ -162,6 +163,9 @@ public class PlayerController implements Observer<Player> {
             }
         });
         pause.play();
+        player.finishMove();
+        LOGGER.info("Tile Done");
+
     }
 
     /**
