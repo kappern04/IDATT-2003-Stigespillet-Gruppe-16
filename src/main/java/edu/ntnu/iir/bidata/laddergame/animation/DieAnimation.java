@@ -23,9 +23,15 @@ public class DieAnimation {
     private MediaPlayer currentPlayer;
     private AnimationTimer timer;
     private long animationStartTime;
+    private long pauseDurationMs = PAUSE_DURATION_MS;
+
 
     public DieAnimation(DieView dieView) {
         this.dieView = dieView;
+    }
+
+    public void setPauseDuration(long pauseDurationMs) {
+        this.pauseDurationMs = pauseDurationMs;
     }
 
     public void playRollAnimation(int finalValue, Runnable onComplete) {
@@ -48,7 +54,13 @@ public class DieAnimation {
     }
 
     private void scheduleCompletionCallback(Runnable onComplete) {
-        PauseTransition pause = new PauseTransition(Duration.millis(PAUSE_DURATION_MS));
+        if (pauseDurationMs <= 0) {
+            // Execute immediately if no pause needed
+            Platform.runLater(onComplete);
+            return;
+        }
+
+        PauseTransition pause = new PauseTransition(Duration.millis(pauseDurationMs));
         pause.setOnFinished(event -> Platform.runLater(onComplete));
         pause.play();
     }

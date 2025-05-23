@@ -235,7 +235,6 @@ public class BoardGameController extends Observable<BoardGameController> {
     LOGGER.fine("Die rolled: " + die.getLastRoll());
   }
 
-
   /**
    * Checks if the game is over.
    *
@@ -308,29 +307,37 @@ public class BoardGameController extends Observable<BoardGameController> {
       currentPlayer.move(roll);
     }
 
-    // Wait for any animation to finish
-    if (isBusy()) {
-      PauseTransition wait = new PauseTransition(Duration.millis(100));
-      wait.setOnFinished(e -> handlePlayerRoll(currentPlayer, onTurnComplete));
-      wait.play();
-      return;
-    }
+    // Instead of recursive checking, set up a proper callback
+    waitForAnimationsToComplete(() -> {
+      applyTileEffects(currentPlayer);
+      advanceToNextPlayer();
 
-    // Both animations are complete, proceed with turn
-    applyTileEffects(currentPlayer);
-    advanceToNextPlayer();
+      LOGGER.info(currentPlayer.getName() + " rolled " + roll + " and is now at position " +
+              currentPlayer.getPositionIndex());
 
-    LOGGER.info(currentPlayer.getName() + " rolled " + roll + " and is now at position " +
-            currentPlayer.getPositionIndex());
-
-    Runnable completeWithStateReset = () -> {
+      // Only reset state after animations are truly complete
       gameState = GameState.WAITING_FOR_TURN;
-      if (onTurnComplete != null) {
-        onTurnComplete.run();
-      }
-    };
+      executeCallback(onTurnComplete);
+    });
+  }
 
-    executeCallback(completeWithStateReset);
+  private void waitForAnimationsToComplete(Runnable onComplete) {
+    if (!isBusy()) {
+      // Add a small buffer to ensure animations are truly done
+      PauseTransition buffer = new PauseTransition(Duration.millis(50));
+      buffer.setOnFinished(e -> {
+        if (!isBusy()) {
+          onComplete.run();
+        } else {
+          waitForAnimationsToComplete(onComplete);
+        }
+      });
+      buffer.play();
+    } else {
+      PauseTransition wait = new PauseTransition(Duration.millis(100));
+      wait.setOnFinished(e -> waitForAnimationsToComplete(onComplete));
+      wait.play();
+    }
   }
 
   public boolean isBusy() {

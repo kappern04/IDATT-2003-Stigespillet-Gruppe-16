@@ -8,6 +8,7 @@ import edu.ntnu.iir.bidata.laddergame.view.board.PlayerView;
 import java.util.HashMap;
 import java.util.Map;
 import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.util.Duration;
 
@@ -16,7 +17,7 @@ import javafx.util.Duration;
  */
 public class PlayerAnimation {
     public static final int STEP_DURATION_MS = 300;
-    public static final int SPECIAL_JUMP_DURATION_MS = 500;
+    public static final int SPECIAL_JUMP_DURATION_MS = 300;
 
     private final Board board;
     private final PlayerView playerView;
@@ -54,10 +55,17 @@ public class PlayerAnimation {
 
         Timeline timeline = new Timeline();
         timeline.setOnFinished(e -> {
-            // Mark animation as complete
-            playerView.prepareForAnimation(sprite, false);
             activeAnimations.remove(player);
-            if (onComplete != null) onComplete.run();
+
+            // Wait for PlayerView cleanup
+            playerView.prepareForAnimation(sprite, false);
+
+            // Add delay to ensure all Platform.runLater() calls complete
+            PauseTransition cleanupWait = new PauseTransition(Duration.millis(100));
+            cleanupWait.setOnFinished(cleanupEvent -> {
+                if (onComplete != null) onComplete.run();
+            });
+            cleanupWait.play();
         });
 
         // Decide animation type

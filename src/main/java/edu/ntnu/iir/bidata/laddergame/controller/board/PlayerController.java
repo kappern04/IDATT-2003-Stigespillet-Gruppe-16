@@ -7,18 +7,19 @@ import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import edu.ntnu.iir.bidata.laddergame.util.Observer;
 import edu.ntnu.iir.bidata.laddergame.view.board.ChanceTileView;
 import edu.ntnu.iir.bidata.laddergame.view.board.PlayerView;
-import java.util.*;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Controls player movements and animations on the game board.
+ * Controls player movement, animation, and tile interactions on the board.
  */
-public class PlayerController implements Observer {
+public class PlayerController implements Observer<Player> {
 
     private static final int LADDER_DELAY_MS = 200;
     private static final int EFFECT_DELAY_MS = 0;
@@ -26,29 +27,26 @@ public class PlayerController implements Observer {
     private final Board board;
     private final PlayerView playerView;
     private final PlayerAnimation playerAnimation;
-    private final HashMap<Player, Integer> previousPositions;
+    private final Map<Player, Integer> previousPositions;
     private final AtomicBoolean playerAnimating = new AtomicBoolean(false);
 
-
     /**
-     * Constructs a PlayerController for the given board and players.
-     * @param board the game board
-     * @param players the list of players
+     * Constructs the PlayerController with board and player list.
      */
     public PlayerController(Board board, List<Player> players) {
         this.board = Objects.requireNonNull(board, "Board cannot be null");
         this.previousPositions = new HashMap<>();
-        for (Player player : players) {
-            if (player == null) throw new IllegalArgumentException("Player cannot be null");
+        players.forEach(player -> {
+            Objects.requireNonNull(player, "Player cannot be null");
             previousPositions.put(player, 0);
-        }
+        });
+
         this.playerView = new PlayerView(board, players);
         this.playerAnimation = new PlayerAnimation(board, playerView);
     }
 
     /**
-     * Adds player sprites to the board and initializes their positions.
-     * @param boardPane the board pane
+     * Adds player sprites to the board UI and updates initial positions.
      */
     public void addPlayersToBoard(Pane boardPane) {
         playerView.addPlayersToBoard(boardPane);
@@ -56,138 +54,118 @@ public class PlayerController implements Observer {
     }
 
     /**
-     * Updates the positions of all players on the board.
+     * Updates visual player positions on the board.
      */
     public void updatePlayerPositions() {
         previousPositions.keySet().forEach(player -> {
             int currentPos = previousPositions.get(player);
             int targetPos = player.getPositionIndex();
+
             if (currentPos != targetPos) {
                 animatePlayerMovement(player, currentPos, targetPos);
             } else {
-                Tile tile = board.getTiles().get(currentPos);
-                playerView.positionPlayerAtTile(player, tile);
+                positionPlayer(player, board.getTiles().get(currentPos));
             }
         });
     }
 
     /**
-     * Animates player movement from one position to another.
-     * @param player the player
-     * @param fromPosition starting position
-     * @param toPosition ending position
+     * Animates movement from one tile to another.
      */
     public void animatePlayerMovement(Player player, int fromPosition, int toPosition) {
         playerAnimating.set(true);
         playerAnimation.animatePlayerMovement(player, fromPosition, toPosition, () -> {
             handleMovementComplete(player, fromPosition, toPosition);
-            playerAnimating.set(false);
+            PauseTransition cleanupWait = new PauseTransition(Duration.millis(100));
+            cleanupWait.setOnFinished(e -> playerAnimating.set(false));
+            cleanupWait.play();
         });
     }
 
     /**
-     * Sets the proper rotation for a player's sprite based on the current tile position.
-     * @param player the player
-     * @param tile the current tile
+     * Called after a player's movement animation finishes.
+     */
+    private void handleMovementComplete(Player player, int from, int to) {
+        previousPositions.put(player, to);
+        if (to >= board.getTiles().size()) return;
+
+        Tile targetTile = board.getTiles().get(to);
+        PauseTransition pause = new PauseTransition(Duration.millis(EFFECT_DELAY_MS));
+        pause.setOnFinished(e -> {
+            if (targetTile.getTileAction() != null) {
+                processSpecialTileEffects(player, targetTile, from, () -> handlePostEffectPositioning(player, to));
+            } else {
+                positionPlayer(player, targetTile);
+            }
+        });
+        pause.play();
+    }
+
+    /**
+     * Handles visual repositioning after tile effects are applied.
+     */
+    private void handlePostEffectPositioning(Player player, int originalTo) {
+        int newPos = player.getPositionIndex();
+        Tile newTile = board.getTiles().get(newPos);
+
+        if (newPos != originalTo && Math.abs(newPos - originalTo) > 1) {
+            animatePlayerMovement(player, originalTo, newPos);
+        } else {
+            positionPlayer(player, newTile);
+        }
+    }
+
+    /**
+     * Sets a player's image on a tile and rotates it accordingly.
+     */
+    private void positionPlayer(Player player, Tile tile) {
+        Platform.runLater(() -> {
+            playerView.positionPlayerAtTile(player, tile);
+            setRotationForTile(player, tile);
+        });
+    }
+
+    /**
+     * Sets the rotation for a player's sprite based on tile layout.
      */
     private void setRotationForTile(Player player, Tile tile) {
         ImageView sprite = playerView.getPlayerSprite(player);
-        if (sprite == null) return;
-
-        double rotation = BoardUtils.getRotationForTile(board, tile);
-        sprite.setRotate(rotation);
-    }
-
-    /**
-     * Handles completion of a movement animation.
-     * @param player the player
-     * @param fromPosition the starting position
-     * @param toPosition the ending position
-     */
-    private void handleMovementComplete(Player player, int fromPosition, int toPosition) {
-        // Update previous position
-        previousPositions.put(player, toPosition);
-
-        // Check if we're within bounds
-        if (toPosition >= board.getTiles().size()) return;
-
-        Tile targetTile = board.getTiles().get(toPosition);
-
-        // Schedule tile effect processing with a slight delay
-        PauseTransition pause = new PauseTransition(Duration.millis(EFFECT_DELAY_MS));
-        pause.setOnFinished(e -> {
-            // Process tile effects
-            if (targetTile.getTileAction() != null) {
-                // Explicitly process special tile effects (with sound)
-                processSpecialTileEffects(player, targetTile, fromPosition, () -> {
-                    // If position changed due to a tile action
-                    if (player.getPositionIndex() != toPosition) {
-                        // Get final position after tile action
-                        int finalPosition = player.getPositionIndex();
-                        Tile finalTile = board.getTiles().get(finalPosition);
-
-                        // Position at final location with binding (not animation)
-                        Platform.runLater(() -> {
-                            // If position changed significantly, animate the special move
-                            if (Math.abs(finalPosition - toPosition) > 1) {
-                                Platform.runLater(() -> animatePlayerMovement(player, toPosition, finalPosition));
-                            } else {
-                                playerView.positionPlayerAtTile(player, finalTile);
-                                setRotationForTile(player, finalTile);
-                            }
-                        });
-                    } else {
-                        // No position change from tile action, just bind to final position
-                        Platform.runLater(() -> {
-                            playerView.positionPlayerAtTile(player, targetTile);
-                            setRotationForTile(player, targetTile);
-                        });
-                    }
-                });
-            } else {
-                // No tile action, just bind to final position
-                Platform.runLater(() -> {
-                    playerView.positionPlayerAtTile(player, targetTile);
-                    setRotationForTile(player, targetTile);
-                });
-            }
-        });
-        pause.play();
-    }
-
-    /**
-     * Processes special tile effects.
-     * @param player the player
-     * @param tile the tile with effects
-     * @param previousPosition the player's previous position
-     * @param onComplete callback when effect processing is complete
-     */
-    private void processSpecialTileEffects(Player player, Tile tile, int previousPosition, Runnable onComplete) {
-        if (tile.getTileAction() == null) {
-            if (onComplete != null) Platform.runLater(onComplete);
-            return;
+        if (sprite != null) {
+            sprite.setRotate(BoardUtils.getRotationForTile(board, tile));
         }
+    }
 
+    /**
+     * Handles the logic when a player lands on a special tile.
+     */
+    private void processSpecialTileEffects(Player player, Tile tile, int prevPos, Runnable onComplete) {
         PauseTransition pause = new PauseTransition(Duration.millis(LADDER_DELAY_MS));
-        pause.setOnFinished(event -> {
-            if (tile.getTileAction() instanceof LadderAction ladderAction) {
-                ladderAction.playLadderSound(previousPosition);
-                if (onComplete != null) Platform.runLater(onComplete);
-            } else if (tile.getTileAction() instanceof CosmicChanceAction chanceAction) {
-                new ChanceTileView().showChancePopup(player, chanceAction, () -> {
-                    chanceAction.executeEffect(player);
-                    if (onComplete != null) Platform.runLater(onComplete);
+        pause.setOnFinished(e -> {
+            TileAction action = tile.getTileAction();
+            if (action instanceof LadderAction ladder) {
+                ladder.playLadderSound(prevPos);
+                runLater(onComplete);
+            } else if (action instanceof CosmicChanceAction chance) {
+                new ChanceTileView().showChancePopup(player, chance, () -> {
+                    chance.executeEffect(player);
+                    runLater(onComplete);
                 });
             } else {
-                if (onComplete != null) Platform.runLater(onComplete);
+                runLater(onComplete);
             }
         });
         pause.play();
     }
 
     /**
-     * Checks if any player has an active animation.
-     * @return true if any player has an active animation
+     * Helper to execute callbacks safely on the JavaFX thread.
+     */
+    private void runLater(Runnable runnable) {
+        if (runnable != null) Platform.runLater(runnable);
+    }
+
+    /**
+     * @return true if any player animation is currently in progress.
      */
     public boolean hasActiveAnimations() {
         return playerAnimating.get();
@@ -198,14 +176,10 @@ public class PlayerController implements Observer {
     }
 
     @Override
-    public void update(Observable observable, String prompt) {
+    public void update(Observable<Player> observable, String eventType) {
         updatePlayerPositions();
     }
 
-    /**
-     * Gets the player view.
-     * @return the player view
-     */
     public PlayerView getPlayerView() {
         return playerView;
     }
