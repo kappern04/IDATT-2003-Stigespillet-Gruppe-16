@@ -433,7 +433,6 @@ public class BoardGameController extends Observable<BoardGameController> {
     return !players.isEmpty();
   }
 
-
   @Override
   public String toString() {
     return "BoardGameController{" +

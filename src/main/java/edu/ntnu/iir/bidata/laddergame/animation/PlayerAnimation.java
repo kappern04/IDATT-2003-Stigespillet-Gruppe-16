@@ -17,7 +17,7 @@ import javafx.util.Duration;
  */
 public class PlayerAnimation {
     public static final int STEP_DURATION_MS = 300;
-    public static final int SPECIAL_JUMP_DURATION_MS = 300;
+    public static final int SPECIAL_JUMP_DURATION_MS = 500;
 
     private final Board board;
     private final PlayerView playerView;

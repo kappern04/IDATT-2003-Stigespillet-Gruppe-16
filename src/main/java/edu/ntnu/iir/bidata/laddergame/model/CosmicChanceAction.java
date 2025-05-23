@@ -65,9 +65,6 @@ public class CosmicChanceAction implements TileAction {
             case BACKWARD_LARGE:
                 player.move(-(random.nextInt(4) + 7)); // -7 to -10
                 break;
-            case EXTRA_TURN:
-                player.setHasExtraTurn(true);
-                break;
             case TELEPORT_RANDOM:
                 // Get all players except the current one
                 List<Player> otherPlayers = Player.getPlayers().stream()
@@ -84,9 +81,6 @@ public class CosmicChanceAction implements TileAction {
                 } else {
                     LOGGER.info("No other players to swap with.");
                 }
-                break;
-            case SKIP_TURN:
-                player.setSkipTurn(true);
                 break;
             case RETURN_START:
                 player.setPositionIndex(0);

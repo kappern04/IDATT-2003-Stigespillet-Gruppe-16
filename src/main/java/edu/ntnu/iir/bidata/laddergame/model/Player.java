@@ -102,37 +102,13 @@ public class Player extends Observable<Player> {
     notifyObservers("APPEARANCE_CHANGED");
   }
 
-  public boolean hasExtraTurn() {
-    return hasExtraTurn;
-  }
-
-  public void setHasExtraTurn(boolean hasExtraTurn) {
-    this.hasExtraTurn = hasExtraTurn;
-    notifyObservers("TURN_STATUS_CHANGED");
-  }
-
-  public boolean shouldSkipTurn() {
-    return skipTurn;
-  }
-
-  public void setSkipTurn(boolean skipTurn) {
-    this.skipTurn = skipTurn;
-    notifyObservers("TURN_STATUS_CHANGED");
-  }
-
-  public void useExtraTurn() {
-    this.hasExtraTurn = false;
-    notifyObservers("EXTRA_TURN_USED");
-  }
-
-  public void resetTurnStatus() {
-    this.skipTurn = false;
-    notifyObservers("TURN_STATUS_RESET");
-  }
-
   public void move(int steps) {
     setMoving(true);
     this.positionIndex += steps;
+    if (this.positionIndex < 0) {
+      this.positionIndex = 0;
+
+    }
     notifyObservers("POSITION_CHANGED");
   }
 

@@ -1,6 +1,7 @@
 package edu.ntnu.iir.bidata.laddergame.controller.board;
 
 import edu.ntnu.iir.bidata.laddergame.animation.PlayerAnimation;
+import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
 import edu.ntnu.iir.bidata.laddergame.model.*;
 import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
@@ -15,6 +16,7 @@ import javafx.util.Duration;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 /**
  * Controls player movement, animation, and tile interactions on the board.
@@ -22,13 +24,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class PlayerController implements Observer<Player> {
 
     private static final int LADDER_DELAY_MS = 200;
-    private static final int EFFECT_DELAY_MS = 0;
+    private static final int EFFECT_DELAY_MS = 300;
 
     private final Board board;
     private final PlayerView playerView;
     private final PlayerAnimation playerAnimation;
     private final Map<Player, Integer> previousPositions;
     private final AtomicBoolean playerAnimating = new AtomicBoolean(false);
+
+    private static final Logger LOGGER = Logger.getLogger(PlayerController.class.getName());
+
 
     /**
      * Constructs the PlayerController with board and player list.
@@ -79,6 +84,8 @@ public class PlayerController implements Observer<Player> {
             PauseTransition cleanupWait = new PauseTransition(Duration.millis(100));
             cleanupWait.setOnFinished(e -> playerAnimating.set(false));
             cleanupWait.play();
+            player.finishMove();
+            LOGGER.info("DONE MOVING");
         });
     }
 

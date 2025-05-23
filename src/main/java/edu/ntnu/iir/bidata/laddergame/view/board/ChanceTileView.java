@@ -163,7 +163,7 @@ public class ChanceTileView {
     scene.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
 
     popupStage.setScene(scene);
-    popupStage.showAndWait();
+    popupStage.show();
   }
 
   private ImageView createEffectTypeIcon(ChanceEffectType effectType) {
@@ -180,14 +180,8 @@ public class ChanceTileView {
       case BACKWARD_LARGE:
         imagePath += "backward.png";
         break;
-      case EXTRA_TURN:
-        imagePath += "extra_turn.png";
-        break;
       case TELEPORT_RANDOM:
         imagePath += "teleport.png";
-        break;
-      case SKIP_TURN:
-        imagePath += "skip_turn.png";
         break;
       case RETURN_START:
         imagePath += "return_start.png";
