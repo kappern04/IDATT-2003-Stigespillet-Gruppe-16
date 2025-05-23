@@ -20,11 +20,17 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.Stop;
 import javafx.util.Duration;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Comparator;
 
+/**
+ * GUI class for the click game side panel.
+ * Displays player information and handles player highlighting and click updates.
+ */
 public class Gui extends SidePanelView {
     private static final int PANEL_SPACING = 24;
     private static final int PANEL_PADDING = 28;
@@ -41,12 +47,23 @@ public class Gui extends SidePanelView {
     private final Map<Player, VBox> playerBoxes = new HashMap<>();
     private final Map<Player, Label> playerClicksLabels = new HashMap<>();
 
+    /**
+     * Constructs the GUI for the click game side panel.
+     *
+     * @param boardGameController the board game controller
+     * @param playerController    the player controller
+     */
     public Gui(BoardGameController boardGameController, PlayerController playerController) {
         super(boardGameController, playerController);
         Objects.requireNonNull(playerController, "Player controller cannot be null");
         this.controller = new DummySidePanelController(boardGameController, playerController);
     }
 
+    /**
+     * Creates the side panels containing the player panels.
+     *
+     * @return the HBox containing the side panels
+     */
     @Override
     public HBox createSidePanels() {
         HBox playersPanel = createPlayersPanel();
@@ -62,10 +79,29 @@ public class Gui extends SidePanelView {
         return sidePanelsContainer;
     }
 
+    /**
+     * Creates the panel displaying all players.
+     *
+     * @return the HBox containing player boxes
+     */
     private HBox createPlayersPanel() {
         HBox playersPanel = new HBox(PLAYER_BOX_SPACING);
         playersPanel.setPadding(new Insets(PANEL_PADDING));
-        playersPanel.setAlignment(Pos.CENTER);
+        playersPanel.setAlignment(Pos.CENTER_LEFT);
+
+        playerClicksLabels.clear();
+        playerBoxes.clear();
+
+        // Sort players strictly by ID (1, 2, 3, 4, 5)
+        List<Player> players = new ArrayList<>(controller.getPlayers());
+        players.sort(Comparator.comparingInt(Player::getId));
+
+        for (Player player : players) {
+            VBox playerBox = createPlayerBox(player);
+            playerBoxes.put(player, playerBox);
+            playersPanel.getChildren().add(playerBox);
+        }
+
         playersPanel.setMinHeight(PLAYER_IMAGE_SIZE + 40);
         playersPanel.setBackground(new Background(new BackgroundFill(
                 new LinearGradient(0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
@@ -75,16 +111,15 @@ public class Gui extends SidePanelView {
         )));
         playersPanel.setEffect(new DropShadow(18, Color.rgb(30, 30, 60, 0.18)));
 
-        playerClicksLabels.clear();
-        playerBoxes.clear();
-        for (Player player : controller.getPlayers()) {
-            VBox playerBox = createPlayerBox(player);
-            playerBoxes.put(player, playerBox);
-            playersPanel.getChildren().add(0, playerBox);
-        }
         return playersPanel;
     }
 
+    /**
+     * Creates a VBox representing a single player.
+     *
+     * @param player the player to display
+     * @return the VBox for the player
+     */
     private VBox createPlayerBox(Player player) {
         VBox playerBox = new VBox(8);
         playerBox.setPadding(new Insets(PLAYER_BOX_PADDING));
@@ -119,6 +154,11 @@ public class Gui extends SidePanelView {
         return playerBox;
     }
 
+    /**
+     * Sets the current player and highlights their box.
+     *
+     * @param player the player to set as current
+     */
     public void setCurrentPlayer(Player player) {
         if (player == null) return;
 
@@ -131,6 +171,11 @@ public class Gui extends SidePanelView {
         highlightCurrentPlayer();
     }
 
+    /**
+     * Resets the style of the given player's box.
+     *
+     * @param player the player whose box style to reset
+     */
     private void resetPlayerBoxStyle(Player player) {
         VBox playerBox = playerBoxes.get(player);
         if (playerBox != null) {
@@ -141,6 +186,9 @@ public class Gui extends SidePanelView {
         }
     }
 
+    /**
+     * Highlights the current player's box.
+     */
     public void highlightCurrentPlayer() {
         Player currentPlayer = controller.getCurrentPlayer();
         if (currentPlayer != null) {
@@ -155,6 +203,11 @@ public class Gui extends SidePanelView {
         }
     }
 
+    /**
+     * Animates the given player box with a scale transition.
+     *
+     * @param playerBox the VBox to animate
+     */
     private void animatePlayerBox(VBox playerBox) {
         ScaleTransition st = new ScaleTransition(Duration.millis(ANIMATION_DURATION_MS * 2), playerBox);
         st.setFromX(1.0);
@@ -166,10 +219,20 @@ public class Gui extends SidePanelView {
         st.play();
     }
 
+    /**
+     * Gets the current player.
+     *
+     * @return the current player
+     */
     public Player getCurrentPlayer() {
         return controller.getCurrentPlayer();
     }
 
+    /**
+     * Updates the click count for the given player and updates the label.
+     *
+     * @param player the player whose clicks to update
+     */
     public void updatePlayerClicks(Player player) {
         Label clicksLabel = playerClicksLabels.get(player);
         if (clicksLabel != null) {
@@ -178,23 +241,49 @@ public class Gui extends SidePanelView {
         }
     }
 
+    /**
+     * Gets the total number of clicks.
+     *
+     * @return the total clicks
+     */
     public int getClicks() {
         return controller.getTotalClicks();
     }
 
+    /**
+     * Increments the total click count.
+     */
     public void incrementClicks() {
         controller.incrementTotalClicks();
     }
 
+    /**
+     * Gets the number of clicks for a specific player.
+     *
+     * @param player the player
+     * @return the number of clicks for the player
+     */
     public int getPlayerClicks(Player player) {
         return controller.getPlayerClicks(player);
     }
 
-    public double prefWidth(double height) {
-        return 1000;
+    /**
+     * Returns the preferred width for the GUI.
+     *
+     * @param width the suggested width (ignored)
+     * @return the preferred width
+     */
+    public double prefWidth(double width) {
+        return 1200;
     }
 
-    public double prefHeight(double width) {
+    /**
+     * Returns the preferred height for the GUI.
+     *
+     * @param height the suggested height (ignored)
+     * @return the preferred height
+     */
+    public double prefHeight(double height) {
         return 900;
     }
 }

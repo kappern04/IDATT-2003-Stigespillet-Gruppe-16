@@ -1,5 +1,6 @@
 package edu.ntnu.iir.bidata.clickgame.gui;
 
+import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
 import edu.ntnu.iir.bidata.laddergame.view.menu.GameSetupMenu;
 import edu.ntnu.iir.bidata.laddergame.view.menu.PlayerMenu;
 import edu.ntnu.iir.bidata.laddergame.util.CSS;
@@ -61,7 +62,7 @@ public class GameMenu extends GameSetupMenu {
         VBox playerSection = createSection("Number of Players", createPlayerCountSpinner());
 
         // Key info section
-        Label infoLabel = new Label("Player Keys to Press:\nP1: 1   P2: 4   P3: 7   P4: 0");
+        Label infoLabel = new Label("Player Keys to Press:\nP1: 1   P2: 3   P3: 5   P4: 7   P5: 9");
         infoLabel.getStyleClass().add("info-label");
         infoLabel.setMaxWidth(Double.MAX_VALUE);
         infoLabel.setAlignment(Pos.CENTER);
