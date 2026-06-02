@@ -28,8 +28,8 @@ public class GameSetupMenu {
 
     // Constants for better maintenance
     private static final String BACKGROUND_PATH = "/image/background/mainmenu.png";
-    private static final int SPACING = 25;
-    private static final int PADDING = 30;
+    private static final int SPACING = 12;
+    private static final int PADDING = 20;
 
     /**
      * Constructs a new GameSetupMenu.
@@ -171,7 +171,7 @@ public class GameSetupMenu {
         // Layout containers
         VBox titleBox = new VBox(titleLabel);
         titleBox.setAlignment(Pos.CENTER);
-        titleBox.setPadding(new Insets(PADDING, 0, PADDING, 0));
+        titleBox.setPadding(new Insets(15, 0, 15, 0));
 
         // Settings container
         VBox settingsBox = new VBox(
@@ -188,14 +188,14 @@ public class GameSetupMenu {
         settingsBox.setSpacing(SPACING);
         settingsBox.setPadding(new Insets(0, PADDING, PADDING, PADDING));
         settingsBox.getStyleClass().add("space-settings-box");
-        settingsBox.setMaxWidth(400);  // Limit width for better appearance
+        settingsBox.setMaxWidth(480);
 
         // Main container
         VBox mainContent = new VBox(titleBox, settingsBox);
         mainContent.setAlignment(Pos.CENTER);
         root.setCenter(mainContent);
 
-        Scene scene = new Scene(root, 800, 1000);
+        Scene scene = new Scene(root, 700, 750);
         css.applyDefaultStylesheet(scene);
         primaryStage.setScene(scene);
     }

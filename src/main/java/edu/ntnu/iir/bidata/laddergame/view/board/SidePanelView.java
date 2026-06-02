@@ -63,12 +63,13 @@ public class SidePanelView {
     }
 
     public HBox createSidePanels() {
-        VBox playersPanel = new VBox(10);
+        int playerCount = sidePanelController.getPlayers().size();
+        VBox playersPanel = new VBox(playerCount <= 4 ? 10 : 6);
         VBox diePanel = new VBox(20);
         playersPanel.getStyleClass().add("side-panel");
         diePanel.getStyleClass().add("side-panel");
 
-        sidePanelController.getPlayers().forEach(player -> addPlayerToPanel(playersPanel, player));
+        sidePanelController.getPlayers().forEach(player -> addPlayerToPanel(playersPanel, player, playerCount));
 
         diePanel.setAlignment(Pos.TOP_CENTER);
         diePanel.setPrefWidth(200);
@@ -99,17 +100,18 @@ public class SidePanelView {
         return dieBox;
     }
 
-    private void addPlayerToPanel(VBox panel, Player player) {
-        VBox playerBox = createPlayerBox(player);
+    private void addPlayerToPanel(VBox panel, Player player, int playerCount) {
+        VBox playerBox = createPlayerBox(player, playerCount);
         panel.getChildren().add(playerBox);
         playerBoxes.put(player, playerBox);
     }
 
-    private VBox createPlayerBox(Player player) {
+    private VBox createPlayerBox(Player player, int playerCount) {
         VBox box = new VBox();
         box.getStyleClass().add("player-box");
 
-        ImageView avatar = PixelArtUpscaler.resizeImage(sidePanelController.getPlayerImage(player), 80, 80);
+        int avatarSize = playerCount <= 4 ? 80 : 48;
+        ImageView avatar = PixelArtUpscaler.resizeImage(sidePanelController.getPlayerImage(player), avatarSize, avatarSize);
         Color color = getPlayerColor(player);
 
         Label nameLabel = css.sidePanelLabel(player.getName(), color);
@@ -207,7 +209,7 @@ public class SidePanelView {
 
         Optional.ofNullable(playerBoxes.get(current))
                 .ifPresent(box -> box.getStyleClass().setAll("player-box-highlighted"));
-        
+
     }
 
     private void setDieButtonEnabled(boolean enabled) {
