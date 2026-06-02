@@ -74,15 +74,30 @@ public class DieController implements Observer<Die> {
      */
     @Override
     public void update(Observable<Die> observable, String eventType) {
-        if (observable == die && "ROLL".equals(eventType) && isAnimating.compareAndSet(false, true)) {
-            int roll = die.getLastRoll();
-            dieAnimation.playRollAnimation(roll, () -> {
-                isAnimating.set(false);
-                Runnable callback = onAnimationComplete.getAndSet(null);
-                if (callback != null) {
-                    callback.run();
-                }
-            });
+        if (observable != die) {
+            return;
+        }
+
+        if ("ROLL".equals(eventType) && isAnimating.compareAndSet(false, true)) {
+            dieAnimation.playRollAnimation(die.getLastRoll(), this::completeAnimation);
+        } else if ("DOUBLE_ROLL".equals(eventType) && isAnimating.compareAndSet(false, true)) {
+            // Reuse the single die view: roll it once to show the first die, then
+            // again to show the second. The player moves by the combined total.
+            int first = die.getLastRoll();
+            int second = die.getSecondDieRoll();
+            dieAnimation.playRollAnimation(first,
+                    () -> dieAnimation.playRollAnimation(second, this::completeAnimation));
+        }
+    }
+
+    /**
+     * Clears the animating flag and runs the pending completion callback, if any.
+     */
+    private void completeAnimation() {
+        isAnimating.set(false);
+        Runnable callback = onAnimationComplete.getAndSet(null);
+        if (callback != null) {
+            callback.run();
         }
     }
 

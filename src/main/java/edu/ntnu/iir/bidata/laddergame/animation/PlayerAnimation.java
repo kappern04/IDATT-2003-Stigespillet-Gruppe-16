@@ -135,8 +135,10 @@ public class PlayerAnimation {
      */
     private boolean isSpecialMovement(int currentPosition, int targetPosition) {
         Tile currentTile = board.getTiles().get(currentPosition);
+        // Only tile actions (ladders/snakes) and backward moves jump directly.
+        // A large forward roll is still a normal move and must walk tile-by-tile;
+        // otherwise double-dice rolls (up to 12) would skip the walking animation.
         return hasSpecialMovementToPosition(currentTile, targetPosition) ||
-                Math.abs(targetPosition - currentPosition) > 6 ||
                 targetPosition < currentPosition;
     }
 

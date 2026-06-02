@@ -138,6 +138,24 @@ public class BoardGameController extends Observable<BoardGameController> impleme
   }
 
   /**
+   * Enables or disables double-dice mode. When enabled, each turn rolls two dice
+   * and the player moves by their combined total.
+   *
+   * @param doubleDiceMode true to roll two dice per turn
+   */
+  public void setDoubleDiceMode(boolean doubleDiceMode) {
+    this.doubleDiceMode = doubleDiceMode;
+    LOGGER.info("Double dice mode " + (doubleDiceMode ? "enabled" : "disabled"));
+  }
+
+  /**
+   * @return true if double-dice mode is enabled
+   */
+  public boolean isDoubleDiceMode() {
+    return doubleDiceMode;
+  }
+
+  /**
    * Sets the current player index.
    *
    * @param currentPlayerIndex the index to set
@@ -237,7 +255,11 @@ public class BoardGameController extends Observable<BoardGameController> impleme
     LOGGER.info("Starting turn for player: " + currentPlayer.getName());
 
     dieController.setOnAnimationComplete(() -> handlePlayerRoll(currentPlayer, onTurnComplete));
-    die.roll();
+    if (doubleDiceMode) {
+      die.rollDouble();
+    } else {
+      die.roll();
+    }
     LOGGER.fine("Die rolled: " + die.getLastRoll());
   }
 
@@ -306,7 +328,7 @@ public class BoardGameController extends Observable<BoardGameController> impleme
     // tile reached by this turn's chance effect must not trigger again.
     currentPlayer.setChanceActivatedThisTurn(false);
 
-    int roll = die.getLastRoll();
+    int roll = doubleDiceMode ? die.getTotalRoll() : die.getLastRoll();
     int boardSize = board.getTiles().size();
     int currentPosition = currentPlayer.getPositionIndex();
     int targetPosition = currentPosition + roll;

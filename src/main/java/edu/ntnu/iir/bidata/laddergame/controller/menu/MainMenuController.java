@@ -94,6 +94,7 @@ public class MainMenuController {
         BoardGameController game = new BoardGameController();
         game.setPlayers(players);
         game.setBoard(board);
+        game.setDoubleDiceMode(doubleDiceMode);
 
         BoardGameView boardGameView = new BoardGameView(game);
         boardGameView.setUpStage(primaryStage);
