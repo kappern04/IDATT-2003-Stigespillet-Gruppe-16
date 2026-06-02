@@ -42,14 +42,26 @@ public class CosmicChanceAction implements TileAction {
     }
 
     /**
-     * Executes the actual effect on the player
+     * Executes the actual effect on the player. Convenience overload for effects
+     * that do not depend on the other players (a player swap will be a no-op).
      */
     public void executeEffect(Player player) {
-        ChanceEffectType[] effects = ChanceEffectType.values();
-        ChanceEffectType randomEffect = effects[random.nextInt(effects.length)];
-        LOGGER.info("Executing cosmic chance action: " + randomEffect);
+        executeEffect(player, java.util.Collections.emptyList());
+    }
 
-        switch (randomEffect) {
+    /**
+     * Executes the actual effect on the player.
+     *
+     * @param player     the player who triggered the chance tile
+     * @param allPlayers all players currently in the game, used by effects that
+     *                   interact with other players (e.g. TELEPORT_RANDOM)
+     */
+    public void executeEffect(Player player, List<Player> allPlayers) {
+        // Apply the effect this tile was assigned at board setup, so the effect
+        // shown in the popup matches what actually happens to the player.
+        LOGGER.info("Executing cosmic chance action: " + effectType);
+
+        switch (effectType) {
             case FORWARD_SMALL:
                 player.move(random.nextInt(3) + 1);
                 break;
@@ -69,7 +81,7 @@ public class CosmicChanceAction implements TileAction {
                 player.move(-(random.nextInt(4) + 7));
                 break;
             case TELEPORT_RANDOM:
-                List<Player> otherPlayers = Player.getPlayers().stream()
+                List<Player> otherPlayers = allPlayers.stream()
                         .filter(p -> !p.equals(player))
                         .toList();
                 if (!otherPlayers.isEmpty()) {
@@ -77,6 +89,10 @@ public class CosmicChanceAction implements TileAction {
                     int tempPos = player.getPositionIndex();
                     player.setPositionIndex(target.getPositionIndex());
                     target.setPositionIndex(tempPos);
+                    // The swap is part of this single chance activation, so neither
+                    // player's destination should trigger another chance effect now.
+                    player.setChanceActivatedThisTurn(true);
+                    target.setChanceActivatedThisTurn(true);
                     LOGGER.info(player.getName() + " swapped places with " + target.getName());
                 } else {
                     LOGGER.info("No other players to swap with.");
@@ -90,7 +106,7 @@ public class CosmicChanceAction implements TileAction {
                 LOGGER.info(player.getName() + " received an extra turn!");
                 break;
             default:
-                LOGGER.warning("Unknown effect type: " + randomEffect);
+                LOGGER.warning("Unknown effect type: " + effectType);
         }
     }
 

@@ -21,7 +21,7 @@ public class Player extends Observable<Player> {
   private int shipType;
   private boolean isMoving;
   private boolean hasExtraTurn;
-  private boolean skipTurn;
+  private boolean chanceActivatedThisTurn;
   private static final List<Player> players = new ArrayList<>();
   private static int nextId = 1;
 
@@ -37,7 +37,6 @@ public class Player extends Observable<Player> {
     this.color = null;
     this.shipType = 1;
     this.hasExtraTurn = false;
-    this.skipTurn = false;
   }
 
   /**
@@ -53,7 +52,6 @@ public class Player extends Observable<Player> {
     this.color = color;
     this.shipType = 1;
     this.hasExtraTurn = false;
-    this.skipTurn = false;
   }
 
   /**
@@ -70,7 +68,6 @@ public class Player extends Observable<Player> {
     this.color = color;
     this.shipType = shipType;
     this.hasExtraTurn = false;
-    this.skipTurn = false;
   }
 
   /**
@@ -224,22 +221,24 @@ public class Player extends Observable<Player> {
   }
 
   /**
-   * Checks if the player should skip their next turn.
+   * Checks whether a chance-tile effect has already been applied to this player
+   * during the current turn.
    *
-   * @return True if the player should skip their turn, false otherwise
+   * @return true if a chance tile has already triggered this turn, false otherwise
    */
-  public boolean isSkipTurn() {
-    return skipTurn;
+  public boolean isChanceActivatedThisTurn() {
+    return chanceActivatedThisTurn;
   }
 
   /**
-   * Sets whether the player should skip their next turn and notifies observers.
+   * Marks whether a chance-tile effect has been applied to this player during the
+   * current turn. Used to prevent a chance effect that moves the player onto another
+   * chance tile from triggering it again (no chance-tile chaining within one turn).
    *
-   * @param skipTurn True to make player skip next turn, false otherwise
+   * @param chanceActivatedThisTurn true once a chance tile has triggered this turn
    */
-  public void setSkipTurn(boolean skipTurn) {
-    this.skipTurn = skipTurn;
-    notifyObservers("SKIP_TURN_CHANGED");
+  public void setChanceActivatedThisTurn(boolean chanceActivatedThisTurn) {
+    this.chanceActivatedThisTurn = chanceActivatedThisTurn;
   }
 
   /**

@@ -7,6 +7,7 @@ import edu.ntnu.iir.bidata.laddergame.model.Die;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
+import edu.ntnu.iir.bidata.laddergame.util.Observer;
 import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 import edu.ntnu.iir.bidata.laddergame.view.board.DieView;
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  * Main controller responsible for managing the board game state and game flow.
  * This class coordinates player turns, die rolls, and movement on the board.
  */
-public class BoardGameController extends Observable<BoardGameController> {
+public class BoardGameController extends Observable<BoardGameController> implements Observer<Player> {
   private static final Logger LOGGER = Logger.getLogger(BoardGameController.class.getName());
 
   // Game state constants
@@ -110,6 +111,9 @@ public class BoardGameController extends Observable<BoardGameController> {
     this.players = new ArrayList<>(players);
     this.currentPlayerIndex = 0;
     this.gameState = GameState.READY_TO_START;
+    // Observe players so an EXTRA_TURN granted asynchronously (after the chance
+    // popup is confirmed) can hand the turn back to that player.
+    this.players.forEach(player -> player.addObserver(this));
     LOGGER.info("Players set: " + players.size() + " players");
   }
 
@@ -298,6 +302,10 @@ public class BoardGameController extends Observable<BoardGameController> {
    * @param onTurnComplete callback to run after turn is complete
    */
   private void handlePlayerRoll(Player currentPlayer, Runnable onTurnComplete) {
+    // A new turn begins: allow a chance tile to trigger once. Any further chance
+    // tile reached by this turn's chance effect must not trigger again.
+    currentPlayer.setChanceActivatedThisTurn(false);
+
     int roll = die.getLastRoll();
     int boardSize = board.getTiles().size();
     int currentPosition = currentPlayer.getPositionIndex();
@@ -367,7 +375,12 @@ public class BoardGameController extends Observable<BoardGameController> {
     int position = player.getPositionIndex();
     if (position >= 0 && position < board.getTiles().size()) {
       Tile currentTile = board.getTiles().get(position);
-      currentTile.landOn(player);
+      // Chance tiles are resolved by the view layer (PlayerController) through the
+      // chance popup, so the effect is applied exactly once after the player
+      // acknowledges it. Executing it here as well would apply a second effect.
+      if (!currentTile.hasChanceAction()) {
+        currentTile.landOn(player);
+      }
     }
   }
 
@@ -438,6 +451,38 @@ public class BoardGameController extends Observable<BoardGameController> {
    */
   public boolean hasPlayers() {
     return !players.isEmpty();
+  }
+
+  /**
+   * Observes player events. The turn pointer advances as soon as a roll is
+   * resolved, but a chance tile's EXTRA_TURN is only applied later, when the
+   * player confirms the popup. This listener reacts to that and hands the turn
+   * back to the player, consuming the flag so exactly one extra turn is granted.
+   *
+   * @param observable the player whose state changed
+   * @param eventType  the kind of change
+   */
+  @Override
+  public void update(Observable<Player> observable, String eventType) {
+    if (!"EXTRA_TURN_CHANGED".equals(eventType) || !(observable instanceof Player player)) {
+      return;
+    }
+    if (!player.hasExtraTurn()) {
+      return;
+    }
+
+    int index = players.indexOf(player);
+    int finalPosition = board.getTiles().size() - 1;
+    if (index < 0 || player.getPositionIndex() >= finalPosition) {
+      // Player isn't part of this game, or has already finished: nothing to grant.
+      player.setExtraTurn(false);
+      return;
+    }
+
+    currentPlayerIndex = index;
+    gameState = GameState.WAITING_FOR_TURN;
+    player.setExtraTurn(false); // consume so the player gets exactly one extra turn
+    LOGGER.info(player.getName() + " takes an extra turn");
   }
 
   @Override

@@ -154,10 +154,19 @@ public class PlayerController implements Observer<Player> {
                 ladder.playLadderSound(prevPos);
                 runLater(onComplete);
             } else if (action instanceof CosmicChanceAction chance) {
-                new ChanceTileView().showChancePopup(player, chance, () -> {
-                    chance.executeEffect(player);
+                if (player.isChanceActivatedThisTurn()) {
+                    // This chance tile was reached by another chance effect during the
+                    // same turn. A chance effect triggers only once per turn, so the
+                    // destination tile must not activate its own effect now.
                     runLater(onComplete);
-                });
+                } else {
+                    player.setChanceActivatedThisTurn(true);
+                    List<Player> allPlayers = new ArrayList<>(getPlayers());
+                    new ChanceTileView().showChancePopup(player, chance, () -> {
+                        chance.executeEffect(player, allPlayers);
+                        runLater(onComplete);
+                    });
+                }
             } else {
                 runLater(onComplete);
             }
