@@ -1,16 +1,15 @@
-package edu.ntnu.iir.bidata.laddergame.view;
+package edu.ntnu.iir.bidata.laddergame.view.screen;
 
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
-import edu.ntnu.iir.bidata.laddergame.controller.board.BoardController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.laddergame.controller.other.MusicController;
-import edu.ntnu.iir.bidata.laddergame.model.MusicPlayer;
 import edu.ntnu.iir.bidata.laddergame.view.board.BoardView;
 import edu.ntnu.iir.bidata.laddergame.view.board.SidePanelView;
-import edu.ntnu.iir.bidata.laddergame.view.other.ControlPanel;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.component.ControlPanel;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.view.other.WinPopup;
+import edu.ntnu.iir.bidata.laddergame.view.dialog.WinPopup;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -26,8 +25,8 @@ import javafx.scene.layout.StackPane;
  * Responsible for initializing and arranging all UI components,
  * including the board, side panels, control panel, and background.
  */
-public class BoardGameView {
-  private final BoardGameController boardGameController;
+public class GameScreenView {
+  private final GameController boardGameController;
   private final BoardView boardView;
   private final SidePanelView sidePanelView;
   private final ControlPanel controlPanel;
@@ -35,34 +34,35 @@ public class BoardGameView {
   private final CSS css = new CSS();
   private Scene scene;
 
-  public BoardGameView(BoardGameController boardGameController) {
+  public GameScreenView(GameController boardGameController) {
     this.boardGameController = boardGameController;
-
-    BoardController boardController = new BoardController(
-            boardGameController.getBoard(),
-            boardGameController.getPlayers()
-    );
-
-    PlayerController playerController = new PlayerController(
-            boardGameController.getBoard(),
-            boardGameController.getPlayers()
-    );
 
     boardGameController.setOnGameOver(() -> {
       Player winner = boardGameController.getWinner();
       if (winner != null) {
-        WinPopup winPopup = new WinPopup(winner);
+        WinPopup winPopup = new WinPopup(winner, () -> System.exit(0));
         winPopup.show();
       }
     });
 
+    this.musicController = new MusicController("/audio/bgmusic.wav");
 
-    MusicPlayer musicPlayer = new MusicPlayer("/audio/bgmusic.wav");
-    this.musicController = new MusicController(musicPlayer);
+    this.boardView = new BoardView(
+            boardGameController.getBoard(),
+            boardGameController.getPlayers()
+    );
 
-    this.boardView = new BoardView(boardController);
+    // Use a single PlayerController everywhere: the one BoardView registers as a
+    // player observer and uses to animate sprites. Sharing it lets the side panel
+    // and the game controller's isBusy() reflect the real animation state.
+    PlayerController playerController = boardView.getPlayerController();
     this.sidePanelView = new SidePanelView(boardGameController, playerController);
     this.controlPanel = new ControlPanel(boardGameController, musicController);
+
+    // Give the game controller the controllers that drive the visible animations,
+    // so its turn flow correctly waits for them to finish.
+    boardGameController.setPlayerController(playerController);
+    boardGameController.setDieController(sidePanelView.getDieController());
   }
 
 
@@ -73,10 +73,10 @@ public class BoardGameView {
     VBox leftPanel = (VBox)sidePanels.getChildren().get(0);
     VBox rightPanel = (VBox)sidePanels.getChildren().get(1);
 
-    Node controlPanelNode = controlPanel.createControlPanel();
+    Node controlPanelNode = controlPanel.createControlPanel(stage);
 
     VBox centerLayout = new VBox(10);
-    centerLayout.setStyle("-fx-padding: 20px;");
+    centerLayout.setPadding(new Insets(20));
     centerLayout.getChildren().addAll(boardPanel, controlPanelNode);
     centerLayout.setAlignment(Pos.CENTER);
 
@@ -114,4 +114,4 @@ public class BoardGameView {
     return (StackPane) boardView.createBoardPanel();
   }
 
-}
+}

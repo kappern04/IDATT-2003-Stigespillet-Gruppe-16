@@ -1,6 +1,6 @@
 package edu.ntnu.iir.bidata.laddergame.controller.board;
 
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import edu.ntnu.iir.bidata.laddergame.util.Observer;
@@ -16,12 +16,12 @@ import java.util.function.Consumer;
  */
 public class SidePanelController implements Observer<Player> {
 
-    private final BoardGameController boardGameController;
+    private final GameController boardGameController;
     private final PlayerController playerController;
     private Consumer<String> onStateChanged;
 
-    public SidePanelController(BoardGameController boardGameController, PlayerController playerController) {
-        this.boardGameController = Objects.requireNonNull(boardGameController, "BoardGameController cannot be null");
+    public SidePanelController(GameController boardGameController, PlayerController playerController) {
+        this.boardGameController = Objects.requireNonNull(boardGameController, "GameController cannot be null");
         this.playerController = Objects.requireNonNull(playerController, "PlayerController cannot be null");
 
         // Register this controller to observe player updates

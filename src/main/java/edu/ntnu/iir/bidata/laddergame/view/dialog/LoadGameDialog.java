@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.view.menu;
+package edu.ntnu.iir.bidata.laddergame.view.dialog;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
 import edu.ntnu.iir.bidata.laddergame.file.SaveFileTracker;
@@ -23,8 +23,7 @@ public class LoadGameDialog {
                 new FileChooser.ExtensionFilter("CSV Files", "*.csv")
         );
 
-        String savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
-        File savesDir = new File(savesDirectory);
+        File savesDir = new File(SaveFileTracker.getSavesDirectory());
 
         if (savesDir.exists() && savesDir.isDirectory()) {
             fileChooser.setInitialDirectory(savesDir);

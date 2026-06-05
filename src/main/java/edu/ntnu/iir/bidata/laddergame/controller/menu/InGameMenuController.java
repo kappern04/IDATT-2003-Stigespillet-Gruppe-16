@@ -1,18 +1,13 @@
 package edu.ntnu.iir.bidata.laddergame.controller.menu;
 
-import edu.ntnu.iir.bidata.laddergame.Stigespillet;
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.controller.other.MusicController;
 import edu.ntnu.iir.bidata.laddergame.file.GameSaveWriterCSV;
 import edu.ntnu.iir.bidata.laddergame.file.SaveFileTracker;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 
 /**
  * Controller for handling in-game menu actions such as saving, returning to menu,
@@ -22,28 +17,30 @@ public class InGameMenuController {
     private static final Logger LOGGER = Logger.getLogger(InGameMenuController.class.getName());
 
     private final MusicController musicController;
-    private final BoardGameController boardGameController;
+    private final GameController boardGameController;
+    private final Stage primaryStage;
 
     /**
      * Creates a new in-game menu controller.
      *
      * @param boardGameController the board game controller
      * @param musicController the music controller
+     * @param primaryStage the primary stage the game is shown on, reused for navigation
      */
-    public InGameMenuController(BoardGameController boardGameController, MusicController musicController) {
+    public InGameMenuController(GameController boardGameController, MusicController musicController, Stage primaryStage) {
         this.boardGameController = boardGameController;
         this.musicController = musicController;
+        this.primaryStage = primaryStage;
         LOGGER.info("InGameMenuController initialized");
     }
 
     /**
-     * Returns to the main menu by closing all open stages and restarting the application.
+     * Returns to the main menu by showing it on the existing primary stage.
      */
     public void returnToMainMenu() {
         LOGGER.info("Returning to main menu");
         musicController.pause();
-        closeAllStagesExcept(null);
-        restartApplication();
+        new MainMenuController(primaryStage);
     }
 
     /**
@@ -52,6 +49,16 @@ public class InGameMenuController {
     public void exitGame() {
         LOGGER.info("Exiting game");
         System.exit(0);
+    }
+
+    /**
+     * Whether saving should prompt the user for a new name. A game loaded from a
+     * save is re-saved over its existing file, so no name is needed then.
+     *
+     * @return true if the user should be asked for a save name
+     */
+    public boolean needsSaveName() {
+        return !SaveFileTracker.getInstance().wasLoadedFromSave();
     }
 
     /**
@@ -85,38 +92,4 @@ public class InGameMenuController {
         }
     }
 
-    /**
-     * Closes all open stages except the specified one.
-     *
-     * @param exceptStage the stage to keep open, can be null to close all stages
-     */
-    private void closeAllStagesExcept(Stage exceptStage) {
-        List<Stage> stagesToClose = new ArrayList<>();
-
-        for (Window window : Stage.getWindows()) {
-            if (window instanceof Stage && window != exceptStage) {
-                stagesToClose.add((Stage) window);
-            }
-        }
-
-        LOGGER.info("Closing " + stagesToClose.size() + " stages");
-        for (Stage stage : stagesToClose) {
-            stage.close();
-        }
-    }
-
-    /**
-     * Restarts the application by creating a new instance of the main application class.
-     */
-    private void restartApplication() {
-        LOGGER.info("Restarting application");
-        Platform.runLater(() -> {
-            try {
-                Stigespillet stigespillet = new Stigespillet();
-                stigespillet.start(new Stage());
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "Failed to restart application", ex);
-            }
-        });
-    }
-}
+}

@@ -1,22 +1,19 @@
 package edu.ntnu.iir.bidata.laddergame.controller.menu;
 
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.file.BoardRegistry;
 import edu.ntnu.iir.bidata.laddergame.file.GameSaveReaderCSV;
 import edu.ntnu.iir.bidata.laddergame.file.SaveFileTracker;
 import edu.ntnu.iir.bidata.laddergame.model.Board;
-import edu.ntnu.iir.bidata.laddergame.model.CosmicChanceAction;
+import edu.ntnu.iir.bidata.laddergame.model.ChanceTilePlacer;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.model.Tile;
-import edu.ntnu.iir.bidata.laddergame.util.ChanceEffectType;
-import edu.ntnu.iir.bidata.laddergame.view.BoardGameView;
-import edu.ntnu.iir.bidata.laddergame.view.menu.MainMenu;
+import edu.ntnu.iir.bidata.laddergame.view.screen.GameScreenView;
+import edu.ntnu.iir.bidata.laddergame.view.screen.MainMenu;
 import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
@@ -84,57 +81,20 @@ public class MainMenuController {
 
             // Apply chance tiles if enabled
             if (enableChanceTiles && chancePercentage > 0) {
-                applyChanceTilesToBoard(board, chancePercentage);
+                ChanceTilePlacer.placeChanceTiles(board, chancePercentage);
             }
         } catch (Exception e) {
             showError("Board Loading Error", "Could not load board: " + e.getMessage());
             board = new Board();
         }
 
-        BoardGameController game = new BoardGameController();
+        GameController game = new GameController();
         game.setPlayers(players);
         game.setBoard(board);
         game.setDoubleDiceMode(doubleDiceMode);
 
-        BoardGameView boardGameView = new BoardGameView(game);
+        GameScreenView boardGameView = new GameScreenView(game);
         boardGameView.setUpStage(primaryStage);
-    }
-
-    /**
-     * Applies chance tiles to the board based on the given percentage.
-     *
-     * @param board the game board
-     * @param chancePercentage percentage of normal tiles to convert to chance tiles
-     */
-    private void applyChanceTilesToBoard(Board board, int chancePercentage) {
-        List<Tile> tiles = board.getTiles();
-        List<Tile> eligibleTiles = new ArrayList<>();
-
-        // Find all eligible tiles (not ladder tiles and not the first or last tile)
-        for (Tile tile : tiles) {
-            int index = tile.getIndex();
-            // Skip first tile, last tile, and tiles that already have ladder actions
-            if (index != 0 && index != board.getLastTile() && !tile.hasLadderAction() && !tile.isDestinationOfLadder(board)) {
-                eligibleTiles.add(tile);
-            }
-        }
-
-        // Calculate how many tiles to convert
-        int tilesToConvert = (int) Math.ceil(eligibleTiles.size() * (chancePercentage / 100.0));
-
-        // Randomly select tiles to convert
-        Random random = new Random();
-        for (int i = 0; i < tilesToConvert && !eligibleTiles.isEmpty(); i++) {
-            int randomIndex = random.nextInt(eligibleTiles.size());
-            Tile selectedTile = eligibleTiles.remove(randomIndex);
-
-            // Randomly select a chance effect type
-            ChanceEffectType[] effectTypes = ChanceEffectType.values();
-            ChanceEffectType randomEffect = effectTypes[random.nextInt(effectTypes.length)];
-
-            selectedTile.setTileAction(new CosmicChanceAction(randomEffect));
-            selectedTile.setType("chance");
-        }
     }
 
     /**
@@ -149,8 +109,8 @@ public class MainMenuController {
         }
         try {
             GameSaveReaderCSV saveReader = new GameSaveReaderCSV();
-            BoardGameController loadedGame = saveReader.loadGame(file.getAbsolutePath());
-            BoardGameView boardGameView = new BoardGameView(loadedGame);
+            GameController loadedGame = saveReader.loadGame(file.getAbsolutePath());
+            GameScreenView boardGameView = new GameScreenView(loadedGame);
             boardGameView.setUpStage(primaryStage);
         } catch (IOException ex) {
             showError("Load Failed", "Failed to load game: " + ex.getMessage());
@@ -167,4 +127,4 @@ public class MainMenuController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-}
+}

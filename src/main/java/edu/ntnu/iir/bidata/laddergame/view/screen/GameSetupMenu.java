@@ -1,8 +1,9 @@
-package edu.ntnu.iir.bidata.laddergame.view.menu;
+package edu.ntnu.iir.bidata.laddergame.view.screen;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
 import edu.ntnu.iir.bidata.laddergame.file.BoardRegistry;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.dialog.PlayerMenu;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
 import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -198,12 +199,5 @@ public class GameSetupMenu {
         Scene scene = new Scene(root, 700, 750);
         css.applyDefaultStylesheet(scene);
         primaryStage.setScene(scene);
-    }
-
-    /**
-     * Displays the load game dialog.
-     */
-    public void showLoadGameDialog() {
-        new LoadGameDialog(controller, primaryStage).show();
     }
 }

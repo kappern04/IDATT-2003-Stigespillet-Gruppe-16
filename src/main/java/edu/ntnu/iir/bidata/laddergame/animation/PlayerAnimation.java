@@ -3,7 +3,7 @@ package edu.ntnu.iir.bidata.laddergame.animation;
 import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
-import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.BoardUtils;
 import edu.ntnu.iir.bidata.laddergame.view.board.PlayerView;
 import java.util.HashMap;
 import java.util.Map;

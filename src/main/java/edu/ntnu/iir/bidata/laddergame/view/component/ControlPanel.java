@@ -1,22 +1,24 @@
-package edu.ntnu.iir.bidata.laddergame.view.other;
+package edu.ntnu.iir.bidata.laddergame.view.component;
 
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.controller.menu.InGameMenuController;
 import edu.ntnu.iir.bidata.laddergame.controller.other.MusicController;
-import edu.ntnu.iir.bidata.laddergame.view.menu.InGameMenu;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.dialog.InGameMenu;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
 /**
  * Provides a control panel with music controls and a menu button.
  */
 public class ControlPanel {
-    private final BoardGameController boardGameController;
+    private final GameController boardGameController;
     private final MusicController musicController;
     private final MusicControlPanel musicControlPanel;
     private final CSS css;
+    private Stage primaryStage;
 
     /**
      * Constructs a ControlPanel.
@@ -24,7 +26,7 @@ public class ControlPanel {
      * @param boardGameController the board game controller
      * @param musicController the music controller
      */
-    public ControlPanel(BoardGameController boardGameController, MusicController musicController) {
+    public ControlPanel(GameController boardGameController, MusicController musicController) {
         this.boardGameController = boardGameController;
         this.musicController = musicController;
         this.musicControlPanel = new MusicControlPanel(musicController);
@@ -34,9 +36,11 @@ public class ControlPanel {
     /**
      * Creates the control panel UI.
      *
+     * @param primaryStage the stage the game is shown on, used for menu navigation
      * @return the HBox containing the control panel
      */
-    public HBox createControlPanel() {
+    public HBox createControlPanel(Stage primaryStage) {
+        this.primaryStage = primaryStage;
         HBox controlPanel = new HBox(30);
         controlPanel.setAlignment(Pos.CENTER_RIGHT);
 
@@ -51,8 +55,8 @@ public class ControlPanel {
     }
 
     private void showInGameMenu() {
-        InGameMenuController controller = new InGameMenuController(boardGameController, musicController);
+        InGameMenuController controller = new InGameMenuController(boardGameController, musicController, primaryStage);
         InGameMenu menu = new InGameMenu(controller);
         menu.show();
     }
-}
+}

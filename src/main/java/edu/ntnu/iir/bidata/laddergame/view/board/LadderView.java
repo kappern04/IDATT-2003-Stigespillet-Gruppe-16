@@ -13,7 +13,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.util.Duration;
-import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.model.Board;
+import edu.ntnu.iir.bidata.laddergame.model.Tile;
+
+import java.util.Map;
 
 /**
  * Responsible for rendering ladder visuals (lines and wormholes) between tiles on the board.
@@ -21,8 +25,26 @@ import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
 public class LadderView {
     private static final int WORMHOLE_WIDTH = 36;
     private static final int WORMHOLE_HEIGHT = 40;
-    private static final String SOUND_UP = "/audio/portal.wav";
-    private static final String SOUND_DOWN = "/audio/portal2.wav";
+
+    /**
+     * Adds a ladder visual for every ladder tile on the board to the given pane.
+     *
+     * @param boardPane   the pane that holds the ladder layer
+     * @param tileNodeMap map from tile index to its rendered node
+     * @param board       the game board
+     */
+    public void addLaddersToBoard(Pane boardPane, Map<Integer, Node> tileNodeMap, Board board) {
+        for (Tile tile : board.getTiles()) {
+            if (tile.getIndex() == 0 || !tile.hasLadderAction()) {
+                continue;
+            }
+            Tile destinationTile = tile.getLadderDestination(board);
+            Node fromTileNode = tileNodeMap.get(tile.getIndex());
+            Node toTileNode = tileNodeMap.get(destinationTile.getIndex());
+            boolean isLadderUp = tile.getIndex() < destinationTile.getIndex();
+            boardPane.getChildren().add(createLadderVisual(fromTileNode, toTileNode, isLadderUp));
+        }
+    }
 
     /**
      * Creates a visual representation of a ladder between two tile nodes.

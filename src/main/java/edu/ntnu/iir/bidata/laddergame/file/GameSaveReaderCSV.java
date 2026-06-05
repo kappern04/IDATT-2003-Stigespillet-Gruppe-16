@@ -1,33 +1,28 @@
 package edu.ntnu.iir.bidata.laddergame.file;
 
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import java.io.*;
 import java.nio.file.Paths;
-import java.text.DecimalFormatSymbols;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.paint.Color;
 
 /**
- * Reads a saved game state from a CSV file and reconstructs the {@link BoardGameController}.
+ * Reads a saved game state from a CSV file and reconstructs the {@link GameController}.
  */
 public class GameSaveReaderCSV {
   private static final Logger LOGGER = Logger.getLogger(GameSaveReaderCSV.class.getName());
   private final String savesDirectory;
-  private final DecimalFormatSymbols symbols;
 
   public GameSaveReaderCSV() {
-    this.savesDirectory = System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
-    this.symbols = new DecimalFormatSymbols(Locale.US);
+    this.savesDirectory = SaveFileTracker.getSavesDirectory();
   }
 
   /**
-   * Loads a game from a CSV file and reconstructs the BoardGameController.
+   * Loads a game from a CSV file and reconstructs the GameController.
    */
-  public BoardGameController loadGame(String filePath) throws IOException {
+  public GameController loadGame(String filePath) throws IOException {
     if (!Paths.get(filePath).isAbsolute()) {
       filePath = savesDirectory + File.separator + filePath;
     }
@@ -41,7 +36,14 @@ public class GameSaveReaderCSV {
       String[] indexParts = parseCsvLine(reader.readLine());
       int currentPlayerIndex = Integer.parseInt(getCsvValue(indexParts, 1));
 
-      reader.readLine();
+      // Optional doubleDiceMode row (present in newer saves; older saves omit it).
+      boolean doubleDiceMode = false;
+      String[] afterIndex = parseCsvLine(reader.readLine());
+      if ("doubleDiceMode".equals(getCsvValue(afterIndex, 0))) {
+        doubleDiceMode = Boolean.parseBoolean(getCsvValue(afterIndex, 1));
+        reader.readLine(); // consume the player-column header row
+      }
+      // else: 'afterIndex' was the player-column header row, already consumed
 
       String[] rankingParts = parseCsvLine(reader.readLine());
       List<Player> players = new ArrayList<>();
@@ -63,10 +65,11 @@ public class GameSaveReaderCSV {
 
       List<Player> rankings = getPlayerRankings(rankingNames, players);
 
-      BoardGameController boardGameController = new BoardGameController();
+      GameController boardGameController = new GameController();
       boardGameController.setBoard(loadBoardByName(boardName));
       boardGameController.setPlayers(players);
       boardGameController.setCurrentPlayerIndex(currentPlayerIndex);
+      boardGameController.setDoubleDiceMode(doubleDiceMode);
       boardGameController.setPlayerRanks(rankings);
 
       LOGGER.info("Successfully loaded game with " + players.size() + " players");
@@ -105,8 +108,7 @@ public class GameSaveReaderCSV {
     player.setPositionIndex(position);
 
     if (parts.length >= 3 && !parts[2].trim().isEmpty()) {
-      Color color = parsePlayerColor(parts[2].trim(), playerName);
-      if (color != null) player.setColor(color);
+      player.setColor(parts[2].trim());
     }
     if (parts.length >= 4 && !parts[3].trim().isEmpty()) {
       try {
@@ -116,35 +118,6 @@ public class GameSaveReaderCSV {
       }
     }
     return player;
-  }
-
-  private Color parsePlayerColor(String colorString, String playerName) {
-    try {
-      String[] colorParts = colorString.split(";");
-      if (colorParts.length < 3) {
-        LOGGER.warning("Invalid color format for player " + playerName + ": " + colorString);
-        return null;
-      }
-      double red = parseDouble(colorParts[0]);
-      double green = parseDouble(colorParts[1]);
-      double blue = parseDouble(colorParts[2]);
-      double opacity = colorParts.length > 3 ? parseDouble(colorParts[3]) : 1.0;
-      return new Color(
-              clamp(red), clamp(green), clamp(blue), clamp(opacity)
-      );
-    } catch (Exception e) {
-      LOGGER.log(Level.WARNING, "Failed to parse color for player " + playerName + ": " + colorString, e);
-      return null;
-    }
-  }
-
-  private double clamp(double value) {
-    return Math.max(0, Math.min(1, value));
-  }
-
-  private double parseDouble(String value) {
-    value = value.replace(',', '.');
-    return Double.parseDouble(value);
   }
 
   /**
@@ -178,4 +151,4 @@ public class GameSaveReaderCSV {
     }
     return board;
   }
-}
+}

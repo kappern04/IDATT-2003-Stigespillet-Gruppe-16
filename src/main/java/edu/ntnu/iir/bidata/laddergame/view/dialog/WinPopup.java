@@ -1,7 +1,7 @@
-package edu.ntnu.iir.bidata.laddergame.view.other;
+package edu.ntnu.iir.bidata.laddergame.view.dialog;
 
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -19,13 +19,19 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 public class WinPopup extends VBox {
-  private Stage popupStage;
-  private CSS css;
-  private Player winner;
+  private final Stage popupStage = new Stage();
+  private final CSS css = new CSS();
+  private final Player winner;
+  private final Runnable onExit;
 
-  public WinPopup(Player winner) {
+  /**
+   * @param winner the winning player to display
+   * @param onExit action to run when the user dismisses the popup (flow decision
+   *               supplied by the caller, not made by this view)
+   */
+  public WinPopup(Player winner, Runnable onExit) {
     this.winner = winner;
-    this.css = new CSS();
+    this.onExit = onExit;
     setupPopup();
   }
 
@@ -44,7 +50,6 @@ public class WinPopup extends VBox {
   }
 
   private void initializeStage() {
-    popupStage = new Stage();
     popupStage.initModality(Modality.APPLICATION_MODAL);
     popupStage.initStyle(StageStyle.UNDECORATED);
   }
@@ -83,7 +88,10 @@ public class WinPopup extends VBox {
 
   private Button createExitButton() {
     Button button = css.createSpaceButton("Return Home");
-    button.setOnAction(e -> System.exit(0));
+    button.setOnAction(e -> {
+      popupStage.close();
+      onExit.run();
+    });
     return button;
   }
 

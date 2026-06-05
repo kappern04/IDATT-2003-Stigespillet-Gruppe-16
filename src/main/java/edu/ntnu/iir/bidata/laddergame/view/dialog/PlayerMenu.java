@@ -1,9 +1,10 @@
-package edu.ntnu.iir.bidata.laddergame.view.menu;
+package edu.ntnu.iir.bidata.laddergame.view.dialog;
 
 import edu.ntnu.iir.bidata.laddergame.util.PlayerData;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.util.PixelArtUpscaler;
-import edu.ntnu.iir.bidata.laddergame.util.ShipUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.Colors;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.util.PixelArtUpscaler;
+import edu.ntnu.iir.bidata.laddergame.view.util.ShipUtils;
 import javafx.animation.ScaleTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -60,8 +61,7 @@ public class PlayerMenu {
 
     private DialogPane setupDialogPane(Dialog<List<PlayerData>> dialog, int numPlayers) {
         DialogPane dialogPane = dialog.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("/css/space-theme.css").toExternalForm());
-        dialogPane.getStyleClass().add("space-dialog-pane");
+        css.styleDialog(dialogPane);
         dialogPane.setPrefWidth(Math.max(440, numPlayers * 135 + 40));
         dialogPane.setPrefHeight(460);
         return dialogPane;
@@ -138,8 +138,7 @@ public class PlayerMenu {
 
     private ColorPicker createColorPicker(int playerIndex) {
         ColorPicker colorPicker = new ColorPicker();
-        colorPicker.getStyleClass().add("space-color-picker");
-        colorPicker.setStyle("-fx-background-radius: 0; -fx-border-radius: 0; -fx-color-rect-width: 96; -fx-color-rect-heigth: 48;");
+        colorPicker.getStyleClass().addAll("space-color-picker", "player-color-picker");
         colorPicker.setTooltip(css.createTooltip("Select your ship's color"));
 
         Color[] defaultColors = ShipUtils.getDefaultColors();
@@ -222,7 +221,7 @@ public class PlayerMenu {
                             : (i % TOTAL_SHIP_TYPES) + 1;
                     String name = nameFields[i] != null ? nameFields[i].getText().trim() : "Player " + (i + 1);
                     Color color = colorPickers[i] != null ? colorPickers[i].getValue() : Color.WHITE;
-                    result.add(new PlayerData(name, color, shipType));
+                    result.add(new PlayerData(name, Colors.toHex(color), shipType));
                 }
                 return result;
             }

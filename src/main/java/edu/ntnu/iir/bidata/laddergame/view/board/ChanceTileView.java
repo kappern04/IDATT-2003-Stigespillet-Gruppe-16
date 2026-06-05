@@ -1,10 +1,14 @@
 package edu.ntnu.iir.bidata.laddergame.view.board;
 
+import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.CosmicChanceAction;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
-import edu.ntnu.iir.bidata.laddergame.util.ChanceEffectType;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.model.Tile;
+import edu.ntnu.iir.bidata.laddergame.view.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.model.ChanceEffectType;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+
+import java.util.Map;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -27,6 +31,26 @@ import javafx.util.Duration;
 public class ChanceTileView {
 
   private static final int INDICATOR_SIZE = 30;
+
+  /**
+   * Adds a chance-tile indicator for every chance tile on the board to the given pane.
+   *
+   * @param boardPane   the pane that holds the chance-tile layer
+   * @param tileNodeMap map from tile index to its rendered node
+   * @param board       the game board
+   */
+  public void addChanceTilesToBoard(Pane boardPane, Map<Integer, Node> tileNodeMap, Board board) {
+    for (Tile tile : board.getTiles()) {
+      if (tile.getIndex() == 0 || !"chance".equals(tile.getType())) {
+        continue;
+      }
+      Node tileNode = tileNodeMap.get(tile.getIndex());
+      Node chanceVisual = createChanceTileVisual(tileNode);
+      if (chanceVisual != null) {
+        boardPane.getChildren().add(chanceVisual);
+      }
+    }
+  }
 
   /**
    * Creates a visual indicator for a chance tile, centered and bound to the tile node.
@@ -89,13 +113,6 @@ public class ChanceTileView {
     popupContent.setAlignment(Pos.CENTER);
     popupContent.setPadding(new javafx.geometry.Insets(30));
     popupContent.getStyleClass().add("space-popup");
-
-    // Add a style class for custom background
-    popupContent.setStyle("-fx-background-color: linear-gradient(to bottom, #121e3d, #0a0f1f); " +
-            "-fx-border-color: #4a90e2; " +
-            "-fx-border-width: 2px; " +
-            "-fx-border-radius: 5px; " +
-            "-fx-background-radius: 5px;");
 
     // Title
     Text title = new Text("COSMIC CHANCE");
@@ -180,7 +197,7 @@ public class ChanceTileView {
       case BACKWARD_LARGE:
         imagePath += "backward.png";
         break;
-      case TELEPORT_RANDOM:
+      case SWAP_RANDOM_PLAYER:
         imagePath += "teleport.png";
         break;
       case RETURN_START:

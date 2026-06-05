@@ -1,7 +1,8 @@
-package edu.ntnu.iir.bidata.laddergame.view.menu;
+package edu.ntnu.iir.bidata.laddergame.view.screen;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.MainMenuController;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.dialog.LoadGameDialog;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -119,7 +120,7 @@ public class MainMenu {
   private Button createLoadGameButton() {
     Button loadGameBtn = css.createSpaceButton("Load Mission");
     loadGameBtn.setMaxWidth(200);
-    loadGameBtn.setOnAction(e -> new GameSetupMenu(controller, primaryStage).showLoadGameDialog());
+    loadGameBtn.setOnAction(e -> new LoadGameDialog(controller, primaryStage).show());
 
     Tooltip tooltip = new Tooltip("Continue a previous mission (L)");
     tooltip.setShowDelay(Duration.millis(500));
@@ -148,7 +149,7 @@ public class MainMenu {
 
     scene.getAccelerators().put(
             new KeyCodeCombination(KeyCode.L),
-            () -> new GameSetupMenu(controller, primaryStage).showLoadGameDialog()
+            () -> new LoadGameDialog(controller, primaryStage).show()
     );
 
     scene.getAccelerators().put(

@@ -1,13 +1,14 @@
 package edu.ntnu.iir.bidata.laddergame.controller.board;
 
 import edu.ntnu.iir.bidata.laddergame.animation.PlayerAnimation;
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.model.*;
-import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.BoardUtils;
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import edu.ntnu.iir.bidata.laddergame.util.Observer;
 import edu.ntnu.iir.bidata.laddergame.view.board.ChanceTileView;
 import edu.ntnu.iir.bidata.laddergame.view.board.PlayerView;
+import edu.ntnu.iir.bidata.laddergame.view.util.SoundEffects;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.scene.image.ImageView;
@@ -31,6 +32,7 @@ public class PlayerController implements Observer<Player> {
     private final PlayerAnimation playerAnimation;
     private final Map<Player, Integer> previousPositions;
     private final AtomicBoolean playerAnimating = new AtomicBoolean(false);
+    private Runnable onTurnSettled;
 
     private static final Logger LOGGER = Logger.getLogger(PlayerController.class.getName());
 
@@ -43,11 +45,31 @@ public class PlayerController implements Observer<Player> {
         this.previousPositions = new HashMap<>();
         players.forEach(player -> {
             Objects.requireNonNull(player, "Player cannot be null");
-            previousPositions.put(player, 0);
+            // Seed with the player's current position so the initial placement is a
+            // direct positioning (no movement animation). For a loaded save this puts
+            // players straight onto their saved tiles instead of replaying the path.
+            previousPositions.put(player, player.getPositionIndex());
         });
 
         this.playerView = new PlayerView(board, players);
         this.playerAnimation = new PlayerAnimation(board, playerView);
+    }
+
+    /**
+     * Registers a callback invoked once a player's movement/effect chain has fully
+     * settled (walk, tile effect, and any resulting slide are all finished). This is
+     * the authoritative end-of-turn signal.
+     *
+     * @param onTurnSettled the callback to run when movement fully settles
+     */
+    public void setOnTurnSettled(Runnable onTurnSettled) {
+        this.onTurnSettled = onTurnSettled;
+    }
+
+    private void notifyTurnSettled() {
+        if (onTurnSettled != null) {
+            runLater(onTurnSettled);
+        }
     }
 
     /**
@@ -104,6 +126,7 @@ public class PlayerController implements Observer<Player> {
                 positionPlayer(player, targetTile);
                 player.finishMove();
                 LOGGER.info("Normal DONE");
+                notifyTurnSettled();
             }
         });
         pause.play();
@@ -120,6 +143,9 @@ public class PlayerController implements Observer<Player> {
             animatePlayerMovement(player, originalTo, newPos);
         } else {
             positionPlayer(player, newTile);
+            // The player has stopped moving and all tile effects have resolved:
+            // this is the true end of the movement chain for this turn.
+            notifyTurnSettled();
         }
     }
 
@@ -151,7 +177,11 @@ public class PlayerController implements Observer<Player> {
         pause.setOnFinished(e -> {
             TileAction action = tile.getTileAction();
             if (action instanceof LadderAction ladder) {
-                ladder.playLadderSound(prevPos);
+                // Move the player along the ladder/snake. This runs for every landing
+                // on a ladder tile, so a chance effect that lands a player on a ladder
+                // triggers the ladder too.
+                SoundEffects.playLadder(ladder.getDestinationTileIndex() > prevPos);
+                ladder.execute(player);
                 runLater(onComplete);
             } else if (action instanceof CosmicChanceAction chance) {
                 if (player.isChanceActivatedThisTurn()) {

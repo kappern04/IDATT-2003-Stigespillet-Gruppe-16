@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.view.other;
+package edu.ntnu.iir.bidata.laddergame.view.component;
 
 import edu.ntnu.iir.bidata.laddergame.controller.other.MusicController;
 import javafx.geometry.Pos;

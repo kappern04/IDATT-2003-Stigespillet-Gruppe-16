@@ -1,8 +1,7 @@
-package edu.ntnu.iir.bidata.laddergame.view.menu;
+package edu.ntnu.iir.bidata.laddergame.view.dialog;
 
 import edu.ntnu.iir.bidata.laddergame.controller.menu.InGameMenuController;
-import edu.ntnu.iir.bidata.laddergame.file.SaveFileTracker;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,7 +31,6 @@ public class InGameMenu extends VBox {
   private static final int SPACING = 30;
   private static final int PADDING = 40;
   private static final String BACKGROUND_PATH = "/image/background/mainmenu.png";
-  private static final String STYLESHEET_PATH = "/css/space-theme.css";
   private static final String TITLE_TEXT = "MISSION CONTROL";
 
   private static final String RESUME_TEXT = "Resume Mission";
@@ -167,7 +165,7 @@ public class InGameMenu extends VBox {
 
   private void handleSaveAction() {
     String fileName = null;
-    if (!SaveFileTracker.getInstance().wasLoadedFromSave()) {
+    if (controller.needsSaveName()) {
       TextInputDialog dialog = createSaveDialog();
       Optional<String> result = dialog.showAndWait();
 
@@ -224,8 +222,7 @@ public class InGameMenu extends VBox {
     dialog.setTitle(SAVE_DIALOG_TITLE);
 
     DialogPane dialogPane = dialog.getDialogPane();
-    dialogPane.getStylesheets().add(getClass().getResource(STYLESHEET_PATH).toExternalForm());
-    dialogPane.getStyleClass().add("space-dialog-pane");
+    css.styleDialog(dialogPane);
 
     TextField editor = dialog.getEditor();
     editor.getStyleClass().add("space-text-field");
@@ -235,9 +232,6 @@ public class InGameMenu extends VBox {
 
     Button okButton = (Button) dialogPane.lookupButton(ButtonType.OK);
     Button cancelButton = (Button) dialogPane.lookupButton(ButtonType.CANCEL);
-
-    okButton.setStyle("small-space-button");
-    cancelButton.setStyle("small-space-button");
 
     okButton.setText(SAVE_BUTTON_TEXT);
     cancelButton.setText(CANCEL_BUTTON_TEXT);
@@ -251,9 +245,7 @@ public class InGameMenu extends VBox {
     alert.setHeaderText(header);
     alert.setContentText(content);
 
-    DialogPane dialogPane = alert.getDialogPane();
-    dialogPane.getStylesheets().add(getClass().getResource(STYLESHEET_PATH).toExternalForm());
-    dialogPane.getStyleClass().add("space-dialog-pane");
+    css.styleDialog(alert.getDialogPane());
 
     return alert;
   }

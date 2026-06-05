@@ -2,11 +2,6 @@ package edu.ntnu.iir.bidata.laddergame.model;
 
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
 import edu.ntnu.iir.bidata.laddergame.util.Observer;
-import javafx.scene.paint.Color;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Represents a player in the ladder game.
@@ -17,12 +12,11 @@ public class Player extends Observable<Player> {
   private int id;
   private String name;
   private int positionIndex;
-  private Color color;
+  private String color;
   private int shipType;
   private boolean isMoving;
   private boolean hasExtraTurn;
   private boolean chanceActivatedThisTurn;
-  private static final List<Player> players = new ArrayList<>();
   private static int nextId = 1;
 
   /**
@@ -43,9 +37,9 @@ public class Player extends Observable<Player> {
    * Creates a new player with the specified name and color.
    *
    * @param name The player's name
-   * @param color The player's color
+   * @param color The player's color as a hex string (e.g. "#00BFFF")
    */
-  public Player(String name, Color color) {
+  public Player(String name, String color) {
     this.id = nextId++;
     this.name = name;
     this.positionIndex = 0;
@@ -58,10 +52,10 @@ public class Player extends Observable<Player> {
    * Creates a new player with the specified name, color, and ship type.
    *
    * @param name The player's name
-   * @param color The player's color
+   * @param color The player's color as a hex string (e.g. "#00BFFF")
    * @param shipType The type of ship representing the player
    */
-  public Player(String name, Color color, int shipType) {
+  public Player(String name, String color, int shipType) {
     this.id = nextId++;
     this.name = name;
     this.positionIndex = 0;
@@ -71,21 +65,12 @@ public class Player extends Observable<Player> {
   }
 
   /**
-   * Returns this player instance.
+   * Returns this player instance (used as a method reference by the click game).
    *
-   * @return The current player instance
+   * @return this player
    */
   public Player getPlayer() {
     return this;
-  }
-
-  /**
-   * Returns an unmodifiable list of all players in the game.
-   *
-   * @return List of all players
-   */
-  public static List<Player> getPlayers() {
-    return Collections.unmodifiableList(players);
   }
 
   /**
@@ -149,20 +134,20 @@ public class Player extends Observable<Player> {
   }
 
   /**
-   * Gets the player's color.
+   * Gets the player's color as a hex string (e.g. "#00BFFF").
    *
-   * @return The player's color
+   * @return The player's color, or null if unset
    */
-  public Color getColor() {
+  public String getColor() {
     return color;
   }
 
   /**
-   * Sets the player's color and notifies observers.
+   * Sets the player's color (a hex string, e.g. "#00BFFF") and notifies observers.
    *
    * @param color The new color for the player
    */
-  public void setColor(Color color) {
+  public void setColor(String color) {
     this.color = color;
     notifyObservers("APPEARANCE_CHANGED");
   }
@@ -314,4 +299,4 @@ public class Player extends Observable<Player> {
   public void notifyObservers(String eventType) {
     super.getObservers().forEach(o -> o.update(this, eventType));
   }
-}
+}

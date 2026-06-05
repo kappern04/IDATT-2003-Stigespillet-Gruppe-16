@@ -75,8 +75,4 @@ public class DieView {
             return null;
         }
     }
-
-    public ImageView getDieImageView() {
-        return imageView;
-    }
 }

@@ -1,13 +1,26 @@
 package edu.ntnu.iir.bidata.laddergame.file;
 
+import java.io.File;
+
 /**
  * Singleton class that tracks the currently loaded save file.
  * This allows the game to overwrite the original save file when saving.
  */
 public class SaveFileTracker {
+  /** The single source of truth for where game saves live. */
+  private static final String SAVES_DIRECTORY =
+      System.getProperty("user.home") + File.separator + "cosmicladder" + File.separator + "saves";
+
   private static SaveFileTracker instance;
   private String currentSaveFilePath;
   private boolean loadedFromSave;
+
+  /**
+   * @return the directory where game saves are stored
+   */
+  public static String getSavesDirectory() {
+    return SAVES_DIRECTORY;
+  }
 
   private SaveFileTracker() {
     this.currentSaveFilePath = null;

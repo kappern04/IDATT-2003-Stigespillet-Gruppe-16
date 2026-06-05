@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.util;
+package edu.ntnu.iir.bidata.laddergame.model;
 
 /**
  * Represents different types of chance effects that can occur when players
@@ -10,7 +10,7 @@ public enum ChanceEffectType {
     FORWARD_MEDIUM("Warp Drive", "Move forward 4-6 spaces", true),
     FORWARD_LARGE("Hyperspace Jump", "Move forward 7-10 spaces", true),
     EXTRA_TURN("Time Warp", "Take an extra turn", true),
-    TELEPORT_RANDOM("Teleportation", "Teleport to a random tile", true),
+    SWAP_RANDOM_PLAYER("Teleportation", "Swap with another player", true),
 
     // Negative effects
     BACKWARD_SMALL("Asteroid Field", "Move back 1-3 spaces", false),

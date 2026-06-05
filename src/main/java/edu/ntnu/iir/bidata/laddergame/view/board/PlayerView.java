@@ -3,8 +3,9 @@ package edu.ntnu.iir.bidata.laddergame.view.board;
 import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
-import edu.ntnu.iir.bidata.laddergame.util.BoardUtils;
-import edu.ntnu.iir.bidata.laddergame.util.ShipUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.Colors;
+import edu.ntnu.iir.bidata.laddergame.view.util.ShipUtils;
 import java.util.*;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -34,12 +35,14 @@ public class PlayerView {
     for (int i = 0; i < players.size(); i++) {
       final int index = i;
       Player player = Objects.requireNonNull(players.get(i), "Player at index " + i + " is null");
-      Color playerColor = player.getColor();
-      if (playerColor == null) {
+      Color playerColor;
+      if (player.getColor() == null || player.getColor().isBlank()) {
         Color[] defaultColors = ShipUtils.getDefaultColors();
         Color c = defaultColors[index % defaultColors.length];
-        player.setColor(c);
+        player.setColor(Colors.toHex(c));
         playerColor = c;
+      } else {
+        playerColor = Colors.toColor(player.getColor());
       }
 
       int shipType = (player.getShipType() > 0 && player.getShipType() <= 5) ? player.getShipType() : 1;
@@ -132,13 +135,5 @@ public class PlayerView {
    */
   public Image getPlayerImage(Player player) {
     return playerSprites.get(player).getImage();
-  }
-
-  /**
-   * Gets an unmodifiable view of the player sprites map.
-   * @return unmodifiable map of player to sprite
-   */
-  public Map<Player, ImageView> getPlayerSprites() {
-    return Collections.unmodifiableMap(playerSprites);
   }
 }

@@ -1,7 +1,5 @@
 package edu.ntnu.iir.bidata.laddergame.model;
 
-import edu.ntnu.iir.bidata.laddergame.util.ChanceEffectType;
-
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -24,14 +22,6 @@ public class CosmicChanceAction implements TileAction {
      * @return the type of effect
      */
     public ChanceEffectType getEffectType() {
-        return effectType;
-    }
-
-    /**
-     * Gets the type of this chance action.
-     * @return the type of effect
-     */
-    public ChanceEffectType getType() {
         return effectType;
     }
 
@@ -80,7 +70,7 @@ public class CosmicChanceAction implements TileAction {
             case BACKWARD_LARGE:
                 player.move(-(random.nextInt(4) + 7));
                 break;
-            case TELEPORT_RANDOM:
+            case SWAP_RANDOM_PLAYER:
                 List<Player> otherPlayers = allPlayers.stream()
                         .filter(p -> !p.equals(player))
                         .toList();

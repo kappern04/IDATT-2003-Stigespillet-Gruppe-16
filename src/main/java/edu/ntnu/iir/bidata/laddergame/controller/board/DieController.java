@@ -56,17 +56,6 @@ public class DieController implements Observer<Die> {
     }
 
     /**
-     * Rolls the die and optionally triggers an action after animation.
-     *
-     * @param afterRollAction action to perform after the die animation
-     */
-    public void handleDieRoll(Runnable afterRollAction) {
-        if (isAnimating.get()) return;
-        setOnAnimationComplete(afterRollAction);
-        die.roll();
-    }
-
-    /**
      * Responds to die events and triggers the appropriate animation.
      *
      * @param observable the observable die

@@ -278,6 +278,12 @@
   -fx-effect: dropshadow(three-pass-box, rgb(64, 224, 208), 5, 0.3, 0, 0);
   -fx-padding: 0;
 }
+/* Wider, square colour swatch used by the player-setup cards. */
+.player-color-picker {
+  -fx-background-radius: 0;
+  -fx-border-radius: 0;
+  -fx-color-rect-width: 96px;
+}
 .space-color-picker .color-picker-label {
   -fx-alignment: center;
   -fx-padding: 0;
@@ -490,4 +496,13 @@
 
 .slider-container {
   -fx-padding: 5 0 5 0;
+}
+
+/* Cosmic Chance popup container (shown when a player lands on a chance tile). */
+.space-popup {
+  -fx-background-color: linear-gradient(to bottom, #121e3d, #0a0f1f);
+  -fx-border-color: #4a90e2;
+  -fx-border-width: 2px;
+  -fx-border-radius: 5px;
+  -fx-background-radius: 5px;
 }

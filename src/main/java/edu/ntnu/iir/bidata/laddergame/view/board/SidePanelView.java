@@ -1,13 +1,13 @@
 package edu.ntnu.iir.bidata.laddergame.view.board;
 
-import edu.ntnu.iir.bidata.laddergame.controller.BoardGameController;
+import edu.ntnu.iir.bidata.laddergame.controller.GameController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.DieController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.SidePanelController;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
-import edu.ntnu.iir.bidata.laddergame.util.PixelArtUpscaler;
-import javafx.animation.PauseTransition;
+import edu.ntnu.iir.bidata.laddergame.view.util.Colors;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.util.PixelArtUpscaler;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -18,7 +18,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 import java.util.*;
 
@@ -41,25 +40,24 @@ public class SidePanelView {
 
     private boolean animationInProgress = false;
 
-    public SidePanelView(BoardGameController boardGameController, PlayerController playerController) {
+    public SidePanelView(GameController boardGameController, PlayerController playerController) {
         this.playerController = Objects.requireNonNull(playerController);
         this.sidePanelController = new SidePanelController(Objects.requireNonNull(boardGameController), playerController);
         this.dieView = new DieView();
         this.dieController = new DieController(boardGameController.getDie(), dieView);
         this.css = new CSS();
 
+        // Player state changes (position, rank, highlight) refresh the panel live.
+        // Re-enabling the die / clearing the in-progress flag happens only when the
+        // whole turn has settled (see onTurnAnimationsComplete).
         this.sidePanelController.setOnStateChanged(event -> Platform.runLater(this::refreshUI));
-        sidePanelController.getPlayers().forEach(player ->
-                player.addObserver((observable, arg) -> {
-                    if ("MOVEMENT_COMPLETE".equals(arg)) {
-                        Platform.runLater(() -> {
-                            animationInProgress = false;
-                            refreshUI();
-                            setDieButtonEnabled(true);
-                        });
-                    }
-                })
-        );
+    }
+
+    /**
+     * @return the die controller driving the visible die, shared with the game controller
+     */
+    public DieController getDieController() {
+        return dieController;
     }
 
     public HBox createSidePanels() {
@@ -126,7 +124,7 @@ public class SidePanelView {
     }
 
     private Color getPlayerColor(Player player) {
-        return Optional.ofNullable(player.getColor()).orElse(Color.WHITE);
+        return Colors.toColor(player.getColor());
     }
 
     private void handleDieRoll() {
@@ -138,20 +136,16 @@ public class SidePanelView {
         sidePanelController.playTurn(dieController, this::onTurnAnimationsComplete);
     }
 
+    /**
+     * Invoked once the whole turn (movement, tile effects, resulting slides and any
+     * chance popup) has fully settled. Re-enables the die and refreshes the panel.
+     */
     private void onTurnAnimationsComplete() {
-        pollUntilIdle();
-    }
-
-    private void pollUntilIdle() {
-        if (!isBusy()) {
+        Platform.runLater(() -> {
             animationInProgress = false;
-            Platform.runLater(this::refreshUI);
-            return;
-        }
-
-        PauseTransition wait = new PauseTransition(Duration.millis(20));
-        wait.setOnFinished(e -> pollUntilIdle());
-        wait.play();
+            setDieButtonEnabled(true);
+            refreshUI();
+        });
     }
 
     private void updateAllLabels() {

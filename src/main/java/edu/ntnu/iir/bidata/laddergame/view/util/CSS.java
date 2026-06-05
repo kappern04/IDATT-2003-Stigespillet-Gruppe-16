@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.util;
+package edu.ntnu.iir.bidata.laddergame.view.util;
 
 import java.io.InputStream;
 import java.util.logging.Level;
@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 import javafx.animation.ScaleTransition;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
@@ -22,12 +23,11 @@ import javafx.util.Duration;
 /**
  * Utility class for applying consistent CSS and style elements across the application.
  */
-public class CSS {
+public class  CSS {
   private static final Logger LOGGER = Logger.getLogger(CSS.class.getName());
   private static final String DEFAULT_CSS_PATH = "/css/space-theme.css";
   private static final String ORBITRON_FONT_PATH = "/font/orbitron-bold.otf";
   private static final Color SPACE_BLUE = Color.rgb(64, 224, 208);
-  private static final Color SPACE_PURPLE = Color.rgb(138, 43, 226);
 
   private static Font orbitronFont;
 
@@ -73,10 +73,6 @@ public class CSS {
     return SPACE_BLUE;
   }
 
-  public Color getSpacePurple() {
-    return SPACE_PURPLE;
-  }
-
   /**
    * Creates a styled label with the Orbitron font and specified color.
    */
@@ -111,7 +107,7 @@ public class CSS {
   /**
    * Determines if the color is high-contrast (light).
    */
-  public static boolean isHighContrastBlack(Color color) {
+  private static boolean isHighContrastBlack(Color color) {
     double luminance = 0.299 * color.getRed() +
             0.587 * color.getGreen() +
             0.114 * color.getBlue();
@@ -183,6 +179,17 @@ public class CSS {
     if (!scene.getStylesheets().contains(css)) {
       scene.getStylesheets().add(css);
     }
+  }
+
+  /**
+   * Applies the space-theme stylesheet and the "space-dialog-pane" style class to a
+   * dialog pane, so dialogs/alerts share consistent theming.
+   *
+   * @param dialogPane the dialog pane to style
+   */
+  public void styleDialog(DialogPane dialogPane) {
+    dialogPane.getStylesheets().add(getClass().getResource(DEFAULT_CSS_PATH).toExternalForm());
+    dialogPane.getStyleClass().add("space-dialog-pane");
   }
 
   public void applyStyleSheet(Scene scene, String cssPath) {

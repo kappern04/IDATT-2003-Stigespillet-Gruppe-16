@@ -1,11 +1,11 @@
 package edu.ntnu.iir.bidata.laddergame.view.board;
 
-import edu.ntnu.iir.bidata.laddergame.controller.board.BoardController;
-import edu.ntnu.iir.bidata.laddergame.controller.board.ChanceTileController;
-import edu.ntnu.iir.bidata.laddergame.controller.board.LadderController;
 import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
+import edu.ntnu.iir.bidata.laddergame.model.Board;
+import edu.ntnu.iir.bidata.laddergame.model.Player;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
-import edu.ntnu.iir.bidata.laddergame.util.CSS;
+import edu.ntnu.iir.bidata.laddergame.view.util.BoardUtils;
+import edu.ntnu.iir.bidata.laddergame.view.util.CSS;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,14 +29,13 @@ public class BoardView {
     private static final Map<String, String> BOARD_BACKGROUNDS = initBackgroundMap();
     private static final String DEFAULT_BACKGROUND = "/image/background/mainmenu.png";
 
-    private final BoardController boardController;
+    private final Board board;
     private final TileView tileView;
     private final LadderView ladderView;
-    private final LadderController ladderController;
+    private final ChanceTileView chanceTileView;
     private final PlayerController playerController;
     private final CSS css;
     private final Map<Integer, Node> tileNodeMap = new HashMap<>();
-    private final ChanceTileController chanceTileController;
 
 
     /**
@@ -55,22 +54,21 @@ public class BoardView {
     /**
      * Creates a new BoardView with the specified controller.
      *
-     * @param boardController controller managing the board model
-     * @throws NullPointerException if boardController is null
+     * @param board   the game board to render
+     * @param players the players to display on the board
+     * @throws NullPointerException if board or players is null
      */
-    public BoardView(BoardController boardController) {
-        this.boardController = Objects.requireNonNull(boardController, "BoardController cannot be null");
-        this.tileView = new TileView(boardController.getBoard());
+    public BoardView(Board board, List<Player> players) {
+        this.board = Objects.requireNonNull(board, "Board cannot be null");
+        Objects.requireNonNull(players, "Players cannot be null");
+        this.tileView = new TileView(board);
         this.ladderView = new LadderView();
-        this.ladderController = new LadderController(boardController.getBoard());
-        this.chanceTileController = new ChanceTileController(boardController.getBoard());
+        this.chanceTileView = new ChanceTileView();
         this.css = new CSS();
 
-        this.playerController = new PlayerController(
-                boardController.getBoard(),
-                boardController.getPlayers()
-        );
-        boardController.registerPlayerObserver(this.playerController);
+        this.playerController = new PlayerController(board, players);
+        // Register the player controller to observe player movement.
+        players.forEach(player -> player.addObserver(this.playerController));
     }
 
     /**
@@ -85,12 +83,12 @@ public class BoardView {
         Pane chanceTilePane = new Pane();
 
 
-        // Setup the board's tile node map in the model
-        boardController.getBoard().setTileNodeMap(tileNodeMap);
+        // Register the rendered tile nodes for positioning (view-layer concern).
+        BoardUtils.setTileNodeMap(tileNodeMap);
 
         // Add ladders and players to their respective panes
-        ladderController.addLaddersToBoard(ladderPane, tileNodeMap);
-        chanceTileController.addChanceTilesToBoard(chanceTilePane, tileNodeMap);
+        ladderView.addLaddersToBoard(ladderPane, tileNodeMap, board);
+        chanceTileView.addChanceTilesToBoard(chanceTilePane, tileNodeMap, board);
         playerController.addPlayersToBoard(playerPane);
 
         // Combine all layers into a single stack pane
@@ -110,7 +108,7 @@ public class BoardView {
         gridPane.setHgap(GRID_GAP);
         gridPane.setVgap(GRID_GAP);
 
-        List<Tile> tiles = boardController.getTiles();
+        List<Tile> tiles = board.getTiles();
 
         // Calculate normalization offsets to ensure grid starts at (0,0)
         int minX = calculateMinimumCoordinate(tiles, Tile::getX);
@@ -190,13 +188,4 @@ public class BoardView {
     public PlayerController getPlayerController() {
         return playerController;
     }
-
-    /**
-     * Gets the ladder controller associated with this board view.
-     *
-     * @return the ladder controller
-     */
-    public LadderController getLadderController() {
-        return ladderController;
-    }
-}
+}

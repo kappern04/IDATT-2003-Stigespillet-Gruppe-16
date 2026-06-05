@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.util;
+package edu.ntnu.iir.bidata.laddergame.view.util;
 
 import java.util.Objects;
 import javafx.scene.effect.DropShadow;

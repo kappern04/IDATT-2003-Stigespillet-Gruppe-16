@@ -22,7 +22,7 @@ class LadderActionTest {
     void testPerformActionSetsPlayerPosition() {
         LadderAction action = new LadderAction(15);
         Player player = new Player("Test", Color.RED);
-        action.performAction(player);
+        action.execute(player);
         assertEquals(15, player.getPositionIndex());
     }
 
@@ -39,4 +39,4 @@ class LadderActionTest {
         assertTrue(action.leadsToPosition(board, 42));
         assertFalse(action.leadsToPosition(board, 41));
     }
-}
+}

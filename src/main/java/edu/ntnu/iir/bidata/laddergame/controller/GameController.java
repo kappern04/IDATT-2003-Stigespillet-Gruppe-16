@@ -5,12 +5,7 @@ import edu.ntnu.iir.bidata.laddergame.controller.board.PlayerController;
 import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Die;
 import edu.ntnu.iir.bidata.laddergame.model.Player;
-import edu.ntnu.iir.bidata.laddergame.model.Tile;
 import edu.ntnu.iir.bidata.laddergame.util.Observable;
-import edu.ntnu.iir.bidata.laddergame.util.Observer;
-import javafx.animation.PauseTransition;
-import javafx.util.Duration;
-import edu.ntnu.iir.bidata.laddergame.view.board.DieView;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -19,8 +14,8 @@ import java.util.logging.Logger;
  * Main controller responsible for managing the board game state and game flow.
  * This class coordinates player turns, die rolls, and movement on the board.
  */
-public class BoardGameController extends Observable<BoardGameController> implements Observer<Player> {
-  private static final Logger LOGGER = Logger.getLogger(BoardGameController.class.getName());
+public class GameController extends Observable<GameController> {
+  private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
   // Game state constants
   private enum GameState { WAITING_FOR_PLAYERS, READY_TO_START, TURN_IN_PROGRESS, WAITING_FOR_TURN, GAME_OVER }
@@ -32,52 +27,30 @@ public class BoardGameController extends Observable<BoardGameController> impleme
   private final Die die;
   private final List<Player> playerRanks;
   private GameState gameState;
-  private final PlayerController playerController;
-  private final DieController dieController;
+  // Injected by the view layer (see setPlayerController / setDieController) so that
+  // isBusy() reflects the controllers that actually drive the on-screen animations.
+  private PlayerController playerController;
+  private DieController dieController;
   private Runnable onGameOverCallback;
   private boolean doubleDiceMode = false;
 
-
+  // Turn lifecycle: a turn ends only when the player's movement/effect chain fully
+  // settles (signalled by the player controller via onMovementSettled).
+  private boolean turnInProgress = false;
+  private Runnable pendingTurnComplete;
+  private Player pendingPlayer;
 
   /**
    * Creates a new game controller with a default board.
    */
-  /**
-   * Creates a new game controller with a default board.
-   */
-  public BoardGameController() {
+  public GameController() {
     this.board = new Board();
     this.players = new ArrayList<>();
     this.currentPlayerIndex = 0;
     this.die = new Die();
     this.playerRanks = new ArrayList<>();
     this.gameState = GameState.WAITING_FOR_PLAYERS;
-
-    DieView dieView = new DieView();
-    this.dieController = new DieController(this.die, dieView);
-    this.playerController = new PlayerController(this.board, this.players);
-
-    LOGGER.info("BoardGameController initialized with default board");
-  }
-
-  /**
-   * Creates a new game controller with the specified board.
-   *
-   * @param board the game board
-   * @param playerController the player controller
-   * @param dieController the die controller
-   * @throws NullPointerException if any parameter is null
-   */
-  public BoardGameController(Board board, PlayerController playerController, DieController dieController) {
-    this.board = Objects.requireNonNull(board, "Board cannot be null");
-    this.playerController = Objects.requireNonNull(playerController, "PlayerController cannot be null");
-    this.dieController = Objects.requireNonNull(dieController, "DieController cannot be null");
-    this.players = new ArrayList<>();
-    this.currentPlayerIndex = 0;
-    this.die = new Die();
-    this.playerRanks = new ArrayList<>();
-    this.gameState = GameState.WAITING_FOR_PLAYERS;
-    LOGGER.info("BoardGameController initialized with custom board");
+    LOGGER.info("GameController initialized with default board");
   }
 
   /**
@@ -111,9 +84,6 @@ public class BoardGameController extends Observable<BoardGameController> impleme
     this.players = new ArrayList<>(players);
     this.currentPlayerIndex = 0;
     this.gameState = GameState.READY_TO_START;
-    // Observe players so an EXTRA_TURN granted asynchronously (after the chance
-    // popup is confirmed) can hand the turn back to that player.
-    this.players.forEach(player -> player.addObserver(this));
     LOGGER.info("Players set: " + players.size() + " players");
   }
 
@@ -191,12 +161,26 @@ public class BoardGameController extends Observable<BoardGameController> impleme
   }
 
   /**
-   * Gets the player controller.
+   * Injects the player controller that animates players on the board, and wires its
+   * "movement settled" signal to {@link #onMovementSettled()} (the end-of-turn point).
    *
-   * @return the player controller
+   * @param playerController the active player controller
    */
-  protected PlayerController getPlayerController() {
-    return playerController;
+  public void setPlayerController(PlayerController playerController) {
+    this.playerController = playerController;
+    if (playerController != null) {
+      playerController.setOnTurnSettled(this::onMovementSettled);
+    }
+  }
+
+  /**
+   * Injects the die controller that drives the visible die animation, so
+   * {@link #isBusy()} can tell when the die is still rolling.
+   *
+   * @param dieController the active die controller
+   */
+  public void setDieController(DieController dieController) {
+    this.dieController = dieController;
   }
 
   /**
@@ -333,52 +317,55 @@ public class BoardGameController extends Observable<BoardGameController> impleme
     int currentPosition = currentPlayer.getPositionIndex();
     int targetPosition = currentPosition + roll;
 
+    // Remember what to finalize when the movement chain fully settles. Tile effects
+    // (ladders, chance) are applied by the view-layer PlayerController on landing, and
+    // it calls onMovementSettled() once everything (incl. slides/popup) has resolved.
+    this.pendingPlayer = currentPlayer;
+    this.pendingTurnComplete = onTurnComplete;
+    this.turnInProgress = true;
+
     if (targetPosition >= boardSize - 1) {
       movePlayerToFinish(currentPlayer, currentPosition);
     } else {
       currentPlayer.move(roll);
     }
 
-    waitForAnimationsToComplete(() -> {
-      applyTileEffects(currentPlayer);
-
-      // Check for extra turn
-      if (currentPlayer.hasExtraTurn()) {
-        currentPlayer.setExtraTurn(false); // Reset flag
-        // Do not advance to next player, let the same player play again
-      } else {
-        advanceToNextPlayer(false);
-      }
-
-      LOGGER.info(currentPlayer.getName() + " rolled " + roll + " and is now at position " +
-              currentPlayer.getPositionIndex());
-
-      gameState = GameState.WAITING_FOR_TURN;
-      executeCallback(onTurnComplete);
-    });
+    LOGGER.info(currentPlayer.getName() + " rolled " + roll);
   }
 
-  private void waitForAnimationsToComplete(Runnable onComplete) {
-    if (!isBusy()) {
-      // Add a small buffer to ensure animations are truly done
-      PauseTransition buffer = new PauseTransition(Duration.millis(50));
-      buffer.setOnFinished(e -> {
-        if (!isBusy()) {
-          onComplete.run();
-        } else {
-          waitForAnimationsToComplete(onComplete);
-        }
-      });
-      buffer.play();
-    } else {
-      PauseTransition wait = new PauseTransition(Duration.millis(100));
-      wait.setOnFinished(e -> waitForAnimationsToComplete(onComplete));
-      wait.play();
+  /**
+   * Called once the current player's movement and all tile effects (ladder/chance,
+   * including resulting slides and the chance popup) have fully resolved. This is the
+   * single, authoritative end of a turn: it hands the turn over (unless the player
+   * earned an extra turn) and notifies the UI exactly once.
+   */
+  private void onMovementSettled() {
+    if (!turnInProgress) {
+      return; // not in a turn, or already handled (e.g. the second mover in a swap)
     }
+    turnInProgress = false;
+
+    Player player = pendingPlayer;
+    if (player != null && player.hasExtraTurn()) {
+      player.setExtraTurn(false); // consume: the same player rolls again, no advance
+    } else {
+      advanceToNextPlayer(false);
+    }
+
+    gameState = GameState.WAITING_FOR_TURN;
+    Runnable callback = pendingTurnComplete;
+    pendingTurnComplete = null;
+    pendingPlayer = null;
+    executeCallback(callback);
   }
 
+  /**
+   * @return true if the die or a player movement animation is currently in progress
+   */
   public boolean isBusy() {
-    return dieController.isAnimating() || playerController.hasActiveAnimations();
+    boolean dieBusy = dieController != null && dieController.isAnimating();
+    boolean playerBusy = playerController != null && playerController.hasActiveAnimations();
+    return dieBusy || playerBusy;
   }
 
   private void movePlayerToFinish(Player player, int currentPosition) {
@@ -390,19 +377,6 @@ public class BoardGameController extends Observable<BoardGameController> impleme
     if (!playerRanks.contains(player)) {
       playerRanks.add(player);
       LOGGER.info(player.getName() + " finished in position " + playerRanks.size());
-    }
-  }
-
-  protected void applyTileEffects(Player player) {
-    int position = player.getPositionIndex();
-    if (position >= 0 && position < board.getTiles().size()) {
-      Tile currentTile = board.getTiles().get(position);
-      // Chance tiles are resolved by the view layer (PlayerController) through the
-      // chance popup, so the effect is applied exactly once after the player
-      // acknowledges it. Executing it here as well would apply a second effect.
-      if (!currentTile.hasChanceAction()) {
-        currentTile.landOn(player);
-      }
     }
   }
 
@@ -475,41 +449,9 @@ public class BoardGameController extends Observable<BoardGameController> impleme
     return !players.isEmpty();
   }
 
-  /**
-   * Observes player events. The turn pointer advances as soon as a roll is
-   * resolved, but a chance tile's EXTRA_TURN is only applied later, when the
-   * player confirms the popup. This listener reacts to that and hands the turn
-   * back to the player, consuming the flag so exactly one extra turn is granted.
-   *
-   * @param observable the player whose state changed
-   * @param eventType  the kind of change
-   */
-  @Override
-  public void update(Observable<Player> observable, String eventType) {
-    if (!"EXTRA_TURN_CHANGED".equals(eventType) || !(observable instanceof Player player)) {
-      return;
-    }
-    if (!player.hasExtraTurn()) {
-      return;
-    }
-
-    int index = players.indexOf(player);
-    int finalPosition = board.getTiles().size() - 1;
-    if (index < 0 || player.getPositionIndex() >= finalPosition) {
-      // Player isn't part of this game, or has already finished: nothing to grant.
-      player.setExtraTurn(false);
-      return;
-    }
-
-    currentPlayerIndex = index;
-    gameState = GameState.WAITING_FOR_TURN;
-    player.setExtraTurn(false); // consume so the player gets exactly one extra turn
-    LOGGER.info(player.getName() + " takes an extra turn");
-  }
-
   @Override
   public String toString() {
-    return "BoardGameController{" +
+    return "GameController{" +
             "board=" + board +
             ", players=" + players +
             ", currentPlayerIndex=" + currentPlayerIndex +

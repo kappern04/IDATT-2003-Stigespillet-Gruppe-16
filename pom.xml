@@ -72,7 +72,6 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <!-- TODO: Replace with your own main-class -->
                     <mainClass>edu.ntnu.iir.bidata.Main</mainClass>
                 </configuration>
             </plugin>

@@ -1,17 +1,15 @@
 package edu.ntnu.iir.bidata.laddergame.model;
 
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-
+/**
+ * Tile action that moves a player to a fixed destination tile (a ladder or snake).
+ * This is a pure model action; presentation concerns such as sound are handled by
+ * the view layer.
+ */
 public class LadderAction extends DefaultTileAction {
-  private MediaPlayer mediaPlayerUp;
-  private MediaPlayer mediaPlayerDown;
   private int destinationTileIndex;
 
   public LadderAction(int destinationTileIndex) {
     this.destinationTileIndex = destinationTileIndex;
-    this.mediaPlayerUp = createMediaPlayer("portal.wav");
-    this.mediaPlayerDown = createMediaPlayer("portal2.wav");
   }
 
   @Override
@@ -39,31 +37,6 @@ public class LadderAction extends DefaultTileAction {
   @Override
   public String toString() {
     return "LadderAction{" + "destinationTile=" + destinationTileIndex + '}';
-  }
-
-  public void playLadderSound(int previousPosition) {
-    if (destinationTileIndex > previousPosition) {
-      playSound(mediaPlayerUp);
-    } else {
-      playSound(mediaPlayerDown);
-    }
-  }
-
-  private void playSound(MediaPlayer mediaPlayer) {
-    if (mediaPlayer != null) {
-      mediaPlayer.stop();
-      mediaPlayer.play();
-    }
-  }
-
-  private MediaPlayer createMediaPlayer(String soundFile) {
-    try {
-      Media sound = new Media(getClass().getResource("/audio/" + soundFile).toExternalForm());
-      return new MediaPlayer(sound);
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
   }
 
   @Override

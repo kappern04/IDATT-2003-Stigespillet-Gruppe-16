@@ -1,4 +1,4 @@
-package edu.ntnu.iir.bidata.laddergame.util;
+package edu.ntnu.iir.bidata.laddergame.view.util;
 
 import edu.ntnu.iir.bidata.laddergame.model.Board;
 import edu.ntnu.iir.bidata.laddergame.model.Tile;
@@ -6,8 +6,14 @@ import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.beans.binding.Bindings;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Utility class for board-related calculations and positioning.
+ *
+ * <p>Holds the mapping from tile index to its rendered JavaFX node (set by the
+ * board view), so that this view-layer concern stays out of the {@code Board} model.
  */
 public class BoardUtils {
     /** Standard size for tiles on the board */
@@ -15,6 +21,26 @@ public class BoardUtils {
 
     /** Offset to center items on tiles */
     public static final int TILE_CENTER_OFFSET = TILE_SIZE / 2;
+
+    /** Tile index -> its rendered node, for exact on-screen positioning. */
+    private static final Map<Integer, Node> tileNodeMap = new HashMap<>();
+
+    /**
+     * Registers the rendered tile nodes (called by the board view when it builds
+     * the board). Replaces any previously registered nodes.
+     *
+     * @param nodeMap map from tile index to the tile's rendered node
+     */
+    public static void setTileNodeMap(Map<Integer, Node> nodeMap) {
+        tileNodeMap.clear();
+        if (nodeMap != null) {
+            tileNodeMap.putAll(nodeMap);
+        }
+    }
+
+    private static Node nodeFor(Tile tile) {
+        return tile == null ? null : tileNodeMap.get(tile.getIndex());
+    }
 
     public static void bindNodeToCenter(Node node, Node targetNode, double nodeWidth, double nodeHeight, double offsetX, double offsetY) {
         node.layoutXProperty().bind(Bindings.createDoubleBinding(
@@ -36,7 +62,7 @@ public class BoardUtils {
      */
     public static double getBoardOffsetX(Board board, Tile tile) {
         // Try to use the tile's node if available
-        Node tileNode = board.getTileNode(tile);
+        Node tileNode = nodeFor(tile);
         if (tileNode != null && tileNode.getParent() != null) {
             Bounds bounds = tileNode.getBoundsInParent();
             return bounds.getMinX() + bounds.getWidth() / 2;
@@ -60,7 +86,7 @@ public class BoardUtils {
      */
     public static double getBoardOffsetY(Board board, Tile tile) {
         // Try to use the tile's node if available
-        Node tileNode = board.getTileNode(tile);
+        Node tileNode = nodeFor(tile);
         if (tileNode != null && tileNode.getParent() != null) {
             Bounds bounds = tileNode.getBoundsInParent();
             return bounds.getMinY() + bounds.getHeight() / 2;
