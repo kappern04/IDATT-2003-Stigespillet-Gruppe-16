@@ -2,7 +2,6 @@
 This file uses Mark Down syntax. For more information see [here](https://www.markdownguide.org/basic-syntax/).
 
 STUDENT NAME = "Kasper Østerlie Gladsøy"  
-STUDENT ID = "123456"
 
 ## Project description
 
